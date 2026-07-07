@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Walli Garments – Casual Fashion for Everyone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#1A2340;--navy2:#232f55;
+      --gold:#C9963A;--gold2:#e6b050;
+      --cream:#FAF7F2;--sand:#EDE3D5;
+      --charcoal:#3C3C3C;--white:#fff;
+      --green:#2E7D51;--muted:#6b6b6b;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);overflow-x:hidden}
+
+    /* ─── TICKER ─── */
+    .ticker{background:var(--gold);color:var(--navy);font-weight:700;font-size:.82rem;letter-spacing:.6px;overflow:hidden;white-space:nowrap;padding:9px 0}
+    .ticker-inner{display:inline-flex;animation:tick 28s linear infinite}
+    .ticker-inner span{padding:0 3rem}
+    @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+    /* ─── NAV ─── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:66px;box-shadow:0 2px 24px rgba(0,0,0,.3)}
+    .nav-logo{font-family:'Playfair Display',serif;color:var(--gold);font-size:1.55rem;letter-spacing:1px;text-decoration:none}
+    .nav-logo span{color:var(--white)}
+    .nav-links{display:flex;gap:1.8rem;list-style:none;align-items:center}
+    .nav-links a{color:rgba(255,255,255,.82);text-decoration:none;font-size:.88rem;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:var(--gold)}
+    .nav-cta{background:var(--gold)!important;color:var(--navy)!important;padding:8px 20px;border-radius:4px;font-weight:700!important}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+    .hamburger span{width:26px;height:2px;background:var(--white);border-radius:2px;transition:.3s;display:block}
+
+    /* ─── HERO ─── */
+    #hero{min-height:100vh;background:linear-gradient(135deg,#111c38 0%,#1f2f5a 55%,#1a2340 100%);display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:110px 5% 70px;gap:3rem;position:relative;overflow:hidden}
+    #hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23C9963A' fill-opacity='0.04'%3E%3Cpath d='M0 0h40v40H0zm40 40h40v40H40z'/%3E%3C/g%3E%3C/svg%3E")}
+    .hero-left{position:relative;z-index:2}
+    .hero-tag{display:inline-flex;align-items:center;gap:.5rem;background:rgba(201,150,58,.15);color:var(--gold);border:1px solid rgba(201,150,58,.35);padding:6px 16px;border-radius:40px;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:1.6rem}
+    .hero-left h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5.5vw,4.2rem);color:var(--white);line-height:1.1;margin-bottom:1.4rem}
+    .hero-left h1 em{font-style:italic;color:var(--gold)}
+    .hero-left p{color:rgba(255,255,255,.68);font-size:1.05rem;line-height:1.8;margin-bottom:2.4rem;max-width:480px}
+    .hero-btns{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.8rem}
+    .btn-primary{background:var(--gold);color:var(--navy);padding:13px 32px;border-radius:6px;font-weight:700;font-size:.92rem;text-decoration:none;transition:transform .2s,box-shadow .2s;display:inline-block;letter-spacing:.3px}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,150,58,.4)}
+    .btn-outline{border:2px solid rgba(255,255,255,.35);color:var(--white);padding:13px 32px;border-radius:6px;font-weight:600;font-size:.92rem;text-decoration:none;transition:.2s;display:inline-block}
+    .btn-outline:hover{border-color:var(--gold);background:rgba(201,150,58,.1)}
+    .hero-stats{display:flex;gap:2.5rem;flex-wrap:wrap}
+    .hero-stat strong{display:block;font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gold)}
+    .hero-stat span{font-size:.75rem;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.5)}
+
+    /* hero right – visual showcase */
+    .hero-right{position:relative;z-index:2;display:flex;flex-direction:column;gap:1rem}
+    .hero-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .hero-card{background:rgba(255,255,255,.07);border:1px solid rgba(201,150,58,.2);border-radius:14px;padding:1.5rem;text-align:center;transition:transform .3s,background .3s;cursor:default}
+    .hero-card:hover{transform:translateY(-4px);background:rgba(201,150,58,.1)}
+    .hero-card .hc-icon{font-size:3rem;margin-bottom:.7rem}
+    .hero-card h4{color:var(--white);font-size:.95rem;font-weight:600;margin-bottom:.3rem}
+    .hero-card p{color:rgba(255,255,255,.5);font-size:.78rem;line-height:1.5}
+    .hero-promo{background:linear-gradient(135deg,rgba(201,150,58,.2),rgba(201,150,58,.05));border:1px solid rgba(201,150,58,.3);border-radius:14px;padding:1.4rem 1.6rem;display:flex;align-items:center;gap:1.2rem}
+    .hero-promo .promo-icon{font-size:2.2rem;flex-shrink:0}
+    .hero-promo h4{color:var(--gold);font-size:1rem;font-weight:700;margin-bottom:.25rem}
+    .hero-promo p{color:rgba(255,255,255,.6);font-size:.82rem}
+
+    /* ─── MARQUEE STRIP ─── */
+    .marquee-strip{background:var(--navy);padding:18px 0;overflow:hidden;white-space:nowrap}
+    .marquee-inner{display:inline-flex;animation:tick 22s linear infinite;gap:0}
+    .marquee-item{padding:0 2.5rem;color:rgba(255,255,255,.45);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;font-weight:500}
+    .marquee-item .dot{color:var(--gold);margin-right:2.5rem;font-size:1rem}
+
+    /* ─── SECTION BASE ─── */
+    section{padding:88px 5%}
+    .section-label{font-size:.73rem;text-transform:uppercase;letter-spacing:3px;color:var(--gold);font-weight:700;margin-bottom:.7rem}
+    .section-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.7rem);color:var(--navy);line-height:1.2;margin-bottom:.9rem}
+    .section-sub{color:var(--muted);max-width:500px;line-height:1.75;margin-bottom:3rem;font-size:.95rem}
+
+    /* ─── CATEGORIES ─── */
+    #categories{background:var(--white)}
+    .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:.5rem}
+    .cat-card{border-radius:16px;overflow:hidden;position:relative;aspect-ratio:3/4.2;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;transition:transform .35s}
+    .cat-card:hover{transform:translateY(-6px)}
+    .cat-card:hover .cat-overlay{opacity:1}
+    .cat-emoji{position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);font-size:6rem;opacity:.22;transition:opacity .3s}
+    .cat-card:hover .cat-emoji{opacity:.35}
+    .cat-gradient{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(26,35,64,.92) 100%)}
+    .cat-overlay{position:absolute;inset:0;background:rgba(201,150,58,.12);opacity:0;transition:opacity .3s}
+    .cat-body{position:relative;z-index:2;padding:1.6rem}
+    .cat-body h3{font-family:'Playfair Display',serif;font-size:1.55rem;color:var(--white);margin-bottom:.35rem}
+    .cat-body p{color:rgba(255,255,255,.65);font-size:.82rem;margin-bottom:.9rem}
+    .cat-link{color:var(--gold);font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-decoration:none}
+    .cat-card.men{background:linear-gradient(145deg,#8fa3c9,#b8c8e0)}
+    .cat-card.women{background:linear-gradient(145deg,#c98fa3,#e0b8c8)}
+    .cat-card.kids{background:linear-gradient(145deg,#8fc9a3,#b8e0c8)}
+
+    /* ─── PRODUCTS ─── */
+    #products{background:var(--cream)}
+    .filter-row{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:2.5rem}
+    .filter-btn{padding:8px 22px;border:1.5px solid #d5d0c8;border-radius:40px;background:transparent;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;transition:.2s;color:var(--charcoal);font-weight:500}
+    .filter-btn.active,.filter-btn:hover{background:var(--navy);color:var(--white);border-color:var(--navy)}
+    .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.6rem}
+    .p-card{background:var(--white);border-radius:14px;overflow:hidden;transition:box-shadow .3s,transform .3s;cursor:pointer}
+    .p-card:hover{box-shadow:0 16px 48px rgba(0,0,0,.13);transform:translateY(-5px)}
+    .p-img{height:220px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;font-size:5.5rem}
+    .p-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+    .p-badge{position:absolute;top:12px;left:12px;font-size:.7rem;font-weight:700;padding:4px 11px;border-radius:20px;letter-spacing:.4px;z-index:1}
+    .p-badge.sale{background:var(--gold);color:var(--navy)}
+    .p-badge.new{background:var(--navy);color:var(--white)}
+    .p-badge.hot{background:#c0392b;color:var(--white)}
+    .p-info{padding:1rem 1.2rem 1.4rem}
+    .p-cat{font-size:.72rem;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem}
+    .p-info h4{font-weight:600;font-size:.98rem;margin-bottom:.6rem;color:var(--navy)}
+    .p-sizes{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+    .size-tag{padding:2px 8px;border:1px solid #e0dbd2;border-radius:4px;font-size:.7rem;color:var(--muted)}
+    .p-row{display:flex;align-items:center;justify-content:space-between}
+    .p-price{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--navy);font-weight:700}
+    .p-old{font-size:.82rem;color:#bbb;text-decoration:line-through;margin-left:5px}
+    .p-btn{background:var(--navy);color:var(--white);border:none;padding:8px 16px;border-radius:6px;font-size:.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:.2s}
+    .p-btn:hover{background:var(--gold);color:var(--navy)}
+    .no-products{text-align:center;padding:4rem;color:var(--muted);grid-column:1/-1}
+    .no-products .np-icon{font-size:3rem;margin-bottom:1rem}
+
+    /* ─── PROMO BANNER ─── */
+    .promo-banner{background:linear-gradient(135deg,var(--navy),#2b3a6b);margin:0 5%;border-radius:20px;padding:4rem 5%;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2rem;position:relative;overflow:hidden}
+    .promo-banner::before{content:'';position:absolute;right:-60px;top:-60px;width:280px;height:280px;background:rgba(201,150,58,.08);border-radius:50%}
+    .promo-banner h2{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:var(--white);margin-bottom:.8rem}
+    .promo-banner p{color:rgba(255,255,255,.6);font-size:.95rem;line-height:1.7}
+    .promo-banner .btn-primary{white-space:nowrap;flex-shrink:0;font-size:.95rem}
+
+    /* ─── WHY US ─── */
+    #why{background:var(--navy)}
+    #why .section-title{color:var(--white)}
+    #why .section-sub{color:rgba(255,255,255,.55)}
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.3rem}
+    .f-card{background:rgba(255,255,255,.05);border:1px solid rgba(201,150,58,.18);border-radius:14px;padding:1.8rem 1.4rem;transition:.3s}
+    .f-card:hover{background:rgba(201,150,58,.1);transform:translateY(-4px)}
+    .f-icon{font-size:2rem;margin-bottom:.9rem}
+    .f-card h3{color:var(--gold);font-size:1rem;margin-bottom:.45rem;font-weight:600}
+    .f-card p{color:rgba(255,255,255,.55);font-size:.85rem;line-height:1.65}
+
+    /* ─── PAYMENT ─── */
+    #payment{background:var(--sand)}
+    .pay-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.4rem;margin-top:.5rem}
+    .pay-card{background:var(--white);border-radius:14px;padding:2rem;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.06);transition:.3s}
+    .pay-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,.1)}
+    .pay-logo{font-size:3rem;margin-bottom:.9rem}
+    .pay-card h3{font-size:1.15rem;font-weight:700;color:var(--navy);margin-bottom:.45rem}
+    .pay-card p{font-size:.85rem;color:var(--muted);line-height:1.6}
+    .pay-tag{margin-top:.9rem;display:inline-block;background:rgba(46,125,81,.12);color:var(--green);border-radius:20px;padding:4px 14px;font-size:.78rem;font-weight:600}
+
+    /* ─── TESTIMONIALS ─── */
+    #testimonials{background:var(--white)}
+    .testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.4rem}
+    .t-card{background:var(--cream);border-radius:14px;padding:1.8rem;border-left:4px solid var(--gold)}
+    .stars{color:var(--gold);font-size:.95rem;letter-spacing:2px;margin-bottom:.8rem}
+    .t-card p{font-size:.9rem;line-height:1.75;color:var(--charcoal);font-style:italic;margin-bottom:1rem}
+    .t-author{font-weight:700;font-size:.85rem;color:var(--navy)}
+    .t-loc{font-size:.75rem;color:#aaa}
+
+    /* ─── CONTACT ─── */
+    #contact{background:var(--navy)}
+    #contact .section-title{color:var(--white)}
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;margin-top:1.5rem}
+    .c-info h3{color:var(--gold);font-size:1rem;margin-bottom:1.4rem;font-weight:600;letter-spacing:.5px}
+    .info-item{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.3rem}
+    .i-icon{font-size:1.35rem;flex-shrink:0;margin-top:2px}
+    .i-text strong{display:block;color:var(--white);font-size:.88rem;margin-bottom:.2rem}
+    .i-text span,.i-text a{color:rgba(255,255,255,.58);font-size:.85rem;line-height:1.55}
+    .i-text a{color:var(--gold);text-decoration:none}
+    .i-text a:hover{text-decoration:underline}
+    .map-box{background:rgba(255,255,255,.05);border:1px solid rgba(201,150,58,.2);border-radius:12px;padding:1.6rem;text-align:center;margin-top:1.4rem}
+    .map-box .m-icon{font-size:2.2rem;margin-bottom:.6rem}
+    .map-box strong{color:var(--gold);display:block;margin-bottom:.3rem;font-size:.9rem}
+    .map-box p{color:rgba(255,255,255,.5);font-size:.83rem;line-height:1.6}
+    .wa-btn{display:flex;align-items:center;justify-content:center;gap:.7rem;background:#25D366;color:var(--white);text-decoration:none;padding:14px 24px;border-radius:8px;font-weight:700;font-size:.92rem;margin-top:1rem;transition:.2s}
+    .wa-btn:hover{opacity:.9;transform:translateY(-1px)}
+    .order-form{background:rgba(255,255,255,.06);border-radius:16px;padding:2.4rem}
+    .order-form h3{color:var(--gold);margin-bottom:1.5rem;font-size:1rem;font-weight:600}
+    .form-row2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+    .fg{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+    .fg label{font-size:.8rem;color:rgba(255,255,255,.65);font-weight:500}
+    .fg input,.fg select,.fg textarea{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:11px 13px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s}
+    .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold)}
+    .fg select option{background:var(--navy)}
+    .fg textarea{resize:vertical;min-height:82px}
+    .submit-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.3px}
+    .submit-btn:hover{opacity:.9;transform:translateY(-1px)}
+
+    /* ─── FOOTER ─── */
+    footer{background:#0e1625;padding:60px 5% 28px}
+    .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+    .foot-brand .logo{font-family:'Playfair Display',serif;color:var(--gold);font-size:1.6rem;letter-spacing:1px;display:block;margin-bottom:1rem}
+    .foot-brand .logo span{color:var(--white)}
+    .foot-brand p{color:rgba(255,255,255,.45);font-size:.85rem;line-height:1.75;max-width:270px}
+    .foot-col h4{color:var(--gold);font-size:.78rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:1.2rem;font-weight:700}
+    .foot-col ul{list-style:none}
+    .foot-col li{margin-bottom:.65rem}
+    .foot-col a{color:rgba(255,255,255,.5);font-size:.85rem;text-decoration:none;transition:color .2s}
+    .foot-col a:hover{color:var(--gold)}
+    .foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .foot-bottom p{color:rgba(255,255,255,.35);font-size:.8rem}
+    .admin-link{color:rgba(255,255,255,.25)!important;font-size:.75rem!important}
+    .admin-link:hover{color:var(--gold)!important}
+
+    /* ─── FLOAT WA ─── */
+    .float-wa{position:fixed;bottom:24px;right:24px;z-index:999;background:#25D366;color:var(--white);width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;box-shadow:0 6px 24px rgba(37,211,102,.5);text-decoration:none;transition:.2s}
+    .float-wa:hover{transform:scale(1.1)}
+
+    /* ─── RESPONSIVE ─── */
+    @media(max-width:1024px){
+      #hero{grid-template-columns:1fr;text-align:center;padding-top:130px}
+      .hero-right{display:none}
+      .hero-stats{justify-content:center}
+      .hero-btns{justify-content:center}
+      .hero-left p{margin:0 auto 2.4rem}
+      .promo-banner{grid-template-columns:1fr;text-align:center}
+      .promo-banner .btn-primary{width:fit-content;margin:0 auto}
+    }
+    @media(max-width:860px){
+      .cat-grid{grid-template-columns:1fr 1fr}
+      .contact-grid{grid-template-columns:1fr;gap:2.5rem}
+      .foot-grid{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:600px){
+      .nav-links{display:none;flex-direction:column;position:absolute;top:66px;left:0;right:0;background:var(--navy);padding:.5rem 5%;gap:0}
+      .nav-links.open{display:flex}
+      .nav-links li a{padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06);display:block}
+      .hamburger{display:flex}
+      .cat-grid{grid-template-columns:1fr}
+      .form-row2{grid-template-columns:1fr}
+      .foot-grid{grid-template-columns:1fr;gap:2rem}
+      .foot-bottom{flex-direction:column;text-align:center}
+    }
+    @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  </style>
+</head>
+<body>
+
+<!-- Float WA -->
+<a href="https://wa.me/923225925409" target="_blank" class="float-wa" title="Chat on WhatsApp">💬</a>
+
+<!-- Ticker -->
+<div class="ticker" style="position:fixed;top:0;left:0;right:0;z-index:1001">
+  <div class="ticker-inner" id="tickerInner">
+    <span>🎉 Free delivery in Shakargarh</span>
+    <span>📦 Cash on Delivery available</span>
+    <span>📱 Order via WhatsApp: +92322-5925409</span>
+    <span>👗 New arrivals every week</span>
+    <span>✅ 100% Genuine Quality</span>
+    <span>🎉 Free delivery in Shakargarh</span>
+    <span>📦 Cash on Delivery available</span>
+    <span>📱 Order via WhatsApp: +92322-5925409</span>
+    <span>👗 New arrivals every week</span>
+    <span>✅ 100% Genuine Quality</span>
+  </div>
+</div>
+
+<!-- Nav (offset for ticker ~34px) -->
+<nav style="top:34px">
+  <a href="#hero" class="nav-logo">Walli <span>Garments</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#categories">Collections</a></li>
+    <li><a href="#products">Shop</a></li>
+    <li><a href="#payment">Payment</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#contact" class="nav-cta">Order Now</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Hero -->
+<section id="hero" style="padding-top:170px">
+  <div class="hero-left">
+    <div class="hero-tag">📍 Shakargarh, Pakistan · Est. 2020</div>
+    <h1>Your Family's<br/><em>Fashion</em> Destination</h1>
+    <p>Walli Garments brings you the finest casual clothing for men, women, and kids — quality fabrics, trending styles, and prices that feel right every time.</p>
+    <div class="hero-btns">
+      <a href="#products" class="btn-primary">🛍️ &nbsp;Browse Collection</a>
+      <a href="https://wa.me/923225925409?text=Assalam%20o%20Alaikum!%20I%20want%20to%20order%20from%20Walli%20Garments." target="_blank" class="btn-outline">💬 &nbsp;WhatsApp Us</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>500+</strong><span>Happy Customers</span></div>
+      <div class="hero-stat"><strong>3</strong><span>Collections</span></div>
+      <div class="hero-stat"><strong>5★</strong><span>Rated Shop</span></div>
+      <div class="hero-stat"><strong>COD</strong><span>Available</span></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-cards">
+      <div class="hero-card"><div class="hc-icon">👔</div><h4>Men's Wear</h4><p>Kurtas, shirts, trousers & more</p></div>
+      <div class="hero-card"><div class="hc-icon">👗</div><h4>Women's Fashion</h4><p>Suits, frocks & casual sets</p></div>
+      <div class="hero-card"><div class="hc-icon">🧒</div><h4>Kids' Outfits</h4><p>Cute, comfy & colourful</p></div>
+      <div class="hero-card"><div class="hc-icon">🚚</div><h4>Home Delivery</h4><p>Right to your doorstep</p></div>
+    </div>
+    <div class="hero-promo">
+      <div class="promo-icon">🎁</div>
+      <div>
+        <h4>Eid Special Offers</h4>
+        <p>Get the best outfits for every occasion at the best prices. Call or WhatsApp to ask about current deals.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span class="marquee-item"><span class="dot">✦</span>Men's Kurtas & Shalwar Kameez</span>
+    <span class="marquee-item"><span class="dot">✦</span>Women's Lawn Suits</span>
+    <span class="marquee-item"><span class="dot">✦</span>Kids' Summer Collection</span>
+    <span class="marquee-item"><span class="dot">✦</span>EasyPaisa & JazzCash Accepted</span>
+    <span class="marquee-item"><span class="dot">✦</span>Cash on Delivery</span>
+    <span class="marquee-item"><span class="dot">✦</span>Shop #6 Kohlo Wali Gali</span>
+    <span class="marquee-item"><span class="dot">✦</span>Men's Kurtas & Shalwar Kameez</span>
+    <span class="marquee-item"><span class="dot">✦</span>Women's Lawn Suits</span>
+    <span class="marquee-item"><span class="dot">✦</span>Kids' Summer Collection</span>
+    <span class="marquee-item"><span class="dot">✦</span>EasyPaisa & JazzCash Accepted</span>
+    <span class="marquee-item"><span class="dot">✦</span>Cash on Delivery</span>
+    <span class="marquee-item"><span class="dot">✦</span>Shop #6 Kohlo Wali Gali</span>
+  </div>
+</div>
+
+<!-- Categories -->
+<section id="categories">
+  <div class="section-label">Shop by Category</div>
+  <h2 class="section-title">Something for Everyone</h2>
+  <p class="section-sub">From sharp men's wear to elegant women's fashion and adorable kids' clothes — we've got your whole family covered.</p>
+  <div class="cat-grid">
+    <div class="cat-card men" onclick="filterAndScroll('men')">
+      <div class="cat-emoji">👔</div>
+      <div class="cat-gradient"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-body">
+        <h3>Men's Wear</h3>
+        <p>Kurtas, shirts, shalwar kameez & trousers</p>
+        <a class="cat-link">Shop Now →</a>
+      </div>
+    </div>
+    <div class="cat-card women" onclick="filterAndScroll('women')">
+      <div class="cat-emoji">👗</div>
+      <div class="cat-gradient"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-body">
+        <h3>Women's Fashion</h3>
+        <p>Lawn suits, frocks, dupattas & more</p>
+        <a class="cat-link">Shop Now →</a>
+      </div>
+    </div>
+    <div class="cat-card kids" onclick="filterAndScroll('kids')">
+      <div class="cat-emoji">🧒</div>
+      <div class="cat-gradient"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-body">
+        <h3>Kids' Collection</h3>
+        <p>Cute, comfy & colourful outfits for all ages</p>
+        <a class="cat-link">Shop Now →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Products -->
+<section id="products">
+  <div class="section-label">Our Products</div>
+  <h2 class="section-title">Featured Collection</h2>
+  <p class="section-sub">Quality fabrics, trending styles, and prices that make sense for every budget.</p>
+  <div class="filter-row" id="filterRow">
+    <button class="filter-btn active" onclick="filterProducts('all',this)">All Items</button>
+    <button class="filter-btn" onclick="filterProducts('men',this)">Men</button>
+    <button class="filter-btn" onclick="filterProducts('women',this)">Women</button>
+    <button class="filter-btn" onclick="filterProducts('kids',this)">Kids</button>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- Promo Banner -->
+<div class="promo-banner">
+  <div>
+    <h2>Order From Home — We Deliver to Your Door 🚪</h2>
+    <p>No need to visit the shop. WhatsApp or call us with your size and style, and we'll bring it straight to you anywhere in Shakargarh.</p>
+  </div>
+  <a href="https://wa.me/923225925409?text=Assalam%20o%20Alaikum!%20I%20want%20to%20place%20a%20home%20delivery%20order." target="_blank" class="btn-primary">📦 Order on WhatsApp</a>
+</div>
+
+<!-- Why Us -->
+<section id="why">
+  <div class="section-label">Why Choose Us</div>
+  <h2 class="section-title" style="color:var(--white)">The Walli Garments Difference</h2>
+  <p class="section-sub" style="color:rgba(255,255,255,.5)">We don't just sell clothes — we help you dress with confidence every day.</p>
+  <div class="features-grid">
+    <div class="f-card"><div class="f-icon">✅</div><h3>Genuine Quality</h3><p>Every piece is carefully selected for fabric, stitching, and durability before it reaches our shelves.</p></div>
+    <div class="f-card"><div class="f-icon">💰</div><h3>Affordable Prices</h3><p>Fashion shouldn't break the bank. Our prices are fair and competitive for every budget in Shakargarh.</p></div>
+    <div class="f-card"><div class="f-icon">🚚</div><h3>Home Delivery</h3><p>We deliver right to your door within Shakargarh. Just WhatsApp us to place your order.</p></div>
+    <div class="f-card"><div class="f-icon">🔄</div><h3>Easy Exchange</h3><p>Not happy with your order? We make the exchange process simple and hassle-free for you.</p></div>
+    <div class="f-card"><div class="f-icon">👨‍👩‍👧‍👦</div><h3>Family Store</h3><p>Everything for everyone — men, women, and kids — all under one trusted roof since 2020.</p></div>
+    <div class="f-card"><div class="f-icon">📱</div><h3>WhatsApp Orders</h3><p>Can't visit the shop? Browse and order directly through WhatsApp — it's fast and easy.</p></div>
+  </div>
+</section>
+
+<!-- Payment -->
+<section id="payment">
+  <div class="section-label">Payment Methods</div>
+  <h2 class="section-title">Pay Your Way</h2>
+  <p class="section-sub">We keep it flexible — choose the payment method that works best for you, with zero hassle.</p>
+  <div class="pay-grid">
+    <div class="pay-card">
+      <div class="pay-logo">📱</div>
+      <h3>EasyPaisa</h3>
+      <p>Send payment via EasyPaisa mobile wallet. Fast, secure, and available 24/7 from any mobile phone.</p>
+      <span class="pay-tag">✔ Accepted</span>
+    </div>
+    <div class="pay-card">
+      <div class="pay-logo">🎵</div>
+      <h3>JazzCash</h3>
+      <p>Pay instantly with your JazzCash account. No bank required — just your mobile and your order.</p>
+      <span class="pay-tag">✔ Accepted</span>
+    </div>
+    <div class="pay-card">
+      <div class="pay-logo">🚪</div>
+      <h3>Cash on Delivery</h3>
+      <p>Pay when your order arrives at your door. Zero risk, total confidence — the most trusted option.</p>
+      <span class="pay-tag">✔ Accepted</span>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section id="testimonials">
+  <div class="section-label">Customer Reviews</div>
+  <h2 class="section-title">What Our Customers Say</h2>
+  <p class="section-sub">Real feedback from real customers across Shakargarh and nearby areas.</p>
+  <div class="testi-grid">
+    <div class="t-card"><div class="stars">★★★★★</div><p>"Best clothes shop in Shakargarh! Great quality kurtas for my husband and delivery was so fast. Definitely ordering again."</p><div class="t-author">Sana Bibi</div><div class="t-loc">Shakargarh</div></div>
+    <div class="t-card"><div class="stars">★★★★★</div><p>"Ordered kids' clothes via WhatsApp and received them the same day. Prices are very reasonable and the fabric quality is excellent."</p><div class="t-author">Tariq Mehmood</div><div class="t-loc">Near Riaz Market</div></div>
+    <div class="t-card"><div class="stars">★★★★★</div><p>"Visited the shop for my daughter's Eid outfit and found exactly what I was looking for. Very helpful and friendly!"</p><div class="t-author">Ayesha Noor</div><div class="t-loc">Shakargarh</div></div>
+    <div class="t-card"><div class="stars">★★★★☆</div><p>"JazzCash payment worked perfectly. The men's shirts I bought are great quality and look amazing. Will recommend to all my friends."</p><div class="t-author">Bilal Ahmed</div><div class="t-loc">Punjab</div></div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="section-label">Visit or Order</div>
+  <h2 class="section-title">Get in Touch</h2>
+  <div class="contact-grid">
+    <div class="c-info">
+      <h3>📍 Find Us</h3>
+      <div class="info-item"><span class="i-icon">🏪</span><div class="i-text"><strong>Shop Address</strong><span>Famous Kohlo Wali Gali, Near Riaz Market,<br/>Shop Number 6, Shakargarh, Pakistan</span></div></div>
+      <div class="info-item"><span class="i-icon">📞</span><div class="i-text"><strong>Call Us</strong><span><a href="tel:+923225925409">+92322-5925409</a></span></div></div>
+      <div class="info-item"><span class="i-icon">💬</span><div class="i-text"><strong>WhatsApp</strong><span><a href="https://wa.me/923225925409" target="_blank">+92322-5925409</a></span></div></div>
+      <div class="info-item"><span class="i-icon">✉️</span><div class="i-text"><strong>Email</strong><span><a href="mailto:sharryk432@gmail.com">sharryk432@gmail.com</a></span></div></div>
+      <div class="map-box">
+        <div class="m-icon">🗺️</div>
+        <strong>Walli Garments — Shop #6</strong>
+        <p>Kohlo Wali Gali, Near Riaz Market<br/>Shakargarh, Punjab, Pakistan</p>
+      </div>
+      <a href="https://wa.me/923225925409?text=Assalam%20o%20Alaikum!%20I%20want%20to%20place%20an%20order%20from%20Walli%20Garments." target="_blank" class="wa-btn">💬 &nbsp;Order on WhatsApp</a>
+    </div>
+    <div class="order-form">
+      <h3>📝 Place an Order</h3>
+      <div class="form-row2">
+        <div class="fg"><label>Your Name *</label><input type="text" id="fn" placeholder="Ali Hassan"/></div>
+        <div class="fg"><label>Phone Number *</label><input type="tel" id="fp" placeholder="+92300-0000000"/></div>
+      </div>
+      <div class="fg"><label>Category *</label>
+        <select id="fc"><option value="">-- Select Category --</option><option>Men's Wear</option><option>Women's Fashion</option><option>Kids' Collection</option></select>
+      </div>
+      <div class="fg"><label>What do you need? *</label><textarea id="fd" placeholder="e.g. 2 white kurtas size M, 1 kids shirt size 6..."></textarea></div>
+      <div class="fg"><label>Payment Method *</label>
+        <select id="fpm"><option value="">-- Select --</option><option>EasyPaisa</option><option>JazzCash</option><option>Cash on Delivery</option></select>
+      </div>
+      <div class="fg"><label>Delivery Address (optional)</label><input type="text" id="fa" placeholder="Your street, area, Shakargarh"/></div>
+      <button class="submit-btn" onclick="submitOrder()">📦 Send Order via WhatsApp</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <span class="logo">Walli <span>Garments</span></span>
+      <p>Your trusted casual clothing store in Shakargarh. Quality clothes for men, women, and kids at prices that make sense for every family.</p>
+    </div>
+    <div class="foot-col"><h4>Collections</h4><ul><li><a href="#categories">Men's Wear</a></li><li><a href="#categories">Women's Fashion</a></li><li><a href="#categories">Kids' Collection</a></li></ul></div>
+    <div class="foot-col"><h4>Quick Links</h4><ul><li><a href="#hero">Home</a></li><li><a href="#products">Shop</a></li><li><a href="#payment">Payment</a></li><li><a href="#contact">Contact</a></li></ul></div>
+    <div class="foot-col"><h4>Contact</h4><ul>
+      <li><a href="tel:+923225925409">📞 +92322-5925409</a></li>
+      <li><a href="https://wa.me/923225925409" target="_blank">💬 WhatsApp Us</a></li>
+      <li><a href="mailto:sharryk432@gmail.com">✉️ Email Us</a></li>
+      <li><a href="#contact">📍 Shop #6, Shakargarh</a></li>
+    </ul></div>
+  </div>
+  <div class="foot-bottom">
+    <p>© 2025 Walli Garments, Shakargarh. All rights reserved.</p>
+    <p>Made with ❤️ for Shakargarh &nbsp;|&nbsp; <a href="admin/index.html" class="admin-link">Admin</a></p>
+  </div>
+</footer>
+
+<script>
+// ── Default products (used only if admin hasn't saved any) ──
+const defaultProducts = [
+  {id:1, name:"Classic Shalwar Kameez",  cat:"men",   price:1800, oldPrice:2200, sizes:["S","M","L","XL"], badge:"Sale", emoji:"👔", bg:"#d0dae8", img:""},
+  {id:2, name:"Casual Linen Shirt",      cat:"men",   price:1200, oldPrice:0,    sizes:["M","L","XL"],     badge:"New",  emoji:"👕", bg:"#c5d4e6", img:""},
+  {id:3, name:"Men's Formal Trousers",   cat:"men",   price:1500, oldPrice:1800, sizes:["30","32","34","36"],badge:"Sale",emoji:"👖", bg:"#b8c8de", img:""},
+  {id:4, name:"Ladies Lawn Suit",        cat:"women", price:2200, oldPrice:2800, sizes:["S","M","L"],       badge:"Sale", emoji:"👗", bg:"#e8c9d4", img:""},
+  {id:5, name:"Embroidered Kurta",       cat:"women", price:1900, oldPrice:0,    sizes:["S","M","L","XL"], badge:"New",  emoji:"🥻", bg:"#ddbece", img:""},
+  {id:6, name:"Ladies Dupatta Set",      cat:"women", price:2500, oldPrice:3000, sizes:["Free Size"],       badge:"Sale", emoji:"🧣", bg:"#d4aec0", img:""},
+  {id:7, name:"Kids Summer Outfit",      cat:"kids",  price:800,  oldPrice:0,    sizes:["2Y","4Y","6Y","8Y"],badge:"New", emoji:"🧒", bg:"#c0ddc8", img:""},
+  {id:8, name:"Boys Printed T-Shirt",    cat:"kids",  price:650,  oldPrice:800,  sizes:["4Y","6Y","8Y"],    badge:"Sale", emoji:"👦", bg:"#aed0b8", img:""},
+  {id:9, name:"Girls Frock Suit",        cat:"kids",  price:950,  oldPrice:0,    sizes:["2Y","4Y","6Y"],    badge:"New",  emoji:"👧", bg:"#9cc8a8", img:""},
+];
+
+function getProducts(){
+  try{
+    const saved = localStorage.getItem('walliProducts');
+    return saved ? JSON.parse(saved) : defaultProducts;
+  } catch(e){ return defaultProducts; }
+}
+
+let currentFilter = 'all';
+
+function renderProducts(filter){
+  currentFilter = filter;
+  const all = getProducts();
+  const list = filter==='all' ? all : all.filter(p=>p.cat===filter);
+  const grid = document.getElementById('productsGrid');
+  if(!list.length){
+    grid.innerHTML=`<div class="no-products"><div class="np-icon">🛍️</div><p>No products in this category yet.<br/>Check back soon or <a href="https://wa.me/923225925409" style="color:var(--gold)">WhatsApp us</a> for availability.</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(p=>{
+    const imgHtml = p.img
+      ? `<img src="${p.img}" alt="${p.name}" loading="lazy"/><span style="position:absolute;z-index:-1;font-size:5rem;opacity:.1">${p.emoji||'👕'}</span>`
+      : `<span>${p.emoji||'👕'}</span>`;
+    const sizes = (p.sizes||[]).map(s=>`<span class="size-tag">${s}</span>`).join('');
+    const oldP = p.oldPrice>0 ? `<span class="p-old">Rs. ${Number(p.oldPrice).toLocaleString()}</span>` : '';
+    const badge = p.badge ? `<span class="p-badge ${p.badge.toLowerCase()}">${p.badge}</span>` : '';
+    return `
+    <div class="p-card">
+      <div class="p-img" style="background:${p.bg||'#e0e8f0'}">
+        ${imgHtml}${badge}
+      </div>
+      <div class="p-info">
+        <div class="p-cat">${p.cat==='men'?"Men's":p.cat==='women'?"Women's":"Kids'"} Collection</div>
+        <h4>${p.name}</h4>
+        ${sizes?`<div class="p-sizes">${sizes}</div>`:''}
+        <div class="p-row">
+          <div><span class="p-price">Rs. ${Number(p.price).toLocaleString()}</span>${oldP}</div>
+          <button class="p-btn" onclick="orderItem('${p.name.replace(/'/g,"\\'")}',${p.price})">Order</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterProducts(cat, btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts(cat);
+}
+
+function filterAndScroll(cat){
+  const btns = document.querySelectorAll('.filter-btn');
+  btns.forEach(b=>{ b.classList.remove('active'); if(b.textContent.toLowerCase().includes(cat))b.classList.add('active'); });
+  renderProducts(cat);
+  document.getElementById('products').scrollIntoView({behavior:'smooth'});
+}
+
+function orderItem(name,price){
+  const msg = encodeURIComponent(`Assalam o Alaikum!\n\nI want to order:\n📦 *${name}*\n💰 Price: Rs. ${Number(price).toLocaleString()}\n\nPlease confirm availability. JazakAllah!`);
+  window.open(`https://wa.me/923225925409?text=${msg}`,'_blank');
+}
+
+function submitOrder(){
+  const n=document.getElementById('fn').value.trim();
+  const p=document.getElementById('fp').value.trim();
+  const c=document.getElementById('fc').value;
+  const d=document.getElementById('fd').value.trim();
+  const pm=document.getElementById('fpm').value;
+  const a=document.getElementById('fa').value.trim();
+  if(!n||!p||!c||!d||!pm){alert('Please fill in all required fields.');return;}
+  const msg=encodeURIComponent(`Assalam o Alaikum! New Order from Website 🛍️\n\n👤 Name: ${n}\n📞 Phone: ${p}\n📦 Category: ${c}\n📝 Order: ${d}\n💳 Payment: ${pm}${a?`\n📍 Address: ${a}`:''}\n\nPlease confirm. JazakAllah!`);
+  window.open(`https://wa.me/923225925409?text=${msg}`,'_blank');
+}
+
+function toggleNav(){document.getElementById('navLinks').classList.toggle('open')}
+
+// init
+renderProducts('all');
+
+// reload products if admin updated them
+window.addEventListener('storage',e=>{ if(e.key==='walliProducts') renderProducts(currentFilter); });
+</script>
+</body>
+</html>
