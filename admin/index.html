@@ -1,1 +1,677 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel – Walli Garments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#1A2340;--navy2:#222f55;--navy3:#2c3d6e;
+      --gold:#C9963A;--gold2:#e6b050;
+      --white:#fff;--bg:#f0f2f8;--card:#fff;
+      --green:#2E7D51;--red:#c0392b;--muted:#7a8499;
+      --border:#e2e6f0;
+    }
+    html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:#2c3345}
+
+    /* ── LOGIN ── */
+    #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#111c38,#1f2f5a)}
+    .login-box{background:var(--white);border-radius:20px;padding:3rem 2.8rem;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.35);text-align:center}
+    .login-logo{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--navy);margin-bottom:.3rem}
+    .login-logo span{color:var(--gold)}
+    .login-sub{color:var(--muted);font-size:.85rem;margin-bottom:2.2rem}
+    .login-box label{display:block;text-align:left;font-size:.8rem;font-weight:600;color:var(--navy);margin-bottom:.4rem;margin-top:1.2rem}
+    .login-box input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.92rem;outline:none;transition:.2s}
+    .login-box input:focus{border-color:var(--gold)}
+    .login-btn{width:100%;margin-top:1.8rem;background:var(--navy);color:var(--white);border:none;padding:14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.3px}
+    .login-btn:hover{background:var(--gold);color:var(--navy)}
+    .login-err{color:var(--red);font-size:.82rem;margin-top:.9rem;display:none}
+    .login-hint{margin-top:1.2rem;font-size:.78rem;color:var(--muted)}
+
+    /* ── ADMIN LAYOUT ── */
+    #adminScreen{display:none;min-height:100vh;flex-direction:column}
+    .a-header{background:var(--navy);color:var(--white);padding:0 2rem;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.25)}
+    .a-logo{font-family:'Playfair Display',serif;color:var(--gold);font-size:1.35rem}
+    .a-logo span{color:var(--white)}
+    .a-header-right{display:flex;align-items:center;gap:1rem}
+    .a-user{font-size:.82rem;color:rgba(255,255,255,.6)}
+    .logout-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:var(--white);padding:7px 16px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;transition:.2s}
+    .logout-btn:hover{background:var(--red)}
+    .view-site-btn{background:var(--gold);border:none;color:var(--navy);padding:7px 16px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+
+    .a-body{display:flex;flex:1}
+    .a-sidebar{width:220px;background:var(--navy2);padding:1.5rem 0;flex-shrink:0;min-height:calc(100vh - 62px)}
+    .sidebar-label{font-size:.68rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.3);padding:.5rem 1.4rem 0;font-weight:600}
+    .sidebar-link{display:flex;align-items:center;gap:.75rem;padding:11px 1.4rem;color:rgba(255,255,255,.65);font-size:.88rem;cursor:pointer;transition:.2s;border-left:3px solid transparent}
+    .sidebar-link:hover{color:var(--white);background:rgba(255,255,255,.05)}
+    .sidebar-link.active{color:var(--gold);background:rgba(201,150,58,.1);border-left-color:var(--gold)}
+    .sidebar-link .sl-icon{font-size:1.1rem}
+
+    .a-main{flex:1;padding:2rem;overflow-y:auto}
+
+    /* ── TOAST ── */
+    #toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:var(--white);padding:12px 22px;border-radius:8px;font-size:.88rem;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;border-left:4px solid var(--gold)}
+    #toast.show{opacity:1}
+
+    /* ── PANELS ── */
+    .panel{display:none}
+    .panel.active{display:block}
+    .panel-title{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--navy);margin-bottom:.4rem}
+    .panel-sub{color:var(--muted);font-size:.88rem;margin-bottom:2rem}
+
+    /* ── STAT CARDS ── */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.2rem;margin-bottom:2rem}
+    .stat-card{background:var(--card);border-radius:12px;padding:1.4rem;border:1px solid var(--border);display:flex;flex-direction:column;gap:.5rem}
+    .stat-card .st-icon{font-size:1.6rem}
+    .stat-card .st-val{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--navy)}
+    .stat-card .st-lbl{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+    /* ── PRODUCT TABLE ── */
+    .prod-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem}
+    .search-box{display:flex;align-items:center;gap:.5rem;background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;flex:1;max-width:320px}
+    .search-box input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.88rem;width:100%;background:transparent}
+    .add-prod-btn{background:var(--navy);color:var(--white);border:none;padding:10px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:.5rem}
+    .add-prod-btn:hover{background:var(--gold);color:var(--navy)}
+    .cat-filter-tabs{display:flex;gap:.5rem}
+    .ct-tab{padding:6px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:.8rem;cursor:pointer;transition:.2s;background:transparent;font-family:'DM Sans',sans-serif}
+    .ct-tab.active,.ct-tab:hover{background:var(--navy);color:var(--white);border-color:var(--navy)}
+
+    .prod-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+    .prod-table th{background:var(--navy);color:rgba(255,255,255,.8);text-align:left;padding:12px 16px;font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+    .prod-table td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:.88rem;vertical-align:middle}
+    .prod-table tr:last-child td{border-bottom:none}
+    .prod-table tr:hover td{background:#f8f9fc}
+    .prod-thumb{width:46px;height:46px;border-radius:8px;object-fit:cover;background:#eee;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+    .prod-thumb img{width:100%;height:100%;border-radius:8px;object-fit:cover}
+    .cat-pill{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:600}
+    .cat-pill.men{background:#dce6f5;color:#2a4a8a}
+    .cat-pill.women{background:#f5dce6;color:#8a2a4a}
+    .cat-pill.kids{background:#dcf5e6;color:#2a8a4a}
+    .badge-pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.7rem;font-weight:700}
+    .badge-pill.sale{background:#fff3dc;color:#a07020}
+    .badge-pill.new{background:#dce6f5;color:#2a4a8a}
+    .badge-pill.hot{background:#fde;color:#c0392b}
+    .tbl-btns{display:flex;gap:.4rem}
+    .edit-btn,.del-btn{padding:5px 12px;border-radius:6px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;border:none;transition:.2s}
+    .edit-btn{background:#eef2ff;color:var(--navy)}
+    .edit-btn:hover{background:var(--navy);color:var(--white)}
+    .del-btn{background:#fde;color:var(--red)}
+    .del-btn:hover{background:var(--red);color:var(--white)}
+    .empty-row td{text-align:center;padding:3rem;color:var(--muted)}
+
+    /* ── MODAL ── */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(10,15,35,.6);z-index:500;align-items:center;justify-content:center;padding:1rem}
+    .modal-bg.open{display:flex}
+    .modal{background:var(--white);border-radius:16px;width:100%;max-width:620px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.3)}
+    .modal-header{position:sticky;top:0;background:var(--white);padding:1.5rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;z-index:2}
+    .modal-header h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--navy)}
+    .modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);line-height:1}
+    .modal-body{padding:1.5rem 2rem 2rem}
+    .mfg{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.2rem}
+    .mfg label{font-size:.8rem;font-weight:600;color:var(--navy)}
+    .mfg input,.mfg select,.mfg textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:.2s;background:var(--bg)}
+    .mfg input:focus,.mfg select:focus,.mfg textarea:focus{border-color:var(--gold);background:var(--white)}
+    .mrow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .mfg .hint{font-size:.75rem;color:var(--muted);margin-top:.25rem}
+
+    /* image upload */
+    .img-upload-area{border:2px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:.2s;background:var(--bg);position:relative}
+    .img-upload-area:hover{border-color:var(--gold);background:#fffbf4}
+    .img-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .img-upload-area .upload-icon{font-size:2rem;margin-bottom:.5rem}
+    .img-upload-area p{font-size:.82rem;color:var(--muted)}
+    .img-preview{width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-top:1rem;display:none}
+    .emoji-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
+    .emoji-opt{padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.2rem;transition:.2s}
+    .emoji-opt.selected,.emoji-opt:hover{border-color:var(--gold);background:#fffbf4}
+    .color-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
+    .color-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s}
+    .color-swatch.selected{border-color:var(--navy)}
+    .modal-footer{display:flex;gap:.75rem;justify-content:flex-end;padding:1rem 2rem 1.5rem;border-top:1px solid var(--border)}
+    .m-cancel{background:var(--bg);color:var(--navy);border:1.5px solid var(--border);padding:10px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer}
+    .m-save{background:var(--navy);color:var(--white);border:none;padding:10px 28px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s}
+    .m-save:hover{background:var(--gold);color:var(--navy)}
+
+    /* sizes tag input */
+    .tags-container{display:flex;flex-wrap:wrap;gap:.4rem;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);cursor:text;min-height:44px;align-items:center}
+    .tags-container:focus-within{border-color:var(--gold);background:var(--white)}
+    .tag-item{background:var(--navy);color:var(--white);padding:3px 10px;border-radius:12px;font-size:.78rem;display:flex;align-items:center;gap:.3rem}
+    .tag-item button{background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:.85rem;line-height:1;padding:0}
+    .tag-input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.85rem;background:transparent;min-width:80px;flex:1}
+
+    /* ── SETTINGS ── */
+    .settings-card{background:var(--card);border-radius:12px;padding:2rem;border:1px solid var(--border);margin-bottom:1.5rem}
+    .settings-card h3{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+    .pw-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+    .sav-btn{background:var(--navy);color:var(--white);border:none;padding:10px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s}
+    .sav-btn:hover{background:var(--gold);color:var(--navy)}
+
+    .danger-zone{border:1px solid #fde;border-radius:12px;padding:1.5rem;background:#fff8f8}
+    .danger-zone h3{color:var(--red);margin-bottom:.5rem}
+    .danger-zone p{font-size:.85rem;color:var(--muted);margin-bottom:1rem}
+    .danger-btn{background:var(--red);color:var(--white);border:none;padding:9px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer}
+
+    .sfg{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+    .sfg label{font-size:.8rem;font-weight:600;color:var(--navy)}
+    .sfg input{padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:.2s;background:var(--bg)}
+    .sfg input:focus{border-color:var(--gold);background:var(--white)}
+
+    @media(max-width:700px){
+      .a-sidebar{display:none}
+      .mrow{grid-template-columns:1fr}
+      .pw-row{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Walli <span>Garments</span></div>
+    <div class="login-sub">Admin Panel — Authorised Access Only</div>
+    <label>Username</label>
+    <input type="text" id="loginUser" placeholder="admin" autocomplete="username"/>
+    <label>Password</label>
+    <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">🔐 &nbsp;Sign In</button>
+    <div class="login-err" id="loginErr">Incorrect username or password.</div>
+    <div class="login-hint">Default password: <strong>walli2026</strong></div>
+  </div>
+</div>
+
+<!-- ── ADMIN ── -->
+<div id="adminScreen">
+  <div class="a-header">
+    <div class="a-logo">Walli <span>Garments</span> <span style="font-size:.75rem;color:rgba(255,255,255,.4);font-family:'DM Sans',sans-serif;margin-left:.5rem">Admin</span></div>
+    <div class="a-header-right">
+      <span class="a-user">👤 admin</span>
+      <a href="../index.html" target="_blank" class="view-site-btn">🌐 View Site</a>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+  <div class="a-body">
+    <!-- Sidebar -->
+    <div class="a-sidebar">
+      <div style="padding:1.2rem 1.4rem .5rem">
+        <div style="font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:1.5px;text-transform:uppercase;font-weight:600">Menu</div>
+      </div>
+      <div class="sidebar-link active" onclick="showPanel('dashboard')"><span class="sl-icon">📊</span> Dashboard</div>
+      <div class="sidebar-link" onclick="showPanel('products')"><span class="sl-icon">👕</span> Products</div>
+      <div class="sidebar-link" onclick="showPanel('settings')"><span class="sl-icon">⚙️</span> Settings</div>
+      <div style="border-top:1px solid rgba(255,255,255,.07);margin:1rem 0"></div>
+      <div class="sidebar-label">Shop</div>
+      <div class="sidebar-link" onclick="window.open('../index.html','_blank')"><span class="sl-icon">🌐</span> View Website</div>
+      <div class="sidebar-link" onclick="window.open('https://wa.me/923225925409','_blank')"><span class="sl-icon">💬</span> WhatsApp</div>
+    </div>
+
+    <!-- Main -->
+    <div class="a-main">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="panel-title">Dashboard</div>
+        <div class="panel-sub">Welcome back! Here's an overview of your shop.</div>
+        <div class="stats-row" id="statsRow"></div>
+        <div style="background:var(--card);border-radius:12px;padding:1.5rem;border:1px solid var(--border)">
+          <div style="font-weight:700;color:var(--navy);margin-bottom:1rem;font-size:.95rem">📦 Recent Products</div>
+          <div id="recentProds"></div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="panel" id="panel-products">
+        <div class="panel-title">Products</div>
+        <div class="panel-sub">Add, edit, or remove items from your shop. Changes appear live on the website.</div>
+        <div class="prod-toolbar">
+          <div style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:center">
+            <div class="search-box"><span>🔍</span><input type="text" id="searchInput" placeholder="Search products..." oninput="renderTable()"/></div>
+            <div class="cat-filter-tabs">
+              <button class="ct-tab active" onclick="setCatTab('all',this)">All</button>
+              <button class="ct-tab" onclick="setCatTab('men',this)">Men</button>
+              <button class="ct-tab" onclick="setCatTab('women',this)">Women</button>
+              <button class="ct-tab" onclick="setCatTab('kids',this)">Kids</button>
+            </div>
+          </div>
+          <button class="add-prod-btn" onclick="openModal()">➕ Add Product</button>
+        </div>
+        <table class="prod-table" id="prodTable">
+          <thead><tr>
+            <th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Badge</th><th>Sizes</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="prodTbody"></tbody>
+        </table>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="panel-settings">
+        <div class="panel-title">Settings</div>
+        <div class="panel-sub">Manage your admin password and shop data.</div>
+
+        <div class="settings-card">
+          <h3>🔐 Change Password</h3>
+          <div class="pw-row">
+            <div class="sfg"><label>Current Password</label><input type="password" id="curPw" placeholder="Current password"/></div>
+            <div class="sfg"><label>New Password</label><input type="password" id="newPw" placeholder="New password"/></div>
+          </div>
+          <div class="sfg" style="max-width:240px"><label>Confirm New Password</label><input type="password" id="confirmPw" placeholder="Confirm new password"/></div>
+          <button class="sav-btn" onclick="changePassword()">Save Password</button>
+        </div>
+
+        <div class="settings-card">
+          <h3>📤 Export &amp; Backup</h3>
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">Download your product data as a JSON backup file.</p>
+          <button class="sav-btn" onclick="exportData()">⬇️ Export Products JSON</button>
+        </div>
+
+        <div class="settings-card danger-zone">
+          <h3>🗑️ Reset All Products</h3>
+          <p>This will delete all products and restore the default sample products. This cannot be undone.</p>
+          <button class="danger-btn" onclick="resetProducts()">Reset to Defaults</button>
+        </div>
+      </div>
+
+    </div><!-- /a-main -->
+  </div><!-- /a-body -->
+</div><!-- /adminScreen -->
+
+<!-- ── PRODUCT MODAL ── -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Add Product</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="mId"/>
+
+      <div class="mfg">
+        <label>Product Name *</label>
+        <input type="text" id="mName" placeholder="e.g. Classic Shalwar Kameez"/>
+      </div>
+
+      <div class="mrow">
+        <div class="mfg">
+          <label>Category *</label>
+          <select id="mCat">
+            <option value="">-- Select --</option>
+            <option value="men">Men's Wear</option>
+            <option value="women">Women's Fashion</option>
+            <option value="kids">Kids' Collection</option>
+          </select>
+        </div>
+        <div class="mfg">
+          <label>Badge</label>
+          <select id="mBadge">
+            <option value="">None</option>
+            <option value="New">New</option>
+            <option value="Sale">Sale</option>
+            <option value="Hot">Hot</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mrow">
+        <div class="mfg">
+          <label>Price (Rs.) *</label>
+          <input type="number" id="mPrice" placeholder="e.g. 1500" min="0"/>
+        </div>
+        <div class="mfg">
+          <label>Old Price (Rs.) <span style="color:#aaa;font-weight:400">(for strikethrough)</span></label>
+          <input type="number" id="mOldPrice" placeholder="Leave 0 if none" min="0"/>
+        </div>
+      </div>
+
+      <div class="mfg">
+        <label>Available Sizes <span style="color:#aaa;font-weight:400">(type and press Enter or comma)</span></label>
+        <div class="tags-container" id="tagsContainer" onclick="document.getElementById('tagInput').focus()">
+          <input class="tag-input" id="tagInput" placeholder="S, M, L, XL, 2Y…" onkeydown="handleTagKey(event)"/>
+        </div>
+        <div class="hint">Press Enter or comma to add a size tag</div>
+      </div>
+
+      <div class="mfg">
+        <label>Product Emoji (shown when no photo)</label>
+        <div class="emoji-row" id="emojiRow">
+          <span class="emoji-opt selected" onclick="selectEmoji(this,'👕')">👕</span>
+          <span class="emoji-opt" onclick="selectEmoji(this,'👔')">👔</span>
+          <span class="emoji-opt" onclick="selectEmoji(this,'👖')">👖</span>
+          <span class="emoji-opt" onclick="selectEmoji(this,'👗')">👗</span>
+          <span class="emoji-opt" onclick="selectEmoji(this,'🥻')">🥻</span>
+          <span class="emoji-opt" onclick="selectEmoji(this,'🧣')">🧣</span>
+          <span class="emoji-opt" onclick="selectEmoji(this,'🧒')">🧒</span>
+          <span class="emoji-opt" onclick="selectEmoji(this,'👦')">👦</span>
+          <span class="emoji-opt" onclick="selectEmoji(this,'👧')">👧</span>
+          <span class="emoji-opt" onclick="selectEmoji(this,'🧤')">🧤</span>
+          <span class="emoji-opt" onclick="selectEmoji(this,'👟')">👟</span>
+          <span class="emoji-opt" onclick="selectEmoji(this,'🧢')">🧢</span>
+        </div>
+      </div>
+
+      <div class="mfg">
+        <label>Card Background Colour</label>
+        <div class="color-row" id="colorRow">
+          <div class="color-swatch selected" style="background:#d0dae8" onclick="selectColor(this,'#d0dae8')"></div>
+          <div class="color-swatch" style="background:#e8c9d4" onclick="selectColor(this,'#e8c9d4')"></div>
+          <div class="color-swatch" style="background:#c0ddc8" onclick="selectColor(this,'#c0ddc8')"></div>
+          <div class="color-swatch" style="background:#e8e2d0" onclick="selectColor(this,'#e8e2d0')"></div>
+          <div class="color-swatch" style="background:#d4c8e8" onclick="selectColor(this,'#d4c8e8')"></div>
+          <div class="color-swatch" style="background:#e8d4c8" onclick="selectColor(this,'#e8d4c8')"></div>
+          <div class="color-swatch" style="background:#c8d8e8" onclick="selectColor(this,'#c8d8e8')"></div>
+          <div class="color-swatch" style="background:#e0e0e0" onclick="selectColor(this,'#e0e0e0')"></div>
+        </div>
+      </div>
+
+      <div class="mfg">
+        <label>Product Photo</label>
+        <div class="img-upload-area" id="uploadArea">
+          <input type="file" id="imgFile" accept="image/*" onchange="handleImageUpload(event)"/>
+          <div class="upload-icon">📷</div>
+          <p>Click to upload a photo, or drag and drop here<br/><span style="font-size:.72rem;color:#bbb">JPG, PNG, WEBP — max 2MB recommended</span></p>
+        </div>
+        <img id="imgPreview" class="img-preview" alt="Preview"/>
+        <button id="removeImgBtn" style="display:none;margin-top:.5rem;background:#fde;color:var(--red);border:none;padding:5px 12px;border-radius:6px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="removeImage()">✕ Remove Photo</button>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="m-cancel" onclick="closeModal()">Cancel</button>
+      <button class="m-save" onclick="saveProduct()">💾 Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ── AUTH ──
+const ADMIN_USER = 'admin';
+let adminPass = localStorage.getItem('walliAdminPass') || 'walli2026';
+
+function doLogin(){
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if(u===ADMIN_USER && p===adminPass){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('adminScreen').style.display='flex';
+    refreshDashboard();
+  } else {
+    document.getElementById('loginErr').style.display='block';
+    document.getElementById('loginPass').value='';
+  }
+}
+function doLogout(){
+  document.getElementById('adminScreen').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginErr').style.display='none';
+}
+
+// ── PRODUCTS STORE ──
+const defaultProducts = [
+  {id:1,name:"Classic Shalwar Kameez",cat:"men",price:1800,oldPrice:2200,sizes:["S","M","L","XL"],badge:"Sale",emoji:"👔",bg:"#d0dae8",img:""},
+  {id:2,name:"Casual Linen Shirt",cat:"men",price:1200,oldPrice:0,sizes:["M","L","XL"],badge:"New",emoji:"👕",bg:"#c5d4e6",img:""},
+  {id:3,name:"Men's Formal Trousers",cat:"men",price:1500,oldPrice:1800,sizes:["30","32","34","36"],badge:"Sale",emoji:"👖",bg:"#b8c8de",img:""},
+  {id:4,name:"Ladies Lawn Suit",cat:"women",price:2200,oldPrice:2800,sizes:["S","M","L"],badge:"Sale",emoji:"👗",bg:"#e8c9d4",img:""},
+  {id:5,name:"Embroidered Kurta",cat:"women",price:1900,oldPrice:0,sizes:["S","M","L","XL"],badge:"New",emoji:"🥻",bg:"#ddbece",img:""},
+  {id:6,name:"Ladies Dupatta Set",cat:"women",price:2500,oldPrice:3000,sizes:["Free Size"],badge:"Sale",emoji:"🧣",bg:"#d4aec0",img:""},
+  {id:7,name:"Kids Summer Outfit",cat:"kids",price:800,oldPrice:0,sizes:["2Y","4Y","6Y","8Y"],badge:"New",emoji:"🧒",bg:"#c0ddc8",img:""},
+  {id:8,name:"Boys Printed T-Shirt",cat:"kids",price:650,oldPrice:800,sizes:["4Y","6Y","8Y"],badge:"Sale",emoji:"👦",bg:"#aed0b8",img:""},
+  {id:9,name:"Girls Frock Suit",cat:"kids",price:950,oldPrice:0,sizes:["2Y","4Y","6Y"],badge:"New",emoji:"👧",bg:"#9cc8a8",img:""},
+];
+
+function getProducts(){ try{ const s=localStorage.getItem('walliProducts'); return s?JSON.parse(s):defaultProducts; }catch(e){return defaultProducts;} }
+function saveProducts(arr){ localStorage.setItem('walliProducts',JSON.stringify(arr)); }
+function nextId(arr){ return arr.length ? Math.max(...arr.map(p=>p.id))+1 : 1; }
+
+// ── PANELS ──
+function showPanel(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.querySelectorAll('.sidebar-link').forEach(l=>{ if(l.textContent.toLowerCase().includes(name)) l.classList.add('active'); });
+  if(name==='dashboard') refreshDashboard();
+  if(name==='products') renderTable();
+}
+
+// ── DASHBOARD ──
+function refreshDashboard(){
+  const prods = getProducts();
+  const menC=prods.filter(p=>p.cat==='men').length;
+  const womenC=prods.filter(p=>p.cat==='women').length;
+  const kidsC=prods.filter(p=>p.cat==='kids').length;
+  document.getElementById('statsRow').innerHTML=`
+    <div class="stat-card"><div class="st-icon">👕</div><div class="st-val">${prods.length}</div><div class="st-lbl">Total Products</div></div>
+    <div class="stat-card"><div class="st-icon">👔</div><div class="st-val">${menC}</div><div class="st-lbl">Men's Items</div></div>
+    <div class="stat-card"><div class="st-icon">👗</div><div class="st-val">${womenC}</div><div class="st-lbl">Women's Items</div></div>
+    <div class="stat-card"><div class="st-icon">🧒</div><div class="st-val">${kidsC}</div><div class="st-lbl">Kids' Items</div></div>
+  `;
+  const recent=prods.slice(-5).reverse();
+  document.getElementById('recentProds').innerHTML = recent.length ? recent.map(p=>`
+    <div style="display:flex;align-items:center;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border)">
+      <div style="width:40px;height:40px;border-radius:8px;background:${p.bg||'#eee'};display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">${p.img?`<img src="${p.img}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" alt=""/>`:(p.emoji||'👕')}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:.88rem;color:var(--navy)">${p.name}</div><div style="font-size:.75rem;color:var(--muted)">${p.cat} · Rs. ${Number(p.price).toLocaleString()}</div></div>
+      ${p.badge?`<span class="badge-pill ${p.badge.toLowerCase()}">${p.badge}</span>`:''}
+    </div>`).join('') : '<div style="color:var(--muted);font-size:.88rem;padding:1rem 0">No products yet.</div>';
+}
+
+// ── TABLE ──
+let catFilter='all';
+function setCatTab(cat,btn){ catFilter=cat; document.querySelectorAll('.ct-tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderTable(); }
+
+function renderTable(){
+  const prods=getProducts();
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  let list=prods.filter(p=>{
+    const matchCat=catFilter==='all'||p.cat===catFilter;
+    const matchQ=!q||p.name.toLowerCase().includes(q)||p.cat.includes(q);
+    return matchCat&&matchQ;
+  });
+  const tbody=document.getElementById('prodTbody');
+  if(!list.length){ tbody.innerHTML=`<tr class="empty-row"><td colspan="7">No products found. <button class="edit-btn" onclick="openModal()" style="margin-left:.5rem">+ Add one</button></td></tr>`; return; }
+  tbody.innerHTML=list.map(p=>{
+    const thumb=p.img
+      ?`<div class="prod-thumb"><img src="${p.img}" alt="${p.name}"/></div>`
+      :`<div class="prod-thumb" style="background:${p.bg||'#eee'}">${p.emoji||'👕'}</div>`;
+    const sizes=(p.sizes||[]).join(', ')||'—';
+    const badge=p.badge?`<span class="badge-pill ${p.badge.toLowerCase()}">${p.badge}</span>`:'—';
+    const oldP=p.oldPrice>0?`<span style="font-size:.75rem;color:#bbb;text-decoration:line-through;margin-left:4px">Rs.${Number(p.oldPrice).toLocaleString()}</span>`:'';
+    return `<tr>
+      <td>${thumb}</td>
+      <td style="font-weight:600;max-width:180px">${p.name}</td>
+      <td><span class="cat-pill ${p.cat}">${p.cat}</span></td>
+      <td>Rs. ${Number(p.price).toLocaleString()} ${oldP}</td>
+      <td>${badge}</td>
+      <td style="font-size:.8rem;color:var(--muted);max-width:120px">${sizes}</td>
+      <td><div class="tbl-btns">
+        <button class="edit-btn" onclick="openModal(${p.id})">✏️ Edit</button>
+        <button class="del-btn" onclick="deleteProduct(${p.id})">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── MODAL ──
+let currentTags=[];
+let currentEmoji='👕';
+let currentBg='#d0dae8';
+let currentImg='';
+
+function openModal(id){
+  currentTags=[]; currentEmoji='👕'; currentBg='#d0dae8'; currentImg='';
+  const prods=getProducts();
+  const p=id?prods.find(x=>x.id===id):null;
+
+  document.getElementById('modalTitle').textContent=p?'Edit Product':'Add Product';
+  document.getElementById('mId').value=p?p.id:'';
+  document.getElementById('mName').value=p?p.name:'';
+  document.getElementById('mCat').value=p?p.cat:'';
+  document.getElementById('mBadge').value=p?p.badge:'';
+  document.getElementById('mPrice').value=p?p.price:'';
+  document.getElementById('mOldPrice').value=p?(p.oldPrice||0):'';
+
+  // tags
+  currentTags=p?(p.sizes||[]):[];
+  renderTags();
+
+  // emoji
+  currentEmoji=p?p.emoji:'👕';
+  document.querySelectorAll('.emoji-opt').forEach(e=>{ e.classList.toggle('selected',e.textContent===currentEmoji); });
+
+  // color
+  currentBg=p?p.bg:'#d0dae8';
+  document.querySelectorAll('.color-swatch').forEach(s=>{ s.classList.toggle('selected',s.dataset.color===currentBg||s.style.background===currentBg); });
+
+  // image
+  currentImg=p?p.img:'';
+  const prev=document.getElementById('imgPreview');
+  const removeBtn=document.getElementById('removeImgBtn');
+  if(currentImg){ prev.src=currentImg; prev.style.display='block'; removeBtn.style.display='inline-block'; }
+  else{ prev.style.display='none'; removeBtn.style.display='none'; }
+  document.getElementById('imgFile').value='';
+
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
+
+function saveProduct(){
+  const name=document.getElementById('mName').value.trim();
+  const cat=document.getElementById('mCat').value;
+  const price=parseInt(document.getElementById('mPrice').value);
+  if(!name||!cat||!price){ toast('Please fill in Name, Category, and Price.','red'); return; }
+  const prods=getProducts();
+  const id=document.getElementById('mId').value;
+  const prod={
+    id:id?parseInt(id):nextId(prods),
+    name, cat,
+    price,
+    oldPrice:parseInt(document.getElementById('mOldPrice').value)||0,
+    badge:document.getElementById('mBadge').value,
+    sizes:currentTags,
+    emoji:currentEmoji,
+    bg:currentBg,
+    img:currentImg,
+  };
+  if(id){ const idx=prods.findIndex(p=>p.id===parseInt(id)); prods[idx]=prod; }
+  else{ prods.push(prod); }
+  saveProducts(prods);
+  closeModal();
+  renderTable();
+  refreshDashboard();
+  toast(id?'Product updated!':'Product added!','gold');
+}
+
+function deleteProduct(id){
+  if(!confirm('Delete this product? This cannot be undone.')) return;
+  const prods=getProducts().filter(p=>p.id!==id);
+  saveProducts(prods);
+  renderTable();
+  refreshDashboard();
+  toast('Product deleted.','red');
+}
+
+// ── TAGS ──
+function renderTags(){
+  const container=document.getElementById('tagsContainer');
+  const existing=container.querySelectorAll('.tag-item');
+  existing.forEach(e=>e.remove());
+  const input=document.getElementById('tagInput');
+  currentTags.forEach((t,i)=>{
+    const el=document.createElement('span');
+    el.className='tag-item';
+    el.innerHTML=`${t} <button onclick="removeTag(${i})" title="Remove">×</button>`;
+    container.insertBefore(el,input);
+  });
+}
+function handleTagKey(e){
+  if(e.key==='Enter'||e.key===','){
+    e.preventDefault();
+    const val=e.target.value.replace(',','').trim();
+    if(val&&!currentTags.includes(val)){ currentTags.push(val); renderTags(); }
+    e.target.value='';
+  }
+}
+function removeTag(i){ currentTags.splice(i,1); renderTags(); }
+
+// ── EMOJI / COLOR ──
+function selectEmoji(el,emoji){ currentEmoji=emoji; document.querySelectorAll('.emoji-opt').forEach(e=>e.classList.remove('selected')); el.classList.add('selected'); }
+function selectColor(el,col){ currentBg=col; document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected')); el.classList.add('selected'); }
+
+// ── IMAGE ──
+function handleImageUpload(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    // resize via canvas
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const max=800;
+      let w=img.width, h=img.height;
+      if(w>max||h>max){ if(w>h){h=Math.round(h*max/w);w=max;}else{w=Math.round(w*max/h);h=max;} }
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      currentImg=canvas.toDataURL('image/jpeg',0.82);
+      const prev=document.getElementById('imgPreview');
+      prev.src=currentImg; prev.style.display='block';
+      document.getElementById('removeImgBtn').style.display='inline-block';
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function removeImage(){ currentImg=''; document.getElementById('imgPreview').style.display='none'; document.getElementById('removeImgBtn').style.display='none'; document.getElementById('imgFile').value=''; }
+
+// ── SETTINGS ──
+function changePassword(){
+  const cur=document.getElementById('curPw').value;
+  const nw=document.getElementById('newPw').value;
+  const cf=document.getElementById('confirmPw').value;
+  if(cur!==adminPass){ toast('Current password is wrong.','red'); return; }
+  if(nw.length<6){ toast('New password must be at least 6 characters.','red'); return; }
+  if(nw!==cf){ toast('Passwords do not match.','red'); return; }
+  adminPass=nw;
+  localStorage.setItem('walliAdminPass',nw);
+  document.getElementById('curPw').value='';
+  document.getElementById('newPw').value='';
+  document.getElementById('confirmPw').value='';
+  toast('Password updated successfully!','gold');
+}
+
+function exportData(){
+  const data=JSON.stringify(getProducts(),null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='walli-products-backup.json';
+  a.click();
+  toast('Products exported!','gold');
+}
+
+function resetProducts(){
+  if(!confirm('This will delete all your products and restore defaults. Are you sure?')) return;
+  localStorage.removeItem('walliProducts');
+  renderTable();
+  refreshDashboard();
+  toast('Products reset to defaults.','red');
+}
+
+// ── TOAST ──
+function toast(msg,type='gold'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.borderLeftColor=type==='red'?'#c0392b':'var(--gold)';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// init
+renderTable();
+</script>
+</body>
+</html>
