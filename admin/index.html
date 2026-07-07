@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,26 +9,24 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
       --navy:#1A2340;--navy2:#222f55;--navy3:#2c3d6e;
-      --gold:#C9963A;--gold2:#e6b050;
-      --white:#fff;--bg:#f0f2f8;--card:#fff;
-      --green:#2E7D51;--red:#c0392b;--muted:#7a8499;
-      --border:#e2e6f0;
+      --gold:#C9963A;--white:#fff;--bg:#f0f2f8;--card:#fff;
+      --green:#2E7D51;--red:#c0392b;--muted:#7a8499;--border:#e2e6f0;
     }
     html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:#2c3345}
 
     /* ── LOGIN ── */
     #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#111c38,#1f2f5a)}
     .login-box{background:var(--white);border-radius:20px;padding:3rem 2.8rem;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.35);text-align:center}
-    .login-logo{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--navy);margin-bottom:.3rem}
+    .login-logo{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--navy);margin-bottom:.3rem}
     .login-logo span{color:var(--gold)}
-    .login-sub{color:var(--muted);font-size:.85rem;margin-bottom:2.2rem}
+    .login-sub{color:var(--muted);font-size:.85rem;margin-bottom:2rem}
     .login-box label{display:block;text-align:left;font-size:.8rem;font-weight:600;color:var(--navy);margin-bottom:.4rem;margin-top:1.2rem}
     .login-box input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.92rem;outline:none;transition:.2s}
     .login-box input:focus{border-color:var(--gold)}
-    .login-btn{width:100%;margin-top:1.8rem;background:var(--navy);color:var(--white);border:none;padding:14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.3px}
+    .login-btn{width:100%;margin-top:1.8rem;background:var(--navy);color:var(--white);border:none;padding:14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:.2s}
     .login-btn:hover{background:var(--gold);color:var(--navy)}
     .login-err{color:var(--red);font-size:.82rem;margin-top:.9rem;display:none}
-    .login-hint{margin-top:1.2rem;font-size:.78rem;color:var(--muted)}
+    .login-hint{margin-top:1.2rem;font-size:.78rem;color:var(--muted);background:#f8f9fc;padding:8px 12px;border-radius:6px}
 
     /* ── ADMIN LAYOUT ── */
     #adminScreen{display:none;min-height:100vh;flex-direction:column}
@@ -44,16 +41,16 @@
 
     .a-body{display:flex;flex:1}
     .a-sidebar{width:220px;background:var(--navy2);padding:1.5rem 0;flex-shrink:0;min-height:calc(100vh - 62px)}
-    .sidebar-label{font-size:.68rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.3);padding:.5rem 1.4rem 0;font-weight:600}
     .sidebar-link{display:flex;align-items:center;gap:.75rem;padding:11px 1.4rem;color:rgba(255,255,255,.65);font-size:.88rem;cursor:pointer;transition:.2s;border-left:3px solid transparent}
     .sidebar-link:hover{color:var(--white);background:rgba(255,255,255,.05)}
     .sidebar-link.active{color:var(--gold);background:rgba(201,150,58,.1);border-left-color:var(--gold)}
-    .sidebar-link .sl-icon{font-size:1.1rem}
+    .sidebar-divider{border-top:1px solid rgba(255,255,255,.07);margin:1rem 0}
+    .sidebar-label{font-size:.68rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.3);padding:.5rem 1.4rem;font-weight:600}
 
     .a-main{flex:1;padding:2rem;overflow-y:auto}
 
     /* ── TOAST ── */
-    #toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:var(--white);padding:12px 22px;border-radius:8px;font-size:.88rem;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;border-left:4px solid var(--gold)}
+    #toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:var(--white);padding:12px 22px;border-radius:8px;font-size:.88rem;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;border-left:4px solid var(--gold);max-width:300px}
     #toast.show{opacity:1}
 
     /* ── PANELS ── */
@@ -62,30 +59,37 @@
     .panel-title{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--navy);margin-bottom:.4rem}
     .panel-sub{color:var(--muted);font-size:.88rem;margin-bottom:2rem}
 
-    /* ── STAT CARDS ── */
-    .stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.2rem;margin-bottom:2rem}
-    .stat-card{background:var(--card);border-radius:12px;padding:1.4rem;border:1px solid var(--border);display:flex;flex-direction:column;gap:.5rem}
-    .stat-card .st-icon{font-size:1.6rem}
+    /* ── STATS ── */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.2rem;margin-bottom:2rem}
+    .stat-card{background:var(--card);border-radius:12px;padding:1.4rem;border:1px solid var(--border)}
+    .stat-card .st-icon{font-size:1.6rem;margin-bottom:.5rem}
     .stat-card .st-val{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--navy)}
-    .stat-card .st-lbl{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+    .stat-card .st-lbl{font-size:.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+    /* ── DB STATUS ── */
+    .db-status{display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;padding:4px 12px;border-radius:20px;font-weight:600;margin-bottom:1.5rem}
+    .db-status.connected{background:rgba(46,125,81,.12);color:var(--green)}
+    .db-status.error{background:rgba(192,57,43,.12);color:var(--red)}
+    .db-status.checking{background:rgba(201,150,58,.12);color:var(--gold)}
 
     /* ── PRODUCT TABLE ── */
     .prod-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem}
-    .search-box{display:flex;align-items:center;gap:.5rem;background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;flex:1;max-width:320px}
+    .search-box{display:flex;align-items:center;gap:.5rem;background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;flex:1;max-width:300px}
     .search-box input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.88rem;width:100%;background:transparent}
     .add-prod-btn{background:var(--navy);color:var(--white);border:none;padding:10px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:.5rem}
     .add-prod-btn:hover{background:var(--gold);color:var(--navy)}
-    .cat-filter-tabs{display:flex;gap:.5rem}
-    .ct-tab{padding:6px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:.8rem;cursor:pointer;transition:.2s;background:transparent;font-family:'DM Sans',sans-serif}
-    .ct-tab.active,.ct-tab:hover{background:var(--navy);color:var(--white);border-color:var(--navy)}
+    .cat-tabs{display:flex;gap:.5rem;flex-wrap:wrap}
+    .ct{padding:6px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:.8rem;cursor:pointer;transition:.2s;background:transparent;font-family:'DM Sans',sans-serif}
+    .ct.active,.ct:hover{background:var(--navy);color:var(--white);border-color:var(--navy)}
 
-    .prod-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05)}
-    .prod-table th{background:var(--navy);color:rgba(255,255,255,.8);text-align:left;padding:12px 16px;font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px}
-    .prod-table td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:.88rem;vertical-align:middle}
+    .tbl-wrap{overflow-x:auto;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+    .prod-table{width:100%;border-collapse:collapse;background:var(--card);min-width:700px}
+    .prod-table th{background:var(--navy);color:rgba(255,255,255,.8);text-align:left;padding:12px 16px;font-size:.76rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+    .prod-table td{padding:11px 16px;border-bottom:1px solid var(--border);font-size:.87rem;vertical-align:middle}
     .prod-table tr:last-child td{border-bottom:none}
     .prod-table tr:hover td{background:#f8f9fc}
-    .prod-thumb{width:46px;height:46px;border-radius:8px;object-fit:cover;background:#eee;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
-    .prod-thumb img{width:100%;height:100%;border-radius:8px;object-fit:cover}
+    .prod-thumb{width:46px;height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;overflow:hidden}
+    .prod-thumb img{width:100%;height:100%;object-fit:cover;border-radius:8px}
     .cat-pill{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:600}
     .cat-pill.men{background:#dce6f5;color:#2a4a8a}
     .cat-pill.women{background:#f5dce6;color:#8a2a4a}
@@ -93,14 +97,17 @@
     .badge-pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.7rem;font-weight:700}
     .badge-pill.sale{background:#fff3dc;color:#a07020}
     .badge-pill.new{background:#dce6f5;color:#2a4a8a}
-    .badge-pill.hot{background:#fde;color:#c0392b}
+    .badge-pill.hot{background:#fde8e8;color:#c0392b}
     .tbl-btns{display:flex;gap:.4rem}
     .edit-btn,.del-btn{padding:5px 12px;border-radius:6px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;border:none;transition:.2s}
     .edit-btn{background:#eef2ff;color:var(--navy)}
     .edit-btn:hover{background:var(--navy);color:var(--white)}
-    .del-btn{background:#fde;color:var(--red)}
+    .del-btn{background:#fde8e8;color:var(--red)}
     .del-btn:hover{background:var(--red);color:var(--white)}
     .empty-row td{text-align:center;padding:3rem;color:var(--muted)}
+    .tbl-loading{text-align:center;padding:3rem;color:var(--muted)}
+    .spinner{width:36px;height:36px;border:3px solid #e0dbd2;border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
     /* ── MODAL ── */
     .modal-bg{display:none;position:fixed;inset:0;background:rgba(10,15,35,.6);z-index:500;align-items:center;justify-content:center;padding:1rem}
@@ -108,61 +115,74 @@
     .modal{background:var(--white);border-radius:16px;width:100%;max-width:620px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.3)}
     .modal-header{position:sticky;top:0;background:var(--white);padding:1.5rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;z-index:2}
     .modal-header h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--navy)}
-    .modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);line-height:1}
-    .modal-body{padding:1.5rem 2rem 2rem}
+    .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted);line-height:1;padding:2px 6px}
+    .modal-close:hover{color:var(--red)}
+    .modal-body{padding:1.5rem 2rem 1rem}
     .mfg{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.2rem}
     .mfg label{font-size:.8rem;font-weight:600;color:var(--navy)}
     .mfg input,.mfg select,.mfg textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:.2s;background:var(--bg)}
     .mfg input:focus,.mfg select:focus,.mfg textarea:focus{border-color:var(--gold);background:var(--white)}
     .mrow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-    .mfg .hint{font-size:.75rem;color:var(--muted);margin-top:.25rem}
+    .hint{font-size:.74rem;color:var(--muted);margin-top:.25rem}
 
     /* image upload */
-    .img-upload-area{border:2px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:.2s;background:var(--bg);position:relative}
+    .img-upload-area{border:2px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:.2s;background:var(--bg);position:relative;min-height:100px}
     .img-upload-area:hover{border-color:var(--gold);background:#fffbf4}
     .img-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-    .img-upload-area .upload-icon{font-size:2rem;margin-bottom:.5rem}
+    .upload-icon{font-size:2rem;margin-bottom:.5rem}
     .img-upload-area p{font-size:.82rem;color:var(--muted)}
-    .img-preview{width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-top:1rem;display:none}
+    #imgPreview{width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-top:1rem;display:none}
+    #removeImgBtn{display:none;margin-top:.5rem;background:#fde8e8;color:var(--red);border:none;padding:5px 12px;border-radius:6px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+    /* emoji + color */
     .emoji-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
-    .emoji-opt{padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.2rem;transition:.2s}
+    .emoji-opt{padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.2rem;transition:.2s;user-select:none}
     .emoji-opt.selected,.emoji-opt:hover{border-color:var(--gold);background:#fffbf4}
     .color-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
-    .color-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s}
-    .color-swatch.selected{border-color:var(--navy)}
-    .modal-footer{display:flex;gap:.75rem;justify-content:flex-end;padding:1rem 2rem 1.5rem;border-top:1px solid var(--border)}
-    .m-cancel{background:var(--bg);color:var(--navy);border:1.5px solid var(--border);padding:10px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer}
-    .m-save{background:var(--navy);color:var(--white);border:none;padding:10px 28px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s}
-    .m-save:hover{background:var(--gold);color:var(--navy)}
+    .color-swatch{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s}
+    .color-swatch.selected{border-color:var(--navy);transform:scale(1.15)}
 
-    /* sizes tag input */
-    .tags-container{display:flex;flex-wrap:wrap;gap:.4rem;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);cursor:text;min-height:44px;align-items:center}
+    /* tags */
+    .tags-container{display:flex;flex-wrap:wrap;gap:.4rem;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);cursor:text;min-height:44px;align-items:center;transition:.2s}
     .tags-container:focus-within{border-color:var(--gold);background:var(--white)}
     .tag-item{background:var(--navy);color:var(--white);padding:3px 10px;border-radius:12px;font-size:.78rem;display:flex;align-items:center;gap:.3rem}
-    .tag-item button{background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:.85rem;line-height:1;padding:0}
+    .tag-item button{background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:.9rem;line-height:1;padding:0}
     .tag-input{border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.85rem;background:transparent;min-width:80px;flex:1}
+
+    .modal-footer{display:flex;gap:.75rem;justify-content:flex-end;padding:1rem 2rem 1.5rem;border-top:1px solid var(--border);margin-top:.5rem}
+    .m-cancel{background:var(--bg);color:var(--navy);border:1.5px solid var(--border);padding:10px 22px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer}
+    .m-save{background:var(--navy);color:var(--white);border:none;padding:10px 28px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:.5rem}
+    .m-save:hover{background:var(--gold);color:var(--navy)}
+    .m-save:disabled{opacity:.6;cursor:not-allowed}
 
     /* ── SETTINGS ── */
     .settings-card{background:var(--card);border-radius:12px;padding:2rem;border:1px solid var(--border);margin-bottom:1.5rem}
-    .settings-card h3{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+    .settings-card h3{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:1.2rem}
     .pw-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
-    .sav-btn{background:var(--navy);color:var(--white);border:none;padding:10px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s}
-    .sav-btn:hover{background:var(--gold);color:var(--navy)}
-
-    .danger-zone{border:1px solid #fde;border-radius:12px;padding:1.5rem;background:#fff8f8}
-    .danger-zone h3{color:var(--red);margin-bottom:.5rem}
-    .danger-zone p{font-size:.85rem;color:var(--muted);margin-bottom:1rem}
-    .danger-btn{background:var(--red);color:var(--white);border:none;padding:9px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer}
-
     .sfg{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
     .sfg label{font-size:.8rem;font-weight:600;color:var(--navy)}
     .sfg input{padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:.2s;background:var(--bg)}
     .sfg input:focus{border-color:var(--gold);background:var(--white)}
+    .sav-btn{background:var(--navy);color:var(--white);border:none;padding:10px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s}
+    .sav-btn:hover{background:var(--gold);color:var(--navy)}
+    .danger-zone{border:1.5px solid #fde8e8;border-radius:12px;padding:1.5rem;background:#fff8f8}
+    .danger-zone h3{color:var(--red);margin-bottom:.5rem}
+    .danger-zone p{font-size:.85rem;color:var(--muted);margin-bottom:1rem}
+    .danger-btn{background:var(--red);color:var(--white);border:none;padding:9px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s}
+    .danger-btn:hover{opacity:.85}
+
+    /* ── RECENT LIST ── */
+    .recent-item{display:flex;align-items:center;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border)}
+    .recent-item:last-child{border-bottom:none}
+    .ri-thumb{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;overflow:hidden}
+    .ri-thumb img{width:100%;height:100%;object-fit:cover;border-radius:8px}
 
     @media(max-width:700px){
       .a-sidebar{display:none}
       .mrow{grid-template-columns:1fr}
       .pw-row{grid-template-columns:1fr}
+      .prod-toolbar{flex-direction:column;align-items:stretch}
+      .search-box{max-width:100%}
     }
   </style>
 </head>
@@ -178,15 +198,15 @@
     <label>Password</label>
     <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
     <button class="login-btn" onclick="doLogin()">🔐 &nbsp;Sign In</button>
-    <div class="login-err" id="loginErr">Incorrect username or password.</div>
-    <div class="login-hint">Default password: <strong>walli2026</strong></div>
+    <div class="login-err" id="loginErr">❌ Incorrect username or password.</div>
+    <div class="login-hint">Default: username <strong>admin</strong> · password <strong>walli2026</strong></div>
   </div>
 </div>
 
 <!-- ── ADMIN ── -->
 <div id="adminScreen">
   <div class="a-header">
-    <div class="a-logo">Walli <span>Garments</span> <span style="font-size:.75rem;color:rgba(255,255,255,.4);font-family:'DM Sans',sans-serif;margin-left:.5rem">Admin</span></div>
+    <div class="a-logo">Walli <span>Garments</span> <span style="font-size:.72rem;color:rgba(255,255,255,.35);font-family:'DM Sans',sans-serif;margin-left:.5rem">Admin</span></div>
     <div class="a-header-right">
       <span class="a-user">👤 admin</span>
       <a href="../index.html" target="_blank" class="view-site-btn">🌐 View Site</a>
@@ -194,89 +214,91 @@
     </div>
   </div>
   <div class="a-body">
-    <!-- Sidebar -->
     <div class="a-sidebar">
-      <div style="padding:1.2rem 1.4rem .5rem">
-        <div style="font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:1.5px;text-transform:uppercase;font-weight:600">Menu</div>
-      </div>
-      <div class="sidebar-link active" onclick="showPanel('dashboard')"><span class="sl-icon">📊</span> Dashboard</div>
-      <div class="sidebar-link" onclick="showPanel('products')"><span class="sl-icon">👕</span> Products</div>
-      <div class="sidebar-link" onclick="showPanel('settings')"><span class="sl-icon">⚙️</span> Settings</div>
-      <div style="border-top:1px solid rgba(255,255,255,.07);margin:1rem 0"></div>
+      <div class="sidebar-label">Menu</div>
+      <div class="sidebar-link active" onclick="showPanel('dashboard')"><span>📊</span> Dashboard</div>
+      <div class="sidebar-link" onclick="showPanel('products')"><span>👕</span> Products</div>
+      <div class="sidebar-link" onclick="showPanel('settings')"><span>⚙️</span> Settings</div>
+      <div class="sidebar-divider"></div>
       <div class="sidebar-label">Shop</div>
-      <div class="sidebar-link" onclick="window.open('../index.html','_blank')"><span class="sl-icon">🌐</span> View Website</div>
-      <div class="sidebar-link" onclick="window.open('https://wa.me/923225925409','_blank')"><span class="sl-icon">💬</span> WhatsApp</div>
+      <div class="sidebar-link" onclick="window.open('../index.html','_blank')"><span>🌐</span> View Website</div>
+      <div class="sidebar-link" onclick="window.open('https://wa.me/923225925409','_blank')"><span>💬</span> WhatsApp</div>
     </div>
 
-    <!-- Main -->
     <div class="a-main">
 
       <!-- DASHBOARD -->
       <div class="panel active" id="panel-dashboard">
         <div class="panel-title">Dashboard</div>
-        <div class="panel-sub">Welcome back! Here's an overview of your shop.</div>
-        <div class="stats-row" id="statsRow"></div>
+        <div class="panel-sub">Welcome back! Overview of your Walli Garments shop.</div>
+        <div id="dbStatusBadge" class="db-status checking">⏳ Connecting to database...</div>
+        <div class="stats-row" id="statsRow">
+          <div class="stat-card"><div class="st-icon">👕</div><div class="st-val" id="s-total">—</div><div class="st-lbl">Total Products</div></div>
+          <div class="stat-card"><div class="st-icon">👔</div><div class="st-val" id="s-men">—</div><div class="st-lbl">Men's Items</div></div>
+          <div class="stat-card"><div class="st-icon">👗</div><div class="st-val" id="s-women">—</div><div class="st-lbl">Women's Items</div></div>
+          <div class="stat-card"><div class="st-icon">🧒</div><div class="st-val" id="s-kids">—</div><div class="st-lbl">Kids' Items</div></div>
+        </div>
         <div style="background:var(--card);border-radius:12px;padding:1.5rem;border:1px solid var(--border)">
           <div style="font-weight:700;color:var(--navy);margin-bottom:1rem;font-size:.95rem">📦 Recent Products</div>
-          <div id="recentProds"></div>
+          <div id="recentProds"><div class="tbl-loading"><div class="spinner"></div></div></div>
         </div>
       </div>
 
       <!-- PRODUCTS -->
       <div class="panel" id="panel-products">
         <div class="panel-title">Products</div>
-        <div class="panel-sub">Add, edit, or remove items from your shop. Changes appear live on the website.</div>
+        <div class="panel-sub">Add, edit, or delete products. Changes go live on the website instantly.</div>
         <div class="prod-toolbar">
           <div style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:center">
             <div class="search-box"><span>🔍</span><input type="text" id="searchInput" placeholder="Search products..." oninput="renderTable()"/></div>
-            <div class="cat-filter-tabs">
-              <button class="ct-tab active" onclick="setCatTab('all',this)">All</button>
-              <button class="ct-tab" onclick="setCatTab('men',this)">Men</button>
-              <button class="ct-tab" onclick="setCatTab('women',this)">Women</button>
-              <button class="ct-tab" onclick="setCatTab('kids',this)">Kids</button>
+            <div class="cat-tabs">
+              <button class="ct active" onclick="setCatTab('all',this)">All</button>
+              <button class="ct" onclick="setCatTab('men',this)">Men</button>
+              <button class="ct" onclick="setCatTab('women',this)">Women</button>
+              <button class="ct" onclick="setCatTab('kids',this)">Kids</button>
             </div>
           </div>
           <button class="add-prod-btn" onclick="openModal()">➕ Add Product</button>
         </div>
-        <table class="prod-table" id="prodTable">
-          <thead><tr>
-            <th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Badge</th><th>Sizes</th><th>Actions</th>
-          </tr></thead>
-          <tbody id="prodTbody"></tbody>
-        </table>
+        <div class="tbl-wrap">
+          <table class="prod-table">
+            <thead><tr>
+              <th>Photo</th><th>Name</th><th>Category</th><th>Price</th><th>Badge</th><th>Sizes</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="prodTbody"><tr><td colspan="7" class="tbl-loading"><div class="spinner"></div></td></tr></tbody>
+          </table>
+        </div>
       </div>
 
       <!-- SETTINGS -->
       <div class="panel" id="panel-settings">
         <div class="panel-title">Settings</div>
-        <div class="panel-sub">Manage your admin password and shop data.</div>
-
+        <div class="panel-sub">Manage admin password and shop data.</div>
         <div class="settings-card">
-          <h3>🔐 Change Password</h3>
+          <h3>🔐 Change Admin Password</h3>
           <div class="pw-row">
             <div class="sfg"><label>Current Password</label><input type="password" id="curPw" placeholder="Current password"/></div>
-            <div class="sfg"><label>New Password</label><input type="password" id="newPw" placeholder="New password"/></div>
+            <div class="sfg"><label>New Password</label><input type="password" id="newPw" placeholder="New password (min 6 chars)"/></div>
           </div>
-          <div class="sfg" style="max-width:240px"><label>Confirm New Password</label><input type="password" id="confirmPw" placeholder="Confirm new password"/></div>
-          <button class="sav-btn" onclick="changePassword()">Save Password</button>
+          <div class="sfg" style="max-width:260px"><label>Confirm New Password</label><input type="password" id="confirmPw" placeholder="Confirm new password"/></div>
+          <button class="sav-btn" onclick="changePassword()">💾 Save Password</button>
         </div>
-
         <div class="settings-card">
-          <h3>📤 Export &amp; Backup</h3>
-          <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">Download your product data as a JSON backup file.</p>
-          <button class="sav-btn" onclick="exportData()">⬇️ Export Products JSON</button>
+          <h3>🗄️ Database Info</h3>
+          <p style="font-size:.85rem;color:var(--muted);line-height:1.7">Your products are stored in <strong>Supabase</strong> — a real online database. This means all devices (mobile, PC, tablet) see the same products automatically. No exports needed.</p>
+          <br/>
+          <div id="dbStatusBadge2" class="db-status checking">⏳ Checking connection...</div>
         </div>
-
-        <div class="settings-card danger-zone">
-          <h3>🗑️ Reset All Products</h3>
-          <p>This will delete all products and restore the default sample products. This cannot be undone.</p>
-          <button class="danger-btn" onclick="resetProducts()">Reset to Defaults</button>
+        <div class="danger-zone">
+          <h3>🗑️ Delete ALL Products</h3>
+          <p>This will permanently delete every product from the database. This cannot be undone.</p>
+          <button class="danger-btn" onclick="deleteAllProducts()">⚠️ Delete All Products</button>
         </div>
       </div>
 
-    </div><!-- /a-main -->
-  </div><!-- /a-body -->
-</div><!-- /adminScreen -->
+    </div>
+  </div>
+</div>
 
 <!-- ── PRODUCT MODAL ── -->
 <div class="modal-bg" id="modalBg">
@@ -320,21 +342,21 @@
           <input type="number" id="mPrice" placeholder="e.g. 1500" min="0"/>
         </div>
         <div class="mfg">
-          <label>Old Price (Rs.) <span style="color:#aaa;font-weight:400">(for strikethrough)</span></label>
+          <label>Old / Sale Price (Rs.)</label>
           <input type="number" id="mOldPrice" placeholder="Leave 0 if none" min="0"/>
         </div>
       </div>
 
       <div class="mfg">
-        <label>Available Sizes <span style="color:#aaa;font-weight:400">(type and press Enter or comma)</span></label>
+        <label>Available Sizes</label>
         <div class="tags-container" id="tagsContainer" onclick="document.getElementById('tagInput').focus()">
-          <input class="tag-input" id="tagInput" placeholder="S, M, L, XL, 2Y…" onkeydown="handleTagKey(event)"/>
+          <input class="tag-input" id="tagInput" placeholder="Type S, M, L… then press Enter" onkeydown="handleTagKey(event)"/>
         </div>
-        <div class="hint">Press Enter or comma to add a size tag</div>
+        <div class="hint">Press Enter or comma after each size to add it as a tag</div>
       </div>
 
       <div class="mfg">
-        <label>Product Emoji (shown when no photo)</label>
+        <label>Product Emoji (shown when no photo uploaded)</label>
         <div class="emoji-row" id="emojiRow">
           <span class="emoji-opt selected" onclick="selectEmoji(this,'👕')">👕</span>
           <span class="emoji-opt" onclick="selectEmoji(this,'👔')">👔</span>
@@ -361,7 +383,7 @@
           <div class="color-swatch" style="background:#d4c8e8" onclick="selectColor(this,'#d4c8e8')"></div>
           <div class="color-swatch" style="background:#e8d4c8" onclick="selectColor(this,'#e8d4c8')"></div>
           <div class="color-swatch" style="background:#c8d8e8" onclick="selectColor(this,'#c8d8e8')"></div>
-          <div class="color-swatch" style="background:#e0e0e0" onclick="selectColor(this,'#e0e0e0')"></div>
+          <div class="color-swatch" style="background:#dce8dc" onclick="selectColor(this,'#dce8dc')"></div>
         </div>
       </div>
 
@@ -370,16 +392,16 @@
         <div class="img-upload-area" id="uploadArea">
           <input type="file" id="imgFile" accept="image/*" onchange="handleImageUpload(event)"/>
           <div class="upload-icon">📷</div>
-          <p>Click to upload a photo, or drag and drop here<br/><span style="font-size:.72rem;color:#bbb">JPG, PNG, WEBP — max 2MB recommended</span></p>
+          <p>Click to upload a photo<br/><span style="font-size:.72rem;color:#bbb">JPG, PNG, WEBP — auto-resized to fit</span></p>
         </div>
-        <img id="imgPreview" class="img-preview" alt="Preview"/>
-        <button id="removeImgBtn" style="display:none;margin-top:.5rem;background:#fde;color:var(--red);border:none;padding:5px 12px;border-radius:6px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="removeImage()">✕ Remove Photo</button>
+        <img id="imgPreview" alt="Preview"/>
+        <button id="removeImgBtn" onclick="removeImage()">✕ Remove Photo</button>
       </div>
     </div>
 
     <div class="modal-footer">
       <button class="m-cancel" onclick="closeModal()">Cancel</button>
-      <button class="m-save" onclick="saveProduct()">💾 Save Product</button>
+      <button class="m-save" id="saveBtn" onclick="saveProduct()">💾 Save Product</button>
     </div>
   </div>
 </div>
@@ -388,22 +410,33 @@
 <div id="toast"></div>
 
 <script>
+// ── SUPABASE CONFIG ──
+const SB_URL = 'https://jzybbxdexxilvgbbbxzt.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6eWJieGRleHhpbHZnYmJieHp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0Mjg1MDQsImV4cCI6MjA5OTAwNDUwNH0.Xi60WDhQqqK3clgXi0f7HXHKAw3Q0f8Lmhd2sFF1tAE';
+const HEADERS = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+
+async function sbFetch(path, opts={}){
+  const res = await fetch(SB_URL+'/rest/v1/'+path, {headers:HEADERS, ...opts});
+  return res;
+}
+
 // ── AUTH ──
-const ADMIN_USER = 'admin';
 let adminPass = localStorage.getItem('walliAdminPass') || 'walli2026';
 
 function doLogin(){
   const u = document.getElementById('loginUser').value.trim();
   const p = document.getElementById('loginPass').value;
-  if(u===ADMIN_USER && p===adminPass){
+  if(u==='admin' && p===adminPass){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('adminScreen').style.display='flex';
+    checkDbConnection();
     refreshDashboard();
   } else {
     document.getElementById('loginErr').style.display='block';
     document.getElementById('loginPass').value='';
   }
 }
+
 function doLogout(){
   document.getElementById('adminScreen').style.display='none';
   document.getElementById('loginScreen').style.display='flex';
@@ -411,203 +444,268 @@ function doLogout(){
   document.getElementById('loginErr').style.display='none';
 }
 
-// ── PRODUCTS STORE ──
-const defaultProducts = [
-  {id:1,name:"Classic Shalwar Kameez",cat:"men",price:1800,oldPrice:2200,sizes:["S","M","L","XL"],badge:"Sale",emoji:"👔",bg:"#d0dae8",img:""},
-  {id:2,name:"Casual Linen Shirt",cat:"men",price:1200,oldPrice:0,sizes:["M","L","XL"],badge:"New",emoji:"👕",bg:"#c5d4e6",img:""},
-  {id:3,name:"Men's Formal Trousers",cat:"men",price:1500,oldPrice:1800,sizes:["30","32","34","36"],badge:"Sale",emoji:"👖",bg:"#b8c8de",img:""},
-  {id:4,name:"Ladies Lawn Suit",cat:"women",price:2200,oldPrice:2800,sizes:["S","M","L"],badge:"Sale",emoji:"👗",bg:"#e8c9d4",img:""},
-  {id:5,name:"Embroidered Kurta",cat:"women",price:1900,oldPrice:0,sizes:["S","M","L","XL"],badge:"New",emoji:"🥻",bg:"#ddbece",img:""},
-  {id:6,name:"Ladies Dupatta Set",cat:"women",price:2500,oldPrice:3000,sizes:["Free Size"],badge:"Sale",emoji:"🧣",bg:"#d4aec0",img:""},
-  {id:7,name:"Kids Summer Outfit",cat:"kids",price:800,oldPrice:0,sizes:["2Y","4Y","6Y","8Y"],badge:"New",emoji:"🧒",bg:"#c0ddc8",img:""},
-  {id:8,name:"Boys Printed T-Shirt",cat:"kids",price:650,oldPrice:800,sizes:["4Y","6Y","8Y"],badge:"Sale",emoji:"👦",bg:"#aed0b8",img:""},
-  {id:9,name:"Girls Frock Suit",cat:"kids",price:950,oldPrice:0,sizes:["2Y","4Y","6Y"],badge:"New",emoji:"👧",bg:"#9cc8a8",img:""},
-];
-
-function getProducts(){ try{ const s=localStorage.getItem('walliProducts'); return s?JSON.parse(s):defaultProducts; }catch(e){return defaultProducts;} }
-function saveProducts(arr){ localStorage.setItem('walliProducts',JSON.stringify(arr)); }
-function nextId(arr){ return arr.length ? Math.max(...arr.map(p=>p.id))+1 : 1; }
+// ── DB CONNECTION CHECK ──
+async function checkDbConnection(){
+  const badges = ['dbStatusBadge','dbStatusBadge2'];
+  try {
+    const res = await sbFetch('products?select=id&limit=1');
+    const ok = res.ok;
+    badges.forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.className = 'db-status ' + (ok?'connected':'error');
+      el.textContent = ok ? '✅ Connected to Supabase Database' : '❌ Database connection failed';
+    });
+  } catch(e) {
+    badges.forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.className = 'db-status error';
+      el.textContent = '❌ Cannot reach database';
+    });
+  }
+}
 
 // ── PANELS ──
 function showPanel(name){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
-  document.querySelectorAll('.sidebar-link').forEach(l=>{ if(l.textContent.toLowerCase().includes(name)) l.classList.add('active'); });
+  event.currentTarget.classList.add('active');
   if(name==='dashboard') refreshDashboard();
-  if(name==='products') renderTable();
+  if(name==='products') { allProducts=[]; renderTable(); loadAllProducts(); }
+  if(name==='settings') checkDbConnection();
 }
 
 // ── DASHBOARD ──
-function refreshDashboard(){
-  const prods = getProducts();
-  const menC=prods.filter(p=>p.cat==='men').length;
-  const womenC=prods.filter(p=>p.cat==='women').length;
-  const kidsC=prods.filter(p=>p.cat==='kids').length;
-  document.getElementById('statsRow').innerHTML=`
-    <div class="stat-card"><div class="st-icon">👕</div><div class="st-val">${prods.length}</div><div class="st-lbl">Total Products</div></div>
-    <div class="stat-card"><div class="st-icon">👔</div><div class="st-val">${menC}</div><div class="st-lbl">Men's Items</div></div>
-    <div class="stat-card"><div class="st-icon">👗</div><div class="st-val">${womenC}</div><div class="st-lbl">Women's Items</div></div>
-    <div class="stat-card"><div class="st-icon">🧒</div><div class="st-val">${kidsC}</div><div class="st-lbl">Kids' Items</div></div>
-  `;
-  const recent=prods.slice(-5).reverse();
-  document.getElementById('recentProds').innerHTML = recent.length ? recent.map(p=>`
-    <div style="display:flex;align-items:center;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border)">
-      <div style="width:40px;height:40px;border-radius:8px;background:${p.bg||'#eee'};display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">${p.img?`<img src="${p.img}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" alt=""/>`:(p.emoji||'👕')}</div>
-      <div style="flex:1"><div style="font-weight:600;font-size:.88rem;color:var(--navy)">${p.name}</div><div style="font-size:.75rem;color:var(--muted)">${p.cat} · Rs. ${Number(p.price).toLocaleString()}</div></div>
-      ${p.badge?`<span class="badge-pill ${p.badge.toLowerCase()}">${p.badge}</span>`:''}
-    </div>`).join('') : '<div style="color:var(--muted);font-size:.88rem;padding:1rem 0">No products yet.</div>';
+async function refreshDashboard(){
+  try {
+    const res = await sbFetch('products?select=id,name,category,price,badge,emoji,bg,img,created_at&order=created_at.desc');
+    if(!res.ok) throw new Error();
+    const prods = await res.json();
+    document.getElementById('s-total').textContent = prods.length;
+    document.getElementById('s-men').textContent   = prods.filter(p=>p.category==='men').length;
+    document.getElementById('s-women').textContent = prods.filter(p=>p.category==='women').length;
+    document.getElementById('s-kids').textContent  = prods.filter(p=>p.category==='kids').length;
+
+    const recent = prods.slice(0,6);
+    document.getElementById('recentProds').innerHTML = recent.length
+      ? recent.map(p=>`
+        <div class="recent-item">
+          <div class="ri-thumb" style="background:${p.bg||'#eee'}">${p.img?`<img src="${p.img}" alt=""/>`:(p.emoji||'👕')}</div>
+          <div style="flex:1"><div style="font-weight:600;font-size:.88rem;color:var(--navy)">${p.name}</div><div style="font-size:.75rem;color:var(--muted)">${p.category} · Rs. ${Number(p.price).toLocaleString()}</div></div>
+          ${p.badge?`<span class="badge-pill ${p.badge.toLowerCase()}">${p.badge}</span>`:''}
+        </div>`).join('')
+      : '<p style="color:var(--muted);font-size:.88rem;padding:1rem 0">No products yet. Add your first product!</p>';
+
+    document.getElementById('dbStatusBadge').className='db-status connected';
+    document.getElementById('dbStatusBadge').textContent='✅ Connected to Supabase Database';
+  } catch(e) {
+    document.getElementById('recentProds').innerHTML='<p style="color:var(--red);font-size:.88rem">Could not load products. Check your internet connection.</p>';
+  }
 }
 
-// ── TABLE ──
-let catFilter='all';
-function setCatTab(cat,btn){ catFilter=cat; document.querySelectorAll('.ct-tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderTable(); }
+// ── PRODUCTS TABLE ──
+let allProducts = [];
+let catFilter = 'all';
+
+async function loadAllProducts(){
+  const tbody = document.getElementById('prodTbody');
+  tbody.innerHTML = '<tr><td colspan="7" class="tbl-loading"><div class="spinner"></div><p style="margin-top:.5rem">Loading from database...</p></td></tr>';
+  try {
+    const res = await sbFetch('products?select=*&order=created_at.desc');
+    if(!res.ok) throw new Error('DB error');
+    allProducts = await res.json();
+    renderTable();
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="7" class="tbl-loading" style="color:var(--red)">❌ Could not load products. Check internet connection.</td></tr>`;
+  }
+}
+
+function setCatTab(cat,btn){
+  catFilter=cat;
+  document.querySelectorAll('.ct').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
 
 function renderTable(){
-  const prods=getProducts();
-  const q=document.getElementById('searchInput').value.toLowerCase();
-  let list=prods.filter(p=>{
-    const matchCat=catFilter==='all'||p.cat===catFilter;
-    const matchQ=!q||p.name.toLowerCase().includes(q)||p.cat.includes(q);
-    return matchCat&&matchQ;
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  let list = allProducts.filter(p=>{
+    const matchCat = catFilter==='all' || p.category===catFilter;
+    const matchQ   = !q || p.name.toLowerCase().includes(q) || p.category.includes(q);
+    return matchCat && matchQ;
   });
-  const tbody=document.getElementById('prodTbody');
-  if(!list.length){ tbody.innerHTML=`<tr class="empty-row"><td colspan="7">No products found. <button class="edit-btn" onclick="openModal()" style="margin-left:.5rem">+ Add one</button></td></tr>`; return; }
-  tbody.innerHTML=list.map(p=>{
-    const thumb=p.img
-      ?`<div class="prod-thumb"><img src="${p.img}" alt="${p.name}"/></div>`
-      :`<div class="prod-thumb" style="background:${p.bg||'#eee'}">${p.emoji||'👕'}</div>`;
-    const sizes=(p.sizes||[]).join(', ')||'—';
-    const badge=p.badge?`<span class="badge-pill ${p.badge.toLowerCase()}">${p.badge}</span>`:'—';
-    const oldP=p.oldPrice>0?`<span style="font-size:.75rem;color:#bbb;text-decoration:line-through;margin-left:4px">Rs.${Number(p.oldPrice).toLocaleString()}</span>`:'';
+  const tbody = document.getElementById('prodTbody');
+  if(!list.length){
+    tbody.innerHTML=`<tr class="empty-row"><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--muted)">No products found. <button class="edit-btn" onclick="openModal()" style="margin-left:.5rem">+ Add Product</button></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(p=>{
+    const thumb = p.img
+      ? `<div class="prod-thumb"><img src="${p.img}" alt="${p.name}"/></div>`
+      : `<div class="prod-thumb" style="background:${p.bg||'#eee'}">${p.emoji||'👕'}</div>`;
+    const sizes = (p.sizes||[]).join(', ')||'—';
+    const badge = p.badge ? `<span class="badge-pill ${p.badge.toLowerCase()}">${p.badge}</span>` : '—';
+    const oldP  = p.old_price>0 ? `<span style="font-size:.75rem;color:#bbb;text-decoration:line-through;margin-left:4px">Rs.${Number(p.old_price).toLocaleString()}</span>` : '';
     return `<tr>
       <td>${thumb}</td>
-      <td style="font-weight:600;max-width:180px">${p.name}</td>
-      <td><span class="cat-pill ${p.cat}">${p.cat}</span></td>
+      <td style="font-weight:600;max-width:160px">${p.name}</td>
+      <td><span class="cat-pill ${p.category}">${p.category}</span></td>
       <td>Rs. ${Number(p.price).toLocaleString()} ${oldP}</td>
       <td>${badge}</td>
       <td style="font-size:.8rem;color:var(--muted);max-width:120px">${sizes}</td>
       <td><div class="tbl-btns">
-        <button class="edit-btn" onclick="openModal(${p.id})">✏️ Edit</button>
+        <button class="edit-btn" onclick='openModal(${p.id})'>✏️ Edit</button>
         <button class="del-btn" onclick="deleteProduct(${p.id})">🗑️</button>
       </div></td>
     </tr>`;
   }).join('');
 }
 
-// ── MODAL ──
-let currentTags=[];
-let currentEmoji='👕';
-let currentBg='#d0dae8';
-let currentImg='';
+// ── MODAL STATE ──
+let currentTags=[], currentEmoji='👕', currentBg='#d0dae8', currentImg='';
 
 function openModal(id){
   currentTags=[]; currentEmoji='👕'; currentBg='#d0dae8'; currentImg='';
-  const prods=getProducts();
-  const p=id?prods.find(x=>x.id===id):null;
+  const p = id ? allProducts.find(x=>x.id===id) : null;
 
-  document.getElementById('modalTitle').textContent=p?'Edit Product':'Add Product';
-  document.getElementById('mId').value=p?p.id:'';
-  document.getElementById('mName').value=p?p.name:'';
-  document.getElementById('mCat').value=p?p.cat:'';
-  document.getElementById('mBadge').value=p?p.badge:'';
-  document.getElementById('mPrice').value=p?p.price:'';
-  document.getElementById('mOldPrice').value=p?(p.oldPrice||0):'';
+  document.getElementById('modalTitle').textContent = p ? 'Edit Product' : 'Add Product';
+  document.getElementById('mId').value      = p ? p.id : '';
+  document.getElementById('mName').value    = p ? p.name : '';
+  document.getElementById('mCat').value     = p ? p.category : '';
+  document.getElementById('mBadge').value   = p ? (p.badge||'') : '';
+  document.getElementById('mPrice').value   = p ? p.price : '';
+  document.getElementById('mOldPrice').value= p ? (p.old_price||0) : '';
 
-  // tags
-  currentTags=p?(p.sizes||[]):[];
+  currentTags  = p ? (p.sizes||[]) : [];
+  currentEmoji = p ? (p.emoji||'👕') : '👕';
+  currentBg    = p ? (p.bg||'#d0dae8') : '#d0dae8';
+  currentImg   = p ? (p.img||'') : '';
+
   renderTags();
+  document.querySelectorAll('.emoji-opt').forEach(e=>e.classList.toggle('selected', e.textContent===currentEmoji));
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.toggle('selected', s.style.background===currentBg || s.getAttribute('onclick').includes(currentBg)));
 
-  // emoji
-  currentEmoji=p?p.emoji:'👕';
-  document.querySelectorAll('.emoji-opt').forEach(e=>{ e.classList.toggle('selected',e.textContent===currentEmoji); });
-
-  // color
-  currentBg=p?p.bg:'#d0dae8';
-  document.querySelectorAll('.color-swatch').forEach(s=>{ s.classList.toggle('selected',s.dataset.color===currentBg||s.style.background===currentBg); });
-
-  // image
-  currentImg=p?p.img:'';
-  const prev=document.getElementById('imgPreview');
-  const removeBtn=document.getElementById('removeImgBtn');
-  if(currentImg){ prev.src=currentImg; prev.style.display='block'; removeBtn.style.display='inline-block'; }
-  else{ prev.style.display='none'; removeBtn.style.display='none'; }
+  const prev = document.getElementById('imgPreview');
+  const rb   = document.getElementById('removeImgBtn');
+  if(currentImg){ prev.src=currentImg; prev.style.display='block'; rb.style.display='inline-block'; }
+  else { prev.style.display='none'; rb.style.display='none'; }
   document.getElementById('imgFile').value='';
-
+  document.getElementById('saveBtn').disabled=false;
   document.getElementById('modalBg').classList.add('open');
 }
+
 function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
 
-function saveProduct(){
-  const name=document.getElementById('mName').value.trim();
-  const cat=document.getElementById('mCat').value;
-  const price=parseInt(document.getElementById('mPrice').value);
-  if(!name||!cat||!price){ toast('Please fill in Name, Category, and Price.','red'); return; }
-  const prods=getProducts();
-  const id=document.getElementById('mId').value;
-  const prod={
-    id:id?parseInt(id):nextId(prods),
-    name, cat,
-    price,
-    oldPrice:parseInt(document.getElementById('mOldPrice').value)||0,
-    badge:document.getElementById('mBadge').value,
-    sizes:currentTags,
-    emoji:currentEmoji,
-    bg:currentBg,
-    img:currentImg,
+async function saveProduct(){
+  const name     = document.getElementById('mName').value.trim();
+  const category = document.getElementById('mCat').value;
+  const price    = parseInt(document.getElementById('mPrice').value)||0;
+  if(!name||!category||!price){ toast('Please fill in Name, Category, and Price.','red'); return; }
+
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.disabled=true; saveBtn.textContent='Saving...';
+
+  const payload = {
+    name, category, price,
+    old_price : parseInt(document.getElementById('mOldPrice').value)||0,
+    badge     : document.getElementById('mBadge').value||'',
+    sizes     : currentTags,
+    emoji     : currentEmoji,
+    bg        : currentBg,
+    img       : currentImg,
   };
-  if(id){ const idx=prods.findIndex(p=>p.id===parseInt(id)); prods[idx]=prod; }
-  else{ prods.push(prod); }
-  saveProducts(prods);
-  closeModal();
-  renderTable();
-  refreshDashboard();
-  toast(id?'Product updated!':'Product added!','gold');
+
+  const id = document.getElementById('mId').value;
+  try {
+    let res;
+    if(id){
+      res = await sbFetch(`products?id=eq.${id}`, {method:'PATCH', body:JSON.stringify(payload)});
+    } else {
+      res = await sbFetch('products', {method:'POST', body:JSON.stringify(payload)});
+    }
+    if(!res.ok) throw new Error(await res.text());
+    toast(id ? 'Product updated! ✅' : 'Product added! ✅', 'gold');
+    closeModal();
+    await loadAllProducts();
+    await refreshDashboard();
+  } catch(e) {
+    toast('Error saving product. Try again.','red');
+    console.error(e);
+  }
+  saveBtn.disabled=false; saveBtn.innerHTML='💾 Save Product';
 }
 
-function deleteProduct(id){
+async function deleteProduct(id){
   if(!confirm('Delete this product? This cannot be undone.')) return;
-  const prods=getProducts().filter(p=>p.id!==id);
-  saveProducts(prods);
-  renderTable();
-  refreshDashboard();
-  toast('Product deleted.','red');
+  try {
+    const res = await sbFetch(`products?id=eq.${id}`, {method:'DELETE'});
+    if(!res.ok) throw new Error();
+    toast('Product deleted.','red');
+    allProducts = allProducts.filter(p=>p.id!==id);
+    renderTable();
+    refreshDashboard();
+  } catch(e) {
+    toast('Error deleting product. Try again.','red');
+  }
+}
+
+async function deleteAllProducts(){
+  if(!confirm('DELETE ALL products? This CANNOT be undone!')) return;
+  if(!confirm('Are you 100% sure? All products will be permanently removed.')) return;
+  try {
+    const res = await sbFetch('products?id=gt.0', {method:'DELETE'});
+    if(!res.ok) throw new Error();
+    toast('All products deleted.','red');
+    allProducts=[];
+    renderTable();
+    refreshDashboard();
+  } catch(e) {
+    toast('Error. Try again.','red');
+  }
 }
 
 // ── TAGS ──
 function renderTags(){
-  const container=document.getElementById('tagsContainer');
-  const existing=container.querySelectorAll('.tag-item');
-  existing.forEach(e=>e.remove());
-  const input=document.getElementById('tagInput');
+  const container = document.getElementById('tagsContainer');
+  container.querySelectorAll('.tag-item').forEach(e=>e.remove());
+  const input = document.getElementById('tagInput');
   currentTags.forEach((t,i)=>{
-    const el=document.createElement('span');
+    const el = document.createElement('span');
     el.className='tag-item';
     el.innerHTML=`${t} <button onclick="removeTag(${i})" title="Remove">×</button>`;
-    container.insertBefore(el,input);
+    container.insertBefore(el, input);
   });
 }
 function handleTagKey(e){
   if(e.key==='Enter'||e.key===','){
     e.preventDefault();
-    const val=e.target.value.replace(',','').trim();
-    if(val&&!currentTags.includes(val)){ currentTags.push(val); renderTags(); }
+    const val = e.target.value.replace(',','').trim();
+    if(val && !currentTags.includes(val)){ currentTags.push(val); renderTags(); }
     e.target.value='';
   }
 }
 function removeTag(i){ currentTags.splice(i,1); renderTags(); }
 
 // ── EMOJI / COLOR ──
-function selectEmoji(el,emoji){ currentEmoji=emoji; document.querySelectorAll('.emoji-opt').forEach(e=>e.classList.remove('selected')); el.classList.add('selected'); }
-function selectColor(el,col){ currentBg=col; document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected')); el.classList.add('selected'); }
+function selectEmoji(el,emoji){
+  currentEmoji=emoji;
+  document.querySelectorAll('.emoji-opt').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function selectColor(el,col){
+  currentBg=col;
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+  el.classList.add('selected');
+}
 
-// ── IMAGE ──
+// ── IMAGE UPLOAD ──
 function handleImageUpload(e){
   const file=e.target.files[0];
   if(!file) return;
   const reader=new FileReader();
   reader.onload=ev=>{
-    // resize via canvas
     const img=new Image();
     img.onload=()=>{
       const canvas=document.createElement('canvas');
@@ -625,13 +723,18 @@ function handleImageUpload(e){
   };
   reader.readAsDataURL(file);
 }
-function removeImage(){ currentImg=''; document.getElementById('imgPreview').style.display='none'; document.getElementById('removeImgBtn').style.display='none'; document.getElementById('imgFile').value=''; }
+function removeImage(){
+  currentImg='';
+  document.getElementById('imgPreview').style.display='none';
+  document.getElementById('removeImgBtn').style.display='none';
+  document.getElementById('imgFile').value='';
+}
 
 // ── SETTINGS ──
 function changePassword(){
   const cur=document.getElementById('curPw').value;
-  const nw=document.getElementById('newPw').value;
-  const cf=document.getElementById('confirmPw').value;
+  const nw =document.getElementById('newPw').value;
+  const cf =document.getElementById('confirmPw').value;
   if(cur!==adminPass){ toast('Current password is wrong.','red'); return; }
   if(nw.length<6){ toast('New password must be at least 6 characters.','red'); return; }
   if(nw!==cf){ toast('Passwords do not match.','red'); return; }
@@ -640,38 +743,20 @@ function changePassword(){
   document.getElementById('curPw').value='';
   document.getElementById('newPw').value='';
   document.getElementById('confirmPw').value='';
-  toast('Password updated successfully!','gold');
-}
-
-function exportData(){
-  const data=JSON.stringify(getProducts(),null,2);
-  const blob=new Blob([data],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='walli-products-backup.json';
-  a.click();
-  toast('Products exported!','gold');
-}
-
-function resetProducts(){
-  if(!confirm('This will delete all your products and restore defaults. Are you sure?')) return;
-  localStorage.removeItem('walliProducts');
-  renderTable();
-  refreshDashboard();
-  toast('Products reset to defaults.','red');
+  toast('Password updated! ✅','gold');
 }
 
 // ── TOAST ──
-function toast(msg,type='gold'){
+function toast(msg, type='gold'){
   const t=document.getElementById('toast');
   t.textContent=msg;
-  t.style.borderLeftColor=type==='red'?'#c0392b':'var(--gold)';
+  t.style.borderLeftColor = type==='red' ? 'var(--red)' : 'var(--gold)';
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+  setTimeout(()=>t.classList.remove('show'), 3500);
 }
 
-// init
-renderTable();
+// ── INIT ──
+loadAllProducts();
 </script>
 </body>
 </html>
