@@ -4,6 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel – Walli Garments</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -68,6 +70,20 @@
     .stat-card .st-val{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--navy)}
     .stat-card .st-lbl{font-size:.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
     .stat-card.highlight{border-color:var(--gold);background:linear-gradient(135deg,#fffbf4,#fff)}
+
+
+    /* SKU + QR */
+    .sku-label{font-size:.72rem;background:#f0f2f8;color:#555;padding:3px 8px;border-radius:4px;font-weight:600;letter-spacing:1px;font-family:'DM Sans',sans-serif;display:inline-block}
+    .qr-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:4000;align-items:center;justify-content:center}
+    .qr-modal-bg.open{display:flex}
+    .qr-modal{background:#fff;border-radius:16px;padding:2rem;text-align:center;max-width:320px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,.4)}
+    .qr-modal h3{font-family:'Playfair Display',serif;color:#1A1A1A;margin-bottom:.3rem}
+    .qr-modal .qr-sku{font-size:.75rem;color:#aaa;letter-spacing:2px;margin-bottom:1rem}
+    #adminQrCanvas{margin:1rem auto;display:flex;justify-content:center}
+    .qr-close-btn{margin-top:1rem;background:#1A1A1A;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;width:100%}
+    .qr-print-btn{margin-top:.5rem;background:#FF6B00;color:#1A1A1A;border:none;padding:10px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;width:100%}
+    .show-qr-btn{background:#f0f2f8;border:1px solid #e2e6f0;color:#2c3345;padding:4px 10px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:.2s}
+    .show-qr-btn:hover{background:#FF6B00;color:#fff;border-color:#FF6B00}
 
     /* ORDERS */
     .orders-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem}
@@ -346,7 +362,7 @@
         </div>
         <div class="tbl-wrap">
           <table class="prod-table">
-            <thead><tr><th>Photo</th><th>Name</th><th>Category</th><th>Price</th><th>Badge</th><th>Sizes</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Photo</th><th>Name</th><th>SKU</th><th>Category</th><th>Price</th><th>Badge</th><th>Actions</th></tr></thead>
             <tbody id="prodTbody"><tr><td colspan="7" class="tbl-loading"><div class="spinner"></div></td></tr></tbody>
           </table>
         </div>
@@ -391,6 +407,11 @@
     <div class="modal-body">
       <input type="hidden" id="mId"/>
       <div class="mfg"><label>Product Name *</label><input type="text" id="mName" placeholder="e.g. Classic Shalwar Kameez"/></div>
+      <div class="mfg">
+        <label>SKU / Product Code <span style="font-weight:400;color:var(--muted)">(auto-generated if left empty)</span></label>
+        <input type="text" id="mSku" placeholder="e.g. WG-0001 or SHIRT-RED-M" style="font-family:monospace;letter-spacing:1px"/>
+        <div class="hint">Leave blank to auto-generate. Use this code to search or reference the product.</div>
+      </div>
       <div class="mrow">
         <div class="mfg"><label>Category *</label>
           <select id="mCat"><option value="">-- Select --</option><option value="men">Men's Wear</option><option value="women">Women's Fashion</option><option value="kids">Kids' Collection</option></select>
@@ -456,14 +477,33 @@
   </div>
 </div>
 
+
+<!-- Admin QR Modal -->
+<div class="qr-modal-bg" id="adminQrBg" onclick="if(event.target===this)closeAdminQR()">
+  <div class="qr-modal">
+    <h3 id="adminQrName">Product</h3>
+    <div class="qr-sku" id="adminQrSku">SKU: WG-0000</div>
+    <div id="adminQrCanvas"></div>
+    <p style="font-size:.76rem;color:#aaa;margin-top:.3rem" id="adminQrPrice"></p>
+    <button class="qr-print-btn" onclick="printQR()">🖨️ Print QR Label</button>
+    <button class="qr-close-btn" onclick="closeAdminQR()">✕ Close</button>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script>
 // ── SUPABASE ──
 const SB_URL = 'https://jzybbxdexxilvgbbbxzt.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6eWJieGRleHhpbHZnYmJieHp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0Mjg1MDQsImV4cCI6MjA5OTAwNDUwNH0.Xi60WDhQqqK3clgXi0f7HXHKAw3Q0f8Lmhd2sFF1tAE';
-const SBH = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
-async function sbFetch(path,opts={}){ return fetch(SB_URL+'/rest/v1/'+path,{headers:SBH,...opts}); }
+let db;
+try {
+  const _sb = window.supabase || supabase;
+  db = _sb.createClient(SB_URL, SB_KEY);
+  console.log('✅ Supabase connected');
+} catch(e) {
+  console.error('❌ Supabase init failed:', e.message||e);
+}
+
 
 // ── AUTH ──
 let adminPass = localStorage.getItem('walliAdminPass')||'walli2026';
@@ -501,12 +541,10 @@ function showPanel(name){
 // ── DASHBOARD ──
 async function loadDashboard(){
   try {
-    const [oRes, pRes] = await Promise.all([
-      sbFetch('orders?select=id,status,total_amount,customer_name,order_number,created_at&order=created_at.desc'),
-      sbFetch('products?select=id,name,category,price,emoji,bg,img,badge&order=created_at.desc')
+    const [{data: orders}, {data: products}] = await Promise.all([
+      db.from('orders').select('id,status,total_amount,customer_name,order_number,created_at').order('created_at',{ascending:false}),
+      db.from('products').select('id,name,category,price,emoji,bg,img,badge').order('created_at',{ascending:false})
     ]);
-    const orders  = oRes.ok  ? await oRes.json()  : [];
-    const products= pRes.ok  ? await pRes.json()  : [];
 
     const pending   = orders.filter(o=>o.status==='Pending').length;
     const revenue   = orders.filter(o=>o.status==='Delivered').reduce((s,o)=>s+Number(o.total_amount),0);
@@ -557,8 +595,9 @@ let orderFilter = 'all';
 async function loadOrders(){
   document.getElementById('ordersList').innerHTML = '<div class="tbl-loading"><div class="spinner"></div><p style="margin-top:.5rem">Loading orders...</p></div>';
   try {
-    const res = await sbFetch('orders?select=*&order=created_at.desc');
-    allOrders = res.ok ? await res.json() : [];
+    const {data, error} = await db.from('orders').select('*').order('created_at',{ascending:false});
+    if(error) throw new Error(error.message);
+    allOrders = data || [];
     renderOrders();
   } catch(e){
     document.getElementById('ordersList').innerHTML = '<div class="tbl-loading" style="color:var(--red)">❌ Could not load orders. Check internet connection.</div>';
@@ -673,8 +712,8 @@ async function updateStatus(id, status, btn){
   card.querySelectorAll('.s-btn').forEach(b=>b.classList.remove('current'));
   btn.classList.add('current');
   try {
-    const res = await sbFetch(`orders?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({status, updated_at: new Date().toISOString()})});
-    if(!res.ok) throw new Error();
+    const {error} = await db.from('orders').update({status, updated_at: new Date().toISOString()}).eq('id',id);
+    if(error) throw new Error(error.message);
     // update local
     const o = allOrders.find(x=>x.id===id);
     if(o) o.status = status;
@@ -695,7 +734,7 @@ async function updateStatus(id, status, btn){
 async function deleteOrder(id){
   if(!confirm('Delete this order permanently?')) return;
   try {
-    await sbFetch(`orders?id=eq.${id}`,{method:'DELETE'});
+    await db.from('orders').delete().eq('id',id);
     allOrders = allOrders.filter(o=>o.id!==id);
     renderOrders();
     toast('Order deleted.','red');
@@ -706,7 +745,7 @@ async function deleteOrder(id){
 async function deleteAllOrders(){
   if(!confirm('Delete ALL orders? This cannot be undone!')) return;
   try {
-    await sbFetch('orders?id=gt.0',{method:'DELETE'});
+    await db.from('orders').delete().gt('id',0);
     allOrders=[];
     renderOrders();
     toast('All orders deleted.','red');
@@ -722,8 +761,9 @@ async function loadAllProducts(){
   const tbody = document.getElementById('prodTbody');
   tbody.innerHTML='<tr><td colspan="7" class="tbl-loading"><div class="spinner"></div></td></tr>';
   try {
-    const res = await sbFetch('products?select=*&order=created_at.desc');
-    allProducts = res.ok ? await res.json() : [];
+    const {data, error} = await db.from('products').select('*').order('created_at',{ascending:false});
+    if(error) throw new Error(error.message);
+    allProducts = data || [];
     renderTable();
   } catch(e){ tbody.innerHTML='<tr><td colspan="7" class="tbl-loading" style="color:var(--red)">❌ Could not load products.</td></tr>'; }
 }
@@ -738,14 +778,19 @@ function renderTable(){
   tbody.innerHTML=list.map(p=>{
     const thumb=p.img?`<div class="prod-thumb"><img src="${p.img}" alt=""/></div>`:`<div class="prod-thumb" style="background:${p.bg||'#eee'}">${p.emoji||'👕'}</div>`;
     const oldP=p.old_price>0?`<span style="font-size:.75rem;color:#bbb;text-decoration:line-through;margin-left:4px">Rs.${Number(p.old_price).toLocaleString()}</span>`:'';
+    const sku = p.sku || ('WG-'+String(p.id).padStart(4,'0'));
     return `<tr>
       <td>${thumb}</td>
-      <td style="font-weight:600;max-width:160px">${p.name}</td>
+      <td style="font-weight:600;max-width:140px">${p.name}</td>
+      <td><span class="sku-label">${sku}</span></td>
       <td><span class="cat-pill ${p.category}">${p.category}</span></td>
       <td>Rs.${Number(p.price).toLocaleString()}${oldP}</td>
       <td>${p.badge?`<span class="badge-pill ${p.badge.toLowerCase()}">${p.badge}</span>`:'—'}</td>
-      <td style="font-size:.8rem;color:var(--muted)">${(p.sizes||[]).join(', ')||'—'}</td>
-      <td><div class="tbl-btns"><button class="edit-btn" onclick="openProdModal(${p.id})">✏️ Edit</button><button class="del-btn" onclick="deleteProd(${p.id})">🗑️</button></div></td>
+      <td><div class="tbl-btns">
+        <button class="edit-btn" onclick="openProdModal(${p.id})">✏️ Edit</button>
+        <button class="show-qr-btn" onclick="showAdminQR('${sku}','${p.name.replace(/'/g,"\'")}',${p.price})">📱 QR</button>
+        <button class="del-btn" onclick="deleteProd(${p.id})">🗑️</button>
+      </div></td>
     </tr>`;
   }).join('');
 }
@@ -756,6 +801,7 @@ function openProdModal(id){
   document.getElementById('modalTitle').textContent=p?'Edit Product':'Add Product';
   document.getElementById('mId').value=p?p.id:'';
   document.getElementById('mName').value=p?p.name:'';
+  document.getElementById('mSku').value=p?(p.sku||''):'';
   document.getElementById('mCat').value=p?p.category:'';
   document.getElementById('mBadge').value=p?(p.badge||''):'';
   document.getElementById('mPrice').value=p?p.price:'';
@@ -784,11 +830,14 @@ async function saveProduct(){
   if(!name||!category||!price){toast('Fill in Name, Category and Price.','red');return;}
   const btn=document.getElementById('saveBtn');
   btn.disabled=true;btn.textContent='Saving...';
-  const payload={name,category,price,old_price:parseInt(document.getElementById('mOldPrice').value)||0,badge:document.getElementById('mBadge').value||'',sizes:currentTags,emoji:currentEmoji,bg:currentBg,img:currentImg};
+  const skuVal = document.getElementById('mSku').value.trim();
+  const payload={name,category,price,old_price:parseInt(document.getElementById('mOldPrice').value)||0,badge:document.getElementById('mBadge').value||'',sizes:currentTags,emoji:currentEmoji,bg:currentBg,img:currentImg,sku:skuVal||null};
   const id=document.getElementById('mId').value;
   try {
-    const res=id?await sbFetch(`products?id=eq.${id}`,{method:'PATCH',body:JSON.stringify(payload)}):await sbFetch('products',{method:'POST',body:JSON.stringify(payload)});
-    if(!res.ok) throw new Error(await res.text());
+    const {error: saveErr} = id
+      ? await db.from('products').update(payload).eq('id',id)
+      : await db.from('products').insert(payload);
+    if(saveErr) throw new Error(saveErr.message);
     toast(id?'Product updated! ✅':'Product added! ✅','gold');
     closeProdModal();
     await loadAllProducts();
@@ -800,7 +849,7 @@ async function saveProduct(){
 async function deleteProd(id){
   if(!confirm('Delete this product?')) return;
   try {
-    await sbFetch(`products?id=eq.${id}`,{method:'DELETE'});
+    await db.from('products').delete().eq('id',id);
     allProducts=allProducts.filter(p=>p.id!==id);
     renderTable(); loadDashboard();
     toast('Product deleted.','red');
@@ -808,7 +857,7 @@ async function deleteProd(id){
 }
 async function deleteAllProducts(){
   if(!confirm('Delete ALL products?')) return;
-  try { await sbFetch('products?id=gt.0',{method:'DELETE'}); allProducts=[]; renderTable(); loadDashboard(); toast('All products deleted.','red'); } catch(e){toast('Error.','red');}
+  try { await db.from('products').delete().gt('id',0); allProducts=[]; renderTable(); loadDashboard(); toast('All products deleted.','red'); } catch(e){toast('Error.','red');}
 }
 
 // Tags
@@ -847,6 +896,58 @@ function toast(msg,type='gold'){
   const t=document.getElementById('toast');t.textContent=msg;
   t.style.borderLeftColor=type==='red'?'var(--red)':'var(--gold)';
   t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);
+}
+
+
+// ── QR CODE ──
+let currentQRSku = '', currentQRName = '', currentQRPrice = 0;
+function showAdminQR(sku, name, price){
+  currentQRSku = sku; currentQRName = name; currentQRPrice = price;
+  document.getElementById('adminQrName').textContent = name;
+  document.getElementById('adminQrSku').textContent  = 'SKU: ' + sku;
+  document.getElementById('adminQrPrice').textContent = 'Rs. ' + Number(price).toLocaleString();
+  const canvas = document.getElementById('adminQrCanvas');
+  canvas.innerHTML = '';
+  const qrUrl = 'https://index-tau-ruddy.vercel.app/?sku=' + sku;
+  new QRCode(canvas, {
+    text: qrUrl,
+    width: 180,
+    height: 180,
+    colorDark: '#1A1A1A',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+  document.getElementById('adminQrBg').classList.add('open');
+}
+function closeAdminQR(){ document.getElementById('adminQrBg').classList.remove('open'); }
+
+function printQR(){
+  const canvas = document.querySelector('#adminQrCanvas canvas');
+  if(!canvas){ toast('QR not ready yet.','red'); return; }
+  const win = window.open('','_blank');
+  win.document.write(`
+    <!DOCTYPE html><html><head><title>QR Label - ${currentQRSku}</title>
+    <style>
+      body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#fff;font-family:'DM Sans',sans-serif}
+      .label{border:2px solid #1A1A1A;border-radius:12px;padding:1.5rem;text-align:center;width:240px}
+      .shop{font-size:.9rem;font-weight:700;color:#FF6B00;letter-spacing:1px;margin-bottom:.3rem}
+      .pname{font-size:1rem;font-weight:700;color:#1A1A1A;margin-bottom:.3rem}
+      .sku{font-size:.75rem;color:#888;letter-spacing:2px;margin-bottom:.8rem;font-family:monospace}
+      img{width:160px;height:160px}
+      .price{margin-top:.8rem;font-size:1.1rem;font-weight:700;color:#1A1A1A}
+      .scan{font-size:.7rem;color:#aaa;margin-top:.3rem}
+    </style></head><body>
+    <div class="label">
+      <div class="shop">🛍️ WALLI GARMENTS</div>
+      <div class="pname">${currentQRName}</div>
+      <div class="sku">${currentQRSku}</div>
+      <img src="${canvas.toDataURL()}" alt="QR"/>
+      <div class="price">Rs. ${Number(currentQRPrice).toLocaleString()}</div>
+      <div class="scan">Scan to view product online</div>
+    </div>
+    <script>window.onload=()=>window.print()<\/script>
+    </body></html>`);
+  win.document.close();
 }
 
 // Auto-refresh orders every 60 seconds
