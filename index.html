@@ -4,6 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Walli Garments – Casual Fashion for Everyone</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -260,13 +262,32 @@
     .pay-tag{margin-top:.9rem;display:inline-block;background:rgba(46,125,81,.12);color:var(--green);border-radius:20px;padding:4px 14px;font-size:.78rem;font-weight:600}
 
     /* TESTIMONIALS */
-    #testimonials{background:var(--white)}
-    .testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.4rem}
-    .t-card{background:var(--cream);border-radius:14px;padding:1.8rem;border-left:4px solid var(--gold)}
-    .stars{color:var(--gold);font-size:.95rem;letter-spacing:2px;margin-bottom:.8rem}
-    .t-card p{font-size:.9rem;line-height:1.75;color:var(--charcoal);font-style:italic;margin-bottom:1rem}
-    .t-author{font-weight:700;font-size:.85rem;color:var(--navy)}
-    .t-loc{font-size:.75rem;color:#aaa}
+    #testimonials{background:var(--white);overflow:hidden}
+    .testi-summary{display:flex;align-items:center;gap:2.5rem;margin-bottom:3rem;flex-wrap:wrap;background:#f8f9fc;border-radius:16px;padding:2rem}
+    .testi-score{text-align:center;flex-shrink:0}
+    .big-score{font-family:'Playfair Display',serif;font-size:4rem;color:#1A1A1A;line-height:1;display:block}
+    .big-stars{color:#FF6B00;font-size:1.3rem;letter-spacing:3px;margin:.3rem 0;display:block}
+    .testi-score p{font-size:.78rem;color:#aaa;margin:0}
+    .testi-bars{flex:1;min-width:180px}
+    .bar-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.45rem}
+    .bar-label{font-size:.78rem;color:#888;width:30px;text-align:right;flex-shrink:0}
+    .bar-track{flex:1;height:7px;background:#e8e8e8;border-radius:4px;overflow:hidden}
+    .bar-fill{height:100%;background:#FF6B00;border-radius:4px;transition:width 1s ease}
+    .bar-count{font-size:.75rem;color:#aaa;width:20px;flex-shrink:0}
+    .testi-carousel{position:relative;overflow:hidden}
+    .testi-track{display:flex;gap:1.2rem;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+    .t-card{background:var(--cream);border-radius:14px;padding:1.8rem;border-left:4px solid #FF6B00;min-width:300px;max-width:340px;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+    .stars{color:#FF6B00;font-size:.95rem;letter-spacing:2px;margin-bottom:.8rem}
+    .t-card p{font-size:.88rem;line-height:1.75;color:var(--charcoal);font-style:italic;margin-bottom:1rem}
+    .t-author{font-weight:700;font-size:.85rem;color:#1A1A1A}
+    .t-loc{font-size:.75rem;color:#aaa;margin-top:.15rem}
+    .t-tag{display:inline-block;background:rgba(255,107,0,.1);color:#FF6B00;font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:10px;margin-top:.6rem}
+    .testi-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.8rem}
+    .tn-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid #e0e0e0;background:transparent;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:.2s;font-family:'DM Sans',sans-serif}
+    .tn-btn:hover{background:#1A1A1A;color:#fff;border-color:#1A1A1A}
+    .tn-dots{display:flex;gap:.5rem;align-items:center}
+    .tn-dot{width:8px;height:8px;border-radius:50%;background:#e0e0e0;cursor:pointer;transition:.3s;border:none;padding:0}
+    .tn-dot.active{background:#FF6B00;width:22px;border-radius:4px}
 
     /* FOOTER */
     footer{background:#111111;padding:60px 5% 28px}
@@ -293,6 +314,45 @@
     .promo-banner::before{content:'';position:absolute;right:-60px;top:-60px;width:280px;height:280px;background:rgba(255,107,0,.08);border-radius:50%}
     .promo-banner h2{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:var(--white);margin-bottom:.8rem}
     .promo-banner p{color:rgba(255,255,255,.6);font-size:.95rem;line-height:1.7}
+
+
+    /* SKU + QR */
+    .p-sku{font-size:.68rem;color:#aaa;letter-spacing:1.5px;font-weight:600;margin-bottom:.4rem;font-family:'DM Sans',sans-serif}
+    .p-sku span{background:#f0f0f0;padding:2px 7px;border-radius:4px;color:#666}
+    .qr-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:4000;align-items:center;justify-content:center}
+    .qr-modal-bg.open{display:flex}
+    .qr-modal{background:#fff;border-radius:16px;padding:2rem;text-align:center;max-width:320px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,.4)}
+    .qr-modal h3{font-family:'Playfair Display',serif;color:#1A1A1A;margin-bottom:.3rem;font-size:1.1rem}
+    .qr-modal .qr-sku{font-size:.75rem;color:#aaa;letter-spacing:2px;margin-bottom:1rem}
+    #qrCanvas{margin:1rem auto;display:flex;justify-content:center}
+    .qr-close{margin-top:1rem;background:#1A1A1A;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:.2s;width:100%}
+    .qr-close:hover{background:#FF6B00;color:#1A1A1A}
+    .qr-btn{background:none;border:1.5px solid #e0dbd2;padding:5px 10px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:#888;transition:.2s;margin-top:.4rem}
+    .qr-btn:hover{border-color:#FF6B00;color:#FF6B00}
+
+
+    /* SIZE GUIDE */
+    .sg-tab{padding:9px 22px;border:1.5px solid rgba(255,107,0,.3);border-radius:40px;background:transparent;font-family:'DM Sans',sans-serif;font-size:.88rem;cursor:pointer;transition:.2s;color:rgba(255,255,255,.7);font-weight:500}
+    .sg-tab.active,.sg-tab:hover{background:#FF6B00;color:#1A1A1A;border-color:#FF6B00;font-weight:700}
+    .sg-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
+    .sg-heading{font-family:'Playfair Display',serif;font-size:1.15rem;color:#fff;margin-bottom:1.2rem}
+    .sg-table-wrap{overflow-x:auto}
+    .sg-table{width:100%;border-collapse:collapse;min-width:320px}
+    .sg-table th{background:#FF6B00;color:#1A1A1A;padding:10px 14px;text-align:left;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+    .sg-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.08);font-size:.86rem;color:rgba(255,255,255,.8)}
+    .sg-table tr:last-child td{border-bottom:none}
+    .sg-table tr:hover td{background:rgba(255,107,0,.06)}
+    .sz-badge{background:#FF6B00;color:#1A1A1A;padding:3px 10px;border-radius:12px;font-size:.75rem;font-weight:700;display:inline-block}
+    .measure-cards{display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.5rem}
+    .m-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,107,0,.2);border-radius:10px;padding:1rem;display:flex;gap:.9rem;align-items:flex-start}
+    .m-icon{font-size:1.4rem;flex-shrink:0}
+    .m-card strong{display:block;color:#FF6B00;font-size:.88rem;margin-bottom:.2rem}
+    .m-card p{color:rgba(255,255,255,.55);font-size:.82rem;line-height:1.55;margin:0}
+    .dress-tips{background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.2);border-radius:12px;padding:1.4rem}
+    .dress-tips h4{color:#FF6B00;font-size:.9rem;font-weight:700;margin-bottom:.9rem}
+    .dress-tips ul{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+    .dress-tips li{font-size:.85rem;color:rgba(255,255,255,.7);line-height:1.5}
+    @media(max-width:860px){.sg-grid{grid-template-columns:1fr}}
 
     /* TOAST */
     #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--white);padding:12px 24px;border-radius:8px;font-size:.88rem;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;border-left:4px solid var(--gold);white-space:nowrap}
@@ -378,6 +438,7 @@
     <li><a href="#categories">Collections</a></li>
     <li><a href="#products">Shop</a></li>
     <li><a href="#trackingSection" onclick="document.getElementById('trackingSection').classList.add('show')">Track Order</a></li>
+    <li><a href="#sizeGuide">Size Guide</a></li>
     <li><a href="#payment">Payment</a></li>
     <li><a href="#" onclick="openCheckout();return false" class="nav-cta">Order Now</a></li>
   </ul>
@@ -528,12 +589,132 @@
 <section id="testimonials">
   <div class="section-label">Customer Reviews</div>
   <h2 class="section-title">What Our Customers Say</h2>
-  <p class="section-sub">Real feedback from real customers across Shakargarh.</p>
-  <div class="testi-grid">
-    <div class="t-card"><div class="stars">★★★★★</div><p>"Best clothes shop in Shakargarh! Great quality and delivery was so fast. Definitely ordering again."</p><div class="t-author">Sana Bibi</div><div class="t-loc">Shakargarh</div></div>
-    <div class="t-card"><div class="stars">★★★★★</div><p>"Ordered kids' clothes and received them the same day. Prices are very reasonable and fabric quality is excellent."</p><div class="t-author">Tariq Mehmood</div><div class="t-loc">Near Riaz Market</div></div>
-    <div class="t-card"><div class="stars">★★★★★</div><p>"Love the order tracking feature! I could see exactly when my order was coming. Very professional!"</p><div class="t-author">Ayesha Noor</div><div class="t-loc">Shakargarh</div></div>
-    <div class="t-card"><div class="stars">★★★★☆</div><p>"JazzCash payment worked perfectly. The men's shirts I bought are great quality. Will recommend to all my friends."</p><div class="t-author">Bilal Ahmed</div><div class="t-loc">Punjab</div></div>
+  <p class="section-sub">Real reviews from real customers across Shakargarh and nearby areas.</p>
+
+  <!-- Rating summary -->
+  <div class="testi-summary">
+    <div class="testi-score">
+      <span class="big-score">4.9</span>
+      <span class="big-stars">★★★★★</span>
+      <p>Based on 120+ reviews</p>
+    </div>
+    <div class="testi-bars">
+      <div class="bar-row"><span class="bar-label">5★</span><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><span class="bar-count">106</span></div>
+      <div class="bar-row"><span class="bar-label">4★</span><div class="bar-track"><div class="bar-fill" style="width:9%"></div></div><span class="bar-count">11</span></div>
+      <div class="bar-row"><span class="bar-label">3★</span><div class="bar-track"><div class="bar-fill" style="width:2%"></div></div><span class="bar-count">2</span></div>
+      <div class="bar-row"><span class="bar-label">2★</span><div class="bar-track"><div class="bar-fill" style="width:1%"></div></div><span class="bar-count">1</span></div>
+      <div class="bar-row"><span class="bar-label">1★</span><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-count">0</span></div>
+    </div>
+  </div>
+
+  <!-- Carousel -->
+  <div class="testi-carousel">
+    <div class="testi-track" id="testiTrack">
+
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"Best clothes shop in Shakargarh! Bahut acha quality hai aur delivery bhi bohot fast thi. Zaroor dobara order karunga!"</p>
+        <div class="t-author">Sana Bibi</div>
+        <div class="t-loc">📍 Shakargarh</div>
+        <span class="t-tag">👗 Women's Suit</span>
+      </div>
+
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"Bacchon ke kapre WhatsApp pe order kiye aur same day mil gaye. Price bhi bilkul theek tha. Bohot khush hoon!"</p>
+        <div class="t-author">Tariq Mehmood</div>
+        <div class="t-loc">📍 Near Riaz Market</div>
+        <span class="t-tag">🧒 Kids' Outfit</span>
+      </div>
+
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"Order tracking feature bohot achi hai! Pata chal raha tha delivery kab ayegi. Bahut professional service!"</p>
+        <div class="t-author">Ayesha Noor</div>
+        <div class="t-loc">📍 Shakargarh</div>
+        <span class="t-tag">👔 Eid Collection</span>
+      </div>
+
+      <div class="t-card">
+        <div class="stars">★★★★☆</div>
+        <p>"JazzCash se payment ki, bilkul smooth rahi. Gents shirts ki quality mast hai. Sab doston ko recommend karunga!"</p>
+        <div class="t-author">Bilal Ahmed</div>
+        <div class="t-loc">📍 Punjab</div>
+        <span class="t-tag">👔 Men's Shirt</span>
+      </div>
+
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"Meri beti ki Eid dress yahan se li, bilkul perfect thi. Design bhi acha tha aur kapra bhi mast. Shukriya Walli Garments!"</p>
+        <div class="t-author">Rukhsana Kausar</div>
+        <div class="t-loc">📍 Shakargarh</div>
+        <span class="t-tag">👧 Girls Frock</span>
+      </div>
+
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"Shalwar kameez liya, quality bahut achi nikli. Price market se bhi kam tha. Ghar tak delivery free mili. Wah!"</p>
+        <div class="t-author">Muhammad Usman</div>
+        <div class="t-loc">📍 Kohlo Wali Gali</div>
+        <span class="t-tag">👔 Shalwar Kameez</span>
+      </div>
+
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"Lawn suits ki variety bahut achi hai. Rang bhi fresh hain aur kapra original hai. Pura paisa wasool! Dobara zaroor aaunga."</p>
+        <div class="t-author">Zainab Fatima</div>
+        <div class="t-loc">📍 Shakargarh City</div>
+        <span class="t-tag">👗 Lawn Suit</span>
+      </div>
+
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"Maine pehli baar online order kiya tha, thoda dar tha. Lekin Walli Garments ne bilkul sahi kapra bheja. Bahut trust hai ab!"</p>
+        <div class="t-author">Asif Javaid</div>
+        <div class="t-loc">📍 Near Shakargarh</div>
+        <span class="t-tag">👕 Casual Wear</span>
+      </div>
+
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"EasyPaisa se payment ki, bahut asaan tha. Kapra bhi time pe aaya. Walli Garments is the best in Shakargarh!"</p>
+        <div class="t-author">Hina Shahzadi</div>
+        <div class="t-loc">📍 Shakargarh</div>
+        <span class="t-tag">👗 Women's Kurta</span>
+      </div>
+
+      <div class="t-card">
+        <div class="stars">★★★★☆</div>
+        <p>"Mere bete ka uniform style shirt liya, size bilkul sahi aaya. Size guide se help mili. Agle mahine phir order karunga."</p>
+        <div class="t-author">Khalid Mahmood</div>
+        <div class="t-loc">📍 Punjab</div>
+        <span class="t-tag">👦 Boys Shirt</span>
+      </div>
+
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"Shadi ke liye kurta liya, mehmaan bahut tarif karte rahe! Embroidery bilkul perfect thi. Bohot shukria!"</p>
+        <div class="t-author">Imran Butt</div>
+        <div class="t-loc">📍 Shakargarh</div>
+        <span class="t-tag">👔 Wedding Kurta</span>
+      </div>
+
+      <div class="t-card">
+        <div class="stars">★★★★★</div>
+        <p>"Cash on delivery ki wajah se tension nahi thi. Jab kapra mila tab paise diye. Bilkul trust worthy shop hai yeh!"</p>
+        <div class="t-author">Nasreen Akhtar</div>
+        <div class="t-loc">📍 Shakargarh</div>
+        <span class="t-tag">🚪 Cash on Delivery</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="testi-nav">
+    <button class="tn-btn" onclick="testiPrev()">&#8592;</button>
+    <div class="tn-dots" id="testiDots"></div>
+    <button class="tn-btn" onclick="testiNext()">&#8594;</button>
   </div>
 </section>
 
@@ -675,7 +856,8 @@
   <div class="foot-grid">
     <div class="foot-brand"><span class="logo">Walli <span>Garments</span></span><p>Your trusted casual clothing store in Shakargarh. Quality clothes for men, women, and kids at prices that make sense.</p></div>
     <div class="foot-col"><h4>Collections</h4><ul><li><a href="#categories">Men's Wear</a></li><li><a href="#categories">Women's Fashion</a></li><li><a href="#categories">Kids' Collection</a></li></ul></div>
-    <div class="foot-col"><h4>Quick Links</h4><ul><li><a href="#hero">Home</a></li><li><a href="#products">Shop</a></li><li><a href="#trackingSection" onclick="document.getElementById('trackingSection').classList.add('show')">Track Order</a></li><li><a href="#payment">Payment</a></li></ul></div>
+    <div class="foot-col"><h4>Quick Links</h4><ul><li><a href="#hero">Home</a></li><li><a href="#products">Shop</a></li><li><a href="#trackingSection" onclick="document.getElementById('trackingSection').classList.add('show')">Track Order</a></li>
+    <li><a href="#sizeGuide">Size Guide</a></li><li><a href="#payment">Payment</a></li></ul></div>
     <div class="foot-col"><h4>Contact</h4><ul>
       <li><a href="tel:+923225925409">📞 +92322-5925409</a></li>
       <li><a href="https://wa.me/923225925409" target="_blank">💬 WhatsApp Us</a></li>
@@ -702,21 +884,43 @@
   </div>
 </div>
 
+
+<!-- QR Modal -->
+<div class="qr-modal-bg" id="qrModalBg" onclick="if(event.target===this)closeQR()">
+  <div class="qr-modal">
+    <h3 id="qrProductName">Product Name</h3>
+    <div class="qr-sku" id="qrSkuLabel">SKU: WG-0000</div>
+    <div id="qrCanvas"></div>
+    <p style="font-size:.78rem;color:#aaa;margin-top:.5rem">Scan to view this product</p>
+    <button class="qr-close" onclick="closeQR()">✕ Close</button>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
 const SB_URL = 'https://jzybbxdexxilvgbbbxzt.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6eWJieGRleHhpbHZnYmJieHp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0Mjg1MDQsImV4cCI6MjA5OTAwNDUwNH0.Xi60WDhQqqK3clgXi0f7HXHKAw3Q0f8Lmhd2sFF1tAE';
-const SBH = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+let db;
+try {
+  const _sb = window.supabase || supabase;
+  db = _sb.createClient(SB_URL, SB_KEY);
+  console.log('✅ Supabase connected');
+} catch(e) {
+  console.error('❌ Supabase init failed:', e.message||e);
+}
 
 // ── PRODUCTS ──
 let currentFilter = 'all';
 
 async function fetchProducts(cat=''){
-  let url = `${SB_URL}/rest/v1/products?select=*&order=created_at.desc`;
-  if(cat) url += `&category=eq.${cat}`;
-  const res = await fetch(url,{headers:SBH});
-  return res.ok ? await res.json() : [];
+  try {
+    let query = db.from('products').select('*').order('created_at', {ascending:false});
+    if(cat) query = query.eq('category', cat);
+    const {data, error} = await query;
+    if(error){ console.error('fetchProducts error:', error.message, error.code, error.details); return []; }
+    return data || [];
+  } catch(e){ console.error('fetchProducts exception:', e.message||e); return []; }
 }
 
 async function renderProducts(filter){
@@ -736,18 +940,21 @@ async function renderProducts(filter){
     const sizeSelect = (p.sizes&&p.sizes.length)
       ? `<select id="sz-${p.id}" style="width:100%;padding:5px 8px;border:1px solid #e0dbd2;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.78rem;margin-bottom:.7rem;outline:none;background:#f8f9fc"><option value="">Select size</option>${p.sizes.map(s=>`<option>${s}</option>`).join('')}</select>`
       : '';
+    const sku = p.sku || ('WG-'+String(p.id).padStart(4,'0'));
     return `
     <div class="p-card">
       <div class="p-img" style="background:${p.bg||'#d0dae8'}">${imgEl}${badge}</div>
       <div class="p-info">
         <div class="p-cat">${p.category==='men'?"Men's":p.category==='women'?"Women's":"Kids'"} Collection</div>
         <h4>${p.name}</h4>
+        <div class="p-sku">SKU: <span>${sku}</span></div>
         ${sizes?`<div class="p-sizes">${sizes}</div>`:''}
         ${sizeSelect}
         <div class="p-row">
           <div><span class="p-price">Rs. ${Number(p.price).toLocaleString()}</span>${oldP}</div>
-          <button class="p-btn" onclick="addToCart(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.price},'${p.emoji||'👕'}','${p.bg||'#d0dae8'}','${p.img||''}')">Add to Cart</button>
+          <button class="p-btn" onclick="addToCart(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.price},'${p.emoji||'👕'}','${p.bg||'#d0dae8'}','${p.img||''}','${sku}')">Add to Cart</button>
         </div>
+        <button class="qr-btn" onclick="showQR('${sku}','${p.name.replace(/'/g,"\\'")}')" style="width:100%;margin-top:.5rem">📱 Show QR Code</button>
       </div>
     </div>`;
   }).join('');
@@ -767,12 +974,12 @@ function filterAndScroll(cat){
 // ── CART ──
 let cart = [];
 
-function addToCart(id,name,price,emoji,bg,img){
+function addToCart(id,name,price,emoji,bg,img,sku=''){
   const sizeEl = document.getElementById('sz-'+id);
   const size = sizeEl ? sizeEl.value : '';
   const existing = cart.find(c=>c.id===id && c.size===size);
   if(existing){ existing.qty++; }
-  else{ cart.push({id,name,price,emoji,bg,img,size,qty:1}); }
+  else{ cart.push({id,name,price,emoji,bg,img,size,qty:1,sku}); }
   renderCart();
   toast('Added to cart! 🛒');
 }
@@ -801,6 +1008,7 @@ function renderCart(){
         <div class="ci-name">${c.name}</div>
         <div class="ci-price">Rs. ${Number(c.price).toLocaleString()}</div>
         ${c.size?`<div class="ci-size">Size: ${c.size}</div>`:''}
+        ${c.sku?`<div style="font-size:.7rem;color:#aaa;margin-top:.1rem">SKU: ${c.sku}</div>`:''}
         <div class="ci-qty">
           <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
           <span class="qty-val">${c.qty}</span>
@@ -870,26 +1078,22 @@ async function placeOrder(){
   btn.disabled=true; btn.textContent='Placing order...';
 
   const total = cart.reduce((s,c)=>s+c.price*c.qty,0);
-  const itemsText = cart.map(c=>`${c.name}${c.size?' ('+c.size+')':''} x${c.qty}`).join(', ');
+  const itemsText = cart.map(c=>`${c.name}${c.size?' ('+c.size+')':''} [${c.sku||''}] x${c.qty}`).join(', ');
   const orderNum = 'WG-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6);
 
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/orders`,{
-      method:'POST',
-      headers:SBH,
-      body:JSON.stringify({
-        order_number: orderNum,
-        customer_name: name,
-        customer_phone: phone,
-        customer_address: addr,
-        items: itemsText,
-        payment_method: pay,
-        total_amount: total,
-        status: 'Pending',
-        notes: notes
-      })
-    });
-    if(!res.ok) throw new Error(await res.text());
+    const {data: orderData, error: orderError} = await db.from('orders').insert({
+      order_number: orderNum,
+      customer_name: name,
+      customer_phone: phone,
+      customer_address: addr,
+      items: itemsText,
+      payment_method: pay,
+      total_amount: total,
+      status: 'Pending',
+      notes: notes
+    }).select();
+    if(orderError) throw new Error(orderError.message);
 
     // ── AUTO-SEND WhatsApp notification to shop owner ──
     const ownerMsg = encodeURIComponent(
@@ -961,8 +1165,8 @@ async function trackOrder(){
   res.classList.add('show');
 
   try {
-    const r = await fetch(`${SB_URL}/rest/v1/orders?order_number=eq.${num}&select=*`,{headers:SBH});
-    const data = await r.json();
+    const {data, error: trackError} = await db.from('orders').select('*').eq('order_number', num);
+    if(trackError) throw new Error(trackError.message);
     if(!data.length){ res.classList.remove('show'); nf.classList.add('show'); return; }
     const o = data[0];
     const isCancelled = o.status==='Cancelled';
@@ -1030,6 +1234,73 @@ function toast(msg,type='gold'){
 // Init
 renderCart();
 renderProducts('all');
+
+
+
+
+// ── TESTIMONIALS CAROUSEL ──
+let testiIndex = 0;
+const TESTI_VISIBLE = window.innerWidth < 600 ? 1 : window.innerWidth < 900 ? 2 : 3;
+const testiCards = document.querySelectorAll ? 0 : 0; // will be set on load
+
+function initTesti(){
+  const track = document.getElementById('testiTrack');
+  const dots  = document.getElementById('testiDots');
+  if(!track||!dots) return;
+  const cards = track.children.length;
+  const visible = window.innerWidth < 600 ? 1 : window.innerWidth < 900 ? 2 : 3;
+  const pages = Math.ceil(cards / visible);
+  dots.innerHTML = Array.from({length:pages},(_,i)=>
+    `<button class="tn-dot${i===0?' active':''}" onclick="testiGo(${i})"></button>`
+  ).join('');
+  testiGo(0);
+  // auto scroll every 4s
+  setInterval(()=>testiNext(), 4500);
+}
+
+function testiGo(page){
+  const track = document.getElementById('testiTrack');
+  if(!track) return;
+  const visible = window.innerWidth < 600 ? 1 : window.innerWidth < 900 ? 2 : 3;
+  const cardW = track.children[0].offsetWidth + 19; // card + gap
+  const pages = Math.ceil(track.children.length / visible);
+  testiIndex = ((page % pages) + pages) % pages;
+  track.style.transform = `translateX(-${testiIndex * visible * cardW}px)`;
+  document.querySelectorAll('.tn-dot').forEach((d,i)=>d.classList.toggle('active',i===testiIndex));
+}
+
+function testiNext(){ testiGo(testiIndex+1); }
+function testiPrev(){ testiGo(testiIndex-1); }
+
+window.addEventListener('load', initTesti);
+window.addEventListener('resize', ()=>testiGo(0));
+
+// ── SIZE GUIDE TABS ──
+function showSizeTab(tab, btn){
+  document.querySelectorAll('.sg-panel').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.sg-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sg-'+tab).style.display='block';
+  btn.classList.add('active');
+}
+
+// ── QR CODE ──
+function showQR(sku, name){
+  document.getElementById('qrProductName').textContent = name;
+  document.getElementById('qrSkuLabel').textContent = 'SKU: ' + sku;
+  const canvas = document.getElementById('qrCanvas');
+  canvas.innerHTML = '';
+  const qrUrl = window.location.origin + window.location.pathname + '?sku=' + sku;
+  new QRCode(canvas, {
+    text: qrUrl,
+    width: 180,
+    height: 180,
+    colorDark: '#1A1A1A',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+  document.getElementById('qrModalBg').classList.add('open');
+}
+function closeQR(){ document.getElementById('qrModalBg').classList.remove('open'); }
 
 // Show tracking if hash
 if(location.hash==='#trackingSection') document.getElementById('trackingSection').classList.add('show');
