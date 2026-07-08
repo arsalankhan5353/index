@@ -8,7 +8,7 @@
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --navy:#1A2340;--gold:#C9963A;--cream:#FAF7F2;--sand:#EDE3D5;
+      --navy:#1A1A1A;--gold:#FF6B00;--cream:#FAF7F2;--sand:#EDE3D5;
       --charcoal:#3C3C3C;--white:#fff;--green:#2E7D51;--muted:#6b6b6b;
       --red:#c0392b;--border:#e2e6f0;
     }
@@ -33,29 +33,29 @@
     .hamburger span{width:26px;height:2px;background:var(--white);border-radius:2px;display:block}
 
     /* HERO */
-    #hero{min-height:100vh;background:linear-gradient(135deg,#111c38 0%,#1f2f5a 55%,#1a2340 100%);display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:170px 5% 80px;gap:3rem;position:relative;overflow:hidden}
+    #hero{min-height:100vh;background:linear-gradient(135deg,#111111 0%,#2a2a2a 55%,#1A1A1A 100%);display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:170px 5% 80px;gap:3rem;position:relative;overflow:hidden}
     #hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23C9963A' fill-opacity='0.04'%3E%3Cpath d='M0 0h40v40H0zm40 40h40v40H40z'/%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
     .hero-left{position:relative;z-index:2}
-    .hero-tag{display:inline-flex;align-items:center;gap:.5rem;background:rgba(201,150,58,.15);color:var(--gold);border:1px solid rgba(201,150,58,.35);padding:6px 16px;border-radius:40px;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:1.6rem}
+    .hero-tag{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,107,0,.15);color:var(--gold);border:1px solid rgba(255,107,0,.35);padding:6px 16px;border-radius:40px;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:1.6rem}
     .hero-left h1{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5.5vw,4.2rem);color:var(--white);line-height:1.1;margin-bottom:1.4rem}
     .hero-left h1 em{font-style:italic;color:var(--gold)}
     .hero-left p{color:rgba(255,255,255,.68);font-size:1.05rem;line-height:1.8;margin-bottom:2.4rem;max-width:480px}
     .hero-btns{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.8rem}
     .btn-primary{background:var(--gold);color:var(--navy);padding:13px 32px;border-radius:6px;font-weight:700;font-size:.92rem;text-decoration:none;transition:transform .2s,box-shadow .2s;display:inline-block;border:none;cursor:pointer;font-family:'DM Sans',sans-serif}
-    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,150,58,.4)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,107,0,.4)}
     .btn-outline{border:2px solid rgba(255,255,255,.35);color:var(--white);padding:13px 32px;border-radius:6px;font-weight:600;font-size:.92rem;text-decoration:none;transition:.2s;display:inline-block}
-    .btn-outline:hover{border-color:var(--gold);background:rgba(201,150,58,.1)}
+    .btn-outline:hover{border-color:var(--gold);background:rgba(255,107,0,.1)}
     .hero-stats{display:flex;gap:2.5rem;flex-wrap:wrap}
     .hero-stat strong{display:block;font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gold)}
     .hero-stat span{font-size:.75rem;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.5)}
     .hero-right{position:relative;z-index:2;display:flex;flex-direction:column;gap:1rem}
     .hero-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-    .hero-card{background:rgba(255,255,255,.07);border:1px solid rgba(201,150,58,.2);border-radius:14px;padding:1.5rem;text-align:center;transition:.3s}
-    .hero-card:hover{transform:translateY(-4px);background:rgba(201,150,58,.1)}
+    .hero-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,107,0,.2);border-radius:14px;padding:1.5rem;text-align:center;transition:.3s}
+    .hero-card:hover{transform:translateY(-4px);background:rgba(255,107,0,.1)}
     .hero-card .hc-icon{font-size:3rem;margin-bottom:.7rem}
     .hero-card h4{color:var(--white);font-size:.95rem;font-weight:600;margin-bottom:.3rem}
     .hero-card p{color:rgba(255,255,255,.5);font-size:.78rem;line-height:1.5}
-    .hero-promo{background:linear-gradient(135deg,rgba(201,150,58,.2),rgba(201,150,58,.05));border:1px solid rgba(201,150,58,.3);border-radius:14px;padding:1.4rem 1.6rem;display:flex;align-items:center;gap:1.2rem}
+    .hero-promo{background:linear-gradient(135deg,rgba(255,107,0,.2),rgba(255,107,0,.05));border:1px solid rgba(255,107,0,.3);border-radius:14px;padding:1.4rem 1.6rem;display:flex;align-items:center;gap:1.2rem}
     .hero-promo .pi{font-size:2.2rem;flex-shrink:0}
     .hero-promo h4{color:var(--gold);font-size:1rem;font-weight:700;margin-bottom:.25rem}
     .hero-promo p{color:rgba(255,255,255,.6);font-size:.82rem}
@@ -80,7 +80,7 @@
     .cat-emoji{position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);font-size:6rem;opacity:.22;transition:.3s}
     .cat-card:hover .cat-emoji{opacity:.35}
     .cat-gradient{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(26,35,64,.92) 100%)}
-    .cat-overlay{position:absolute;inset:0;background:rgba(201,150,58,.12);opacity:0;transition:.3s}
+    .cat-overlay{position:absolute;inset:0;background:rgba(255,107,0,.12);opacity:0;transition:.3s}
     .cat-card:hover .cat-overlay{opacity:1}
     .cat-body{position:relative;z-index:2;padding:1.6rem}
     .cat-body h3{font-family:'Playfair Display',serif;font-size:1.55rem;color:var(--white);margin-bottom:.35rem}
@@ -185,7 +185,7 @@
     .success-icon{font-size:4rem;margin-bottom:1rem}
     .success-screen h2{font-family:'Playfair Display',serif;color:var(--navy);font-size:1.6rem;margin-bottom:.8rem}
     .success-screen p{color:var(--muted);line-height:1.7;font-size:.92rem;margin-bottom:1.5rem}
-    .order-num-box{background:rgba(201,150,58,.1);border:1px solid rgba(201,150,58,.3);border-radius:10px;padding:1rem;margin-bottom:1.5rem}
+    .order-num-box{background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.3);border-radius:10px;padding:1rem;margin-bottom:1.5rem}
     .order-num-box strong{display:block;font-size:.75rem;color:var(--muted);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:1px}
     .order-num-box span{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gold);font-weight:700}
     .track-hint{font-size:.82rem;color:var(--muted);margin-bottom:1.5rem}
@@ -222,7 +222,7 @@
     .tl-left{display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0}
     .tl-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;border:2px solid var(--border);background:var(--white);transition:.3s}
     .tl-dot.done{background:var(--green);border-color:var(--green);color:var(--white)}
-    .tl-dot.active{background:var(--gold);border-color:var(--gold);color:var(--navy);box-shadow:0 0 0 4px rgba(201,150,58,.2)}
+    .tl-dot.active{background:var(--gold);border-color:var(--gold);color:var(--navy);box-shadow:0 0 0 4px rgba(255,107,0,.2)}
     .tl-dot.cancelled{background:var(--red);border-color:var(--red);color:var(--white)}
     .tl-line{width:2px;flex:1;background:var(--border);min-height:32px;margin:4px 0}
     .tl-line.done{background:var(--green)}
@@ -243,8 +243,8 @@
     #why .section-title{color:var(--white)}
     #why .section-sub{color:rgba(255,255,255,.55)}
     .features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.3rem}
-    .f-card{background:rgba(255,255,255,.05);border:1px solid rgba(201,150,58,.18);border-radius:14px;padding:1.8rem 1.4rem;transition:.3s}
-    .f-card:hover{background:rgba(201,150,58,.1);transform:translateY(-4px)}
+    .f-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,107,0,.18);border-radius:14px;padding:1.8rem 1.4rem;transition:.3s}
+    .f-card:hover{background:rgba(255,107,0,.1);transform:translateY(-4px)}
     .f-icon{font-size:2rem;margin-bottom:.9rem}
     .f-card h3{color:var(--gold);font-size:1rem;margin-bottom:.45rem;font-weight:600}
     .f-card p{color:rgba(255,255,255,.55);font-size:.85rem;line-height:1.65}
@@ -269,7 +269,7 @@
     .t-loc{font-size:.75rem;color:#aaa}
 
     /* FOOTER */
-    footer{background:#0e1625;padding:60px 5% 28px}
+    footer{background:#111111;padding:60px 5% 28px}
     .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
     .foot-brand .logo{font-family:'Playfair Display',serif;color:var(--gold);font-size:1.6rem;display:block;margin-bottom:1rem}
     .foot-brand .logo span{color:var(--white)}
@@ -289,8 +289,8 @@
     .float-wa:hover{transform:scale(1.1)}
 
     /* PROMO BANNER */
-    .promo-banner{background:linear-gradient(135deg,var(--navy),#2b3a6b);margin:0 5%;border-radius:20px;padding:4rem 5%;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2rem;position:relative;overflow:hidden}
-    .promo-banner::before{content:'';position:absolute;right:-60px;top:-60px;width:280px;height:280px;background:rgba(201,150,58,.08);border-radius:50%}
+    .promo-banner{background:linear-gradient(135deg,var(--navy),#2a2a2a);margin:0 5%;border-radius:20px;padding:4rem 5%;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2rem;position:relative;overflow:hidden}
+    .promo-banner::before{content:'';position:absolute;right:-60px;top:-60px;width:280px;height:280px;background:rgba(255,107,0,.08);border-radius:50%}
     .promo-banner h2{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2.2rem);color:var(--white);margin-bottom:.8rem}
     .promo-banner p{color:rgba(255,255,255,.6);font-size:.95rem;line-height:1.7}
 
@@ -534,6 +534,139 @@
     <div class="t-card"><div class="stars">★★★★★</div><p>"Ordered kids' clothes and received them the same day. Prices are very reasonable and fabric quality is excellent."</p><div class="t-author">Tariq Mehmood</div><div class="t-loc">Near Riaz Market</div></div>
     <div class="t-card"><div class="stars">★★★★★</div><p>"Love the order tracking feature! I could see exactly when my order was coming. Very professional!"</p><div class="t-author">Ayesha Noor</div><div class="t-loc">Shakargarh</div></div>
     <div class="t-card"><div class="stars">★★★★☆</div><p>"JazzCash payment worked perfectly. The men's shirts I bought are great quality. Will recommend to all my friends."</p><div class="t-author">Bilal Ahmed</div><div class="t-loc">Punjab</div></div>
+  </div>
+</section>
+
+<!-- SIZE GUIDE -->
+<section id="sizeGuide" style="background:#1A1A1A">
+  <div class="section-label" style="color:#FF6B00">Dress Code & Size Guide</div>
+  <h2 class="section-title" style="color:#fff">Find Your Perfect Fit</h2>
+  <p class="section-sub" style="color:rgba(255,255,255,.55)">Use our size guide to order the right size every time. Not sure? WhatsApp us and we'll help!</p>
+
+  <!-- Tab buttons -->
+  <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:2rem" id="sgTabs">
+    <button class="sg-tab active" onclick="showSizeTab('men',this)">👔 Men</button>
+    <button class="sg-tab" onclick="showSizeTab('women',this)">👗 Women</button>
+    <button class="sg-tab" onclick="showSizeTab('kids',this)">🧒 Kids</button>
+  </div>
+
+  <!-- MEN -->
+  <div id="sg-men" class="sg-panel">
+    <div class="sg-grid">
+      <div class="sg-table-wrap">
+        <h3 class="sg-heading">👔 Men's Sizes</h3>
+        <table class="sg-table">
+          <thead><tr><th>Size</th><th>Chest (inches)</th><th>Waist (inches)</th><th>Height (ft)</th></tr></thead>
+          <tbody>
+            <tr><td><span class="sz-badge">XS</span></td><td>34–35</td><td>28–29</td><td>5'4″–5'6″</td></tr>
+            <tr><td><span class="sz-badge">S</span></td><td>36–37</td><td>30–31</td><td>5'5″–5'7″</td></tr>
+            <tr><td><span class="sz-badge">M</span></td><td>38–39</td><td>32–33</td><td>5'6″–5'8″</td></tr>
+            <tr><td><span class="sz-badge">L</span></td><td>40–41</td><td>34–35</td><td>5'7″–5'9″</td></tr>
+            <tr><td><span class="sz-badge">XL</span></td><td>42–43</td><td>36–37</td><td>5'8″–5'10″</td></tr>
+            <tr><td><span class="sz-badge">2XL</span></td><td>44–46</td><td>38–40</td><td>5'9″–6'0″</td></tr>
+            <tr><td><span class="sz-badge">3XL</span></td><td>47–49</td><td>41–43</td><td>6'0″–6'2″</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 class="sg-heading">📐 How to Measure</h3>
+        <div class="measure-cards">
+          <div class="m-card"><div class="m-icon">📏</div><div><strong>Chest</strong><p>Measure around the fullest part of your chest, keeping the tape flat.</p></div></div>
+          <div class="m-card"><div class="m-icon">📏</div><div><strong>Waist</strong><p>Measure around your natural waistline, just above the belly button.</p></div></div>
+          <div class="m-card"><div class="m-icon">📏</div><div><strong>Not sure?</strong><p>WhatsApp us your measurements and we'll pick the best size for you!</p></div></div>
+        </div>
+        <div class="dress-tips">
+          <h4>👔 Men's Dress Code Tips</h4>
+          <ul>
+            <li>🔵 <strong>Casual:</strong> Shalwar Kameez, printed T-shirts, jeans</li>
+            <li>⚫ <strong>Smart Casual:</strong> Linen shirts, chinos, formal kurta</li>
+            <li>🟠 <strong>Eid/Wedding:</strong> Embroidered kurta, waistcoat + shalwar</li>
+            <li>✅ <strong>Tip:</strong> If between sizes, go one size up for comfort</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WOMEN -->
+  <div id="sg-women" class="sg-panel" style="display:none">
+    <div class="sg-grid">
+      <div class="sg-table-wrap">
+        <h3 class="sg-heading">👗 Women's Sizes</h3>
+        <table class="sg-table">
+          <thead><tr><th>Size</th><th>Bust (inches)</th><th>Waist (inches)</th><th>Hips (inches)</th></tr></thead>
+          <tbody>
+            <tr><td><span class="sz-badge">XS</span></td><td>32–33</td><td>25–26</td><td>35–36</td></tr>
+            <tr><td><span class="sz-badge">S</span></td><td>34–35</td><td>27–28</td><td>37–38</td></tr>
+            <tr><td><span class="sz-badge">M</span></td><td>36–37</td><td>29–30</td><td>39–40</td></tr>
+            <tr><td><span class="sz-badge">L</span></td><td>38–39</td><td>31–32</td><td>41–42</td></tr>
+            <tr><td><span class="sz-badge">XL</span></td><td>40–41</td><td>33–34</td><td>43–44</td></tr>
+            <tr><td><span class="sz-badge">2XL</span></td><td>42–44</td><td>35–37</td><td>45–47</td></tr>
+            <tr><td><span class="sz-badge">3XL</span></td><td>45–47</td><td>38–40</td><td>48–50</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 class="sg-heading">📐 How to Measure</h3>
+        <div class="measure-cards">
+          <div class="m-card"><div class="m-icon">📏</div><div><strong>Bust</strong><p>Measure around the fullest part of your bust, keeping tape parallel to floor.</p></div></div>
+          <div class="m-card"><div class="m-icon">📏</div><div><strong>Waist</strong><p>Measure the narrowest part of your waist, usually just above the navel.</p></div></div>
+          <div class="m-card"><div class="m-icon">📏</div><div><strong>Hips</strong><p>Measure around the widest part of your hips, about 8 inches below waist.</p></div></div>
+        </div>
+        <div class="dress-tips">
+          <h4>👗 Women's Dress Code Tips</h4>
+          <ul>
+            <li>🌸 <strong>Casual:</strong> Lawn suit, printed kurta with tights</li>
+            <li>💜 <strong>Semi-Formal:</strong> Embroidered suit, chiffon dupatta</li>
+            <li>🟠 <strong>Eid/Wedding:</strong> Full embroidered 3-piece, silk dupatta</li>
+            <li>✅ <strong>Tip:</strong> Pakistani suits run slightly large — check chest size</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KIDS -->
+  <div id="sg-kids" class="sg-panel" style="display:none">
+    <div class="sg-grid">
+      <div class="sg-table-wrap">
+        <h3 class="sg-heading">🧒 Kids' Sizes</h3>
+        <table class="sg-table">
+          <thead><tr><th>Size</th><th>Age</th><th>Height (cm)</th><th>Chest (inches)</th></tr></thead>
+          <tbody>
+            <tr><td><span class="sz-badge">1Y</span></td><td>0–1 yr</td><td>70–80 cm</td><td>18–19</td></tr>
+            <tr><td><span class="sz-badge">2Y</span></td><td>1–2 yr</td><td>80–92 cm</td><td>20–21</td></tr>
+            <tr><td><span class="sz-badge">3Y</span></td><td>2–3 yr</td><td>92–98 cm</td><td>21–22</td></tr>
+            <tr><td><span class="sz-badge">4Y</span></td><td>3–4 yr</td><td>98–104 cm</td><td>22–23</td></tr>
+            <tr><td><span class="sz-badge">6Y</span></td><td>5–6 yr</td><td>104–116 cm</td><td>23–24</td></tr>
+            <tr><td><span class="sz-badge">8Y</span></td><td>7–8 yr</td><td>116–128 cm</td><td>25–26</td></tr>
+            <tr><td><span class="sz-badge">10Y</span></td><td>9–10 yr</td><td>128–138 cm</td><td>27–28</td></tr>
+            <tr><td><span class="sz-badge">12Y</span></td><td>11–12 yr</td><td>138–150 cm</td><td>29–30</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 class="sg-heading">📐 How to Measure Kids</h3>
+        <div class="measure-cards">
+          <div class="m-card"><div class="m-icon">📏</div><div><strong>Height</strong><p>Stand child against wall, measure from floor to top of head in cm.</p></div></div>
+          <div class="m-card"><div class="m-icon">📏</div><div><strong>Chest</strong><p>Measure around the fullest part of the chest under the arms.</p></div></div>
+          <div class="m-card"><div class="m-icon">💬</div><div><strong>Need help?</strong><p>Tell us the child's age and height on WhatsApp — we'll suggest the best fit!</p></div></div>
+        </div>
+        <div class="dress-tips">
+          <h4>🧒 Kids' Dress Code Tips</h4>
+          <ul>
+            <li>🌈 <strong>Everyday:</strong> Comfortable cotton suits, T-shirts, trousers</li>
+            <li>🎉 <strong>Eid:</strong> Mini kurta shalwar, frock suits for girls</li>
+            <li>🏫 <strong>School:</strong> Plain shalwar kameez, comfortable fit</li>
+            <li>✅ <strong>Tip:</strong> Order one size up — kids grow fast!</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem;text-align:center">
+    <a href="https://wa.me/923225925409?text=Assalam%20o%20Alaikum!%20I%20need%20help%20choosing%20the%20right%20size." target="_blank" style="display:inline-flex;align-items:center;gap:.7rem;background:#25D366;color:#fff;text-decoration:none;padding:14px 28px;border-radius:8px;font-weight:700;font-size:.92rem;transition:.2s">💬 Not sure about size? Ask us on WhatsApp</a>
   </div>
 </section>
 
