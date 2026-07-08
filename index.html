@@ -758,19 +758,23 @@ async function placeOrder(){
     });
     if(!res.ok) throw new Error(await res.text());
 
-    // WhatsApp to shop owner
+    // ── AUTO-SEND WhatsApp notification to shop owner ──
     const ownerMsg = encodeURIComponent(
       `🛍️ *New Order Received!*\n\n`+
-      `📋 *Order:* ${orderNum}\n`+
+      `📋 *Order No:* ${orderNum}\n`+
       `👤 *Customer:* ${name}\n`+
       `📞 *Phone:* ${phone}\n`+
       `📍 *Address:* ${addr}\n`+
       `📦 *Items:* ${itemsText}\n`+
       `💰 *Total:* Rs. ${total.toLocaleString()}\n`+
       `💳 *Payment:* ${pay}\n`+
-      `${notes?'📝 Notes: '+notes+'\n':''}\n`+
-      `Please confirm this order on your admin panel.`
+      `${notes?'📝 *Notes:* '+notes+'\n':''}\n`+
+      `👉 Please confirm & update status in admin panel:\n`+
+      `https://index-tau-ruddy.vercel.app/admin/index.html`
     );
+
+    // Open WhatsApp automatically to notify owner
+    window.open(`https://wa.me/923225925409?text=${ownerMsg}`, '_blank');
 
     // Show success screen
     document.getElementById('modalTitle').textContent = '✅ Order Placed!';
@@ -778,14 +782,14 @@ async function placeOrder(){
       <div class="success-screen">
         <div class="success-icon">🎉</div>
         <h2>Order Placed Successfully!</h2>
-        <p>Thank you ${name}! Your order has been received and will be confirmed shortly by Walli Garments.</p>
+        <p>Thank you <strong>${name}</strong>! Your order has been received. WhatsApp has opened to notify the shop — please tap <strong>Send</strong> if it didn't send automatically.</p>
         <div class="order-num-box">
           <strong>Your Order Number</strong>
           <span>${orderNum}</span>
         </div>
-        <p class="track-hint">Save this number to track your order status anytime.</p>
-        <a href="https://wa.me/923225925409?text=${ownerMsg}" target="_blank" class="wa-notify-btn">💬 Open WhatsApp to Confirm</a>
-        <a href="#trackingSection" onclick="closeModal();document.getElementById('trackingSection').classList.add('show');setTimeout(()=>{document.getElementById('trackInput').value='${orderNum}';trackOrder()},500)" class="track-btn-link">🔍 Track My Order</a>
+        <p class="track-hint">💡 Save this number to track your order status anytime.</p>
+        <a href="https://wa.me/923225925409?text=${ownerMsg}" target="_blank" class="wa-notify-btn">💬 Re-send WhatsApp Notification</a>
+        <a href="#trackingSection" onclick="closeModal();document.getElementById('trackingSection').classList.add('show');setTimeout(()=>{document.getElementById('trackInput').value='${orderNum}';trackOrder()},600)" class="track-btn-link">🔍 Track My Order</a>
       </div>`;
 
     cart = [];
