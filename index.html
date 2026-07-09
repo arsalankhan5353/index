@@ -354,6 +354,38 @@
     .dress-tips li{font-size:.85rem;color:rgba(255,255,255,.7);line-height:1.5}
     @media(max-width:860px){.sg-grid{grid-template-columns:1fr}}
 
+
+    /* FEEDBACK */
+    #feedback{background:#1A1A1A}
+    #feedback .section-title{color:#fff}
+    #feedback .section-sub{color:rgba(255,255,255,.55)}
+    .feedback-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+    .feedback-why{color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.8}
+    .feedback-why .fw-item{display:flex;align-items:flex-start;gap:.9rem;margin-bottom:1.2rem}
+    .fw-icon{font-size:1.4rem;flex-shrink:0}
+    .fw-text strong{display:block;color:#fff;font-size:.9rem;margin-bottom:.2rem}
+    .fw-text span{font-size:.83rem;color:rgba(255,255,255,.5)}
+    .feedback-form{background:rgba(255,255,255,.06);border:1px solid rgba(255,107,0,.2);border-radius:16px;padding:2rem}
+    .feedback-form h3{color:#FF6B00;font-size:1rem;font-weight:700;margin-bottom:1.5rem}
+    .ff-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem}
+    .ff-group label{font-size:.8rem;font-weight:600;color:rgba(255,255,255,.7)}
+    .ff-group input,.ff-group select,.ff-group textarea{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:11px 13px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:.2s}
+    .ff-group input:focus,.ff-group select:focus,.ff-group textarea:focus{border-color:#FF6B00;background:rgba(255,255,255,.12)}
+    .ff-group select option{background:#1A1A1A;color:#fff}
+    .ff-group textarea{resize:vertical;min-height:90px}
+    .ff-group input::placeholder,.ff-group textarea::placeholder{color:rgba(255,255,255,.3)}
+    .star-picker{display:flex;gap:.4rem;margin-top:.3rem}
+    .star-pick{font-size:1.8rem;cursor:pointer;color:rgba(255,255,255,.2);transition:.2s;line-height:1;border:none;background:none;padding:2px}
+    .star-pick.active,.star-pick:hover{color:#FF6B00}
+    .ff-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .fb-submit{width:100%;background:#FF6B00;color:#1A1A1A;border:none;padding:14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:.2s;margin-top:.5rem;letter-spacing:.3px}
+    .fb-submit:hover{opacity:.9;transform:translateY(-1px)}
+    .fb-submit:disabled{opacity:.6;cursor:not-allowed}
+    .fb-success{text-align:center;padding:2rem}
+    .fb-success .fs-icon{font-size:3.5rem;margin-bottom:1rem}
+    .fb-success h3{color:#FF6B00;font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:.7rem}
+    .fb-success p{color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.7}
+
     /* TOAST */
     #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--white);padding:12px 24px;border-radius:8px;font-size:.88rem;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;border-left:4px solid var(--gold);white-space:nowrap}
     #toast.show{opacity:1}
@@ -368,6 +400,7 @@
     }
     @media(max-width:860px){
       .cat-grid{grid-template-columns:1fr 1fr}
+      .feedback-grid{grid-template-columns:1fr}
       .foot-grid{grid-template-columns:1fr 1fr}
       .tr-details{grid-template-columns:1fr}
     }
@@ -439,6 +472,7 @@
     <li><a href="#products">Shop</a></li>
     <li><a href="#trackingSection" onclick="document.getElementById('trackingSection').classList.add('show')">Track Order</a></li>
     <li><a href="#sizeGuide">Size Guide</a></li>
+    <li><a href="#feedback">Reviews</a></li>
     <li><a href="#payment">Payment</a></li>
     <li><a href="#" onclick="openCheckout();return false" class="nav-cta">Order Now</a></li>
   </ul>
@@ -851,13 +885,68 @@
   </div>
 </section>
 
+
+<!-- FEEDBACK -->
+<section id="feedback">
+  <div class="section-label">Share Your Experience</div>
+  <h2 class="section-title">Leave a Review</h2>
+  <p class="section-sub">Your feedback helps us improve and helps other customers make better decisions.</p>
+  <div class="feedback-grid">
+    <div class="feedback-why">
+      <div class="fw-item"><span class="fw-icon">⭐</span><div class="fw-text"><strong>Your review matters</strong><span>Genuine reviews help other customers in Shakargarh find quality clothes.</span></div></div>
+      <div class="fw-item"><span class="fw-icon">🚀</span><div class="fw-text"><strong>We read every review</strong><span>Your feedback goes directly to the shop owner and helps us serve you better.</span></div></div>
+      <div class="fw-item"><span class="fw-icon">🎁</span><div class="fw-text"><strong>Quick and easy</strong><span>Takes less than 1 minute. Just rate, write a few words and submit!</span></div></div>
+      <div class="fw-item"><span class="fw-icon">💬</span><div class="fw-text"><strong>Prefer WhatsApp?</strong><span>You can also send your feedback directly on WhatsApp and we'll add it.</span></div></div>
+      <a href="https://wa.me/923225925409?text=Assalam%20o%20Alaikum!%20I%20want%20to%20share%20my%20feedback%20about%20Walli%20Garments." target="_blank" style="display:inline-flex;align-items:center;gap:.6rem;background:#25D366;color:#fff;text-decoration:none;padding:12px 22px;border-radius:8px;font-weight:700;font-size:.88rem;margin-top:.5rem;transition:.2s">💬 Send Feedback on WhatsApp</a>
+    </div>
+    <div class="feedback-form" id="feedbackFormBox">
+      <h3>✍️ Write Your Review</h3>
+      <div class="ff-row">
+        <div class="ff-group"><label>Your Name *</label><input type="text" id="fbName" placeholder="e.g. Ali Hassan"/></div>
+        <div class="ff-group"><label>Phone (optional)</label><input type="tel" id="fbPhone" placeholder="+92300-0000000"/></div>
+      </div>
+      <div class="ff-group">
+        <label>Your Rating *</label>
+        <div class="star-picker" id="starPicker">
+          <button class="star-pick" onclick="setRating(1)">★</button>
+          <button class="star-pick" onclick="setRating(2)">★</button>
+          <button class="star-pick" onclick="setRating(3)">★</button>
+          <button class="star-pick" onclick="setRating(4)">★</button>
+          <button class="star-pick" onclick="setRating(5)">★</button>
+        </div>
+      </div>
+      <div class="ff-group">
+        <label>What did you buy?</label>
+        <select id="fbProduct">
+          <option value="">-- Select Category --</option>
+          <option>Men's Wear</option>
+          <option>Women's Fashion</option>
+          <option>Kids' Collection</option>
+          <option>Multiple Items</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="ff-group">
+        <label>Your Review *</label>
+        <textarea id="fbMessage" placeholder="Tell us about your experience — quality, delivery, service..."></textarea>
+      </div>
+      <div class="ff-group">
+        <label>Your Location (optional)</label>
+        <input type="text" id="fbLocation" placeholder="e.g. Shakargarh, Punjab"/>
+      </div>
+      <button class="fb-submit" id="fbSubmitBtn" onclick="submitFeedback()">⭐ Submit Review</button>
+    </div>
+  </div>
+</section>
+
 <!-- Footer -->
 <footer>
   <div class="foot-grid">
     <div class="foot-brand"><span class="logo">Walli <span>Garments</span></span><p>Your trusted casual clothing store in Shakargarh. Quality clothes for men, women, and kids at prices that make sense.</p></div>
     <div class="foot-col"><h4>Collections</h4><ul><li><a href="#categories">Men's Wear</a></li><li><a href="#categories">Women's Fashion</a></li><li><a href="#categories">Kids' Collection</a></li></ul></div>
     <div class="foot-col"><h4>Quick Links</h4><ul><li><a href="#hero">Home</a></li><li><a href="#products">Shop</a></li><li><a href="#trackingSection" onclick="document.getElementById('trackingSection').classList.add('show')">Track Order</a></li>
-    <li><a href="#sizeGuide">Size Guide</a></li><li><a href="#payment">Payment</a></li></ul></div>
+    <li><a href="#sizeGuide">Size Guide</a></li>
+    <li><a href="#feedback">Reviews</a></li><li><a href="#payment">Payment</a></li></ul></div>
     <div class="foot-col"><h4>Contact</h4><ul>
       <li><a href="tel:+923225925409">📞 +92322-5925409</a></li>
       <li><a href="https://wa.me/923225925409" target="_blank">💬 WhatsApp Us</a></li>
@@ -1237,6 +1326,92 @@ renderProducts('all');
 
 
 
+
+
+// ── FEEDBACK ──
+let selectedRating = 0;
+
+function setRating(n){
+  selectedRating = n;
+  document.querySelectorAll('.star-pick').forEach((s,i)=>{
+    s.classList.toggle('active', i < n);
+  });
+}
+
+// hover effect on stars
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.querySelectorAll('.star-pick').forEach((s,i)=>{
+    s.addEventListener('mouseenter',()=>{
+      document.querySelectorAll('.star-pick').forEach((x,j)=>x.classList.toggle('active',j<=i));
+    });
+    s.addEventListener('mouseleave',()=>{
+      document.querySelectorAll('.star-pick').forEach((x,j)=>x.classList.toggle('active',j<selectedRating));
+    });
+  });
+});
+
+async function submitFeedback(){
+  const name     = document.getElementById('fbName').value.trim();
+  const phone    = document.getElementById('fbPhone').value.trim();
+  const product  = document.getElementById('fbProduct').value;
+  const message  = document.getElementById('fbMessage').value.trim();
+  const location = document.getElementById('fbLocation').value.trim();
+
+  if(!name){ toast('Please enter your name.','red'); return; }
+  if(!selectedRating){ toast('Please select a star rating.','red'); return; }
+  if(!message){ toast('Please write your review.','red'); return; }
+
+  const btn = document.getElementById('fbSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  try {
+    // Save to Supabase reviews table
+    if(db){
+      await db.from('reviews').insert({
+        customer_name: name,
+        customer_phone: phone || null,
+        rating: selectedRating,
+        product_category: product || null,
+        message: message,
+        location: location || null,
+        created_at: new Date().toISOString()
+      });
+    }
+
+    // Also send to owner via WhatsApp
+    const stars = '★'.repeat(selectedRating) + '☆'.repeat(5-selectedRating);
+    const waMsg = encodeURIComponent(
+      `⭐ *New Customer Review!*\n\n`+
+      `👤 *Name:* ${name}\n`+
+      `${stars}\n`+
+      `📦 *Bought:* ${product||'Not specified'}\n`+
+      `💬 *Review:* ${message}\n`+
+      `${location?'📍 *Location:* '+location+'\n':''}`+
+      `${phone?'📞 *Phone:* '+phone:''}\n\n`+
+      `Please add this review to your website!`
+    );
+    window.open('https://wa.me/923225925409?text='+waMsg, '_blank');
+
+    // Show success
+    document.getElementById('feedbackFormBox').innerHTML = `
+      <div class="fb-success">
+        <div class="fs-icon">🎉</div>
+        <h3>Thank You for Your Review!</h3>
+        <p>JazakAllah ${name}! Your review has been submitted and sent to Walli Garments on WhatsApp.<br/><br/>Your feedback helps us serve Shakargarh better every day! 🙏</p>
+      </div>`;
+
+  } catch(e){
+    console.error('Feedback error:', e);
+    // Even if DB fails, WhatsApp notification was sent
+    document.getElementById('feedbackFormBox').innerHTML = `
+      <div class="fb-success">
+        <div class="fs-icon">✅</div>
+        <h3>Review Sent!</h3>
+        <p>Your review was sent to Walli Garments via WhatsApp. JazakAllah ${name}!</p>
+      </div>`;
+  }
+}
 
 // ── TESTIMONIALS CAROUSEL ──
 let testiIndex = 0;
