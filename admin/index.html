@@ -85,6 +85,22 @@
     .show-qr-btn{background:#f0f2f8;border:1px solid #e2e6f0;color:#2c3345;padding:4px 10px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:.2s}
     .show-qr-btn:hover{background:#FF6B00;color:#fff;border-color:#FF6B00}
 
+
+    /* REVIEWS */
+    .review-card{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:1.2rem 1.5rem;margin-bottom:.9rem;display:flex;align-items:flex-start;gap:1rem;transition:.2s}
+    .review-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07)}
+    .rv-avatar{width:42px;height:42px;border-radius:50%;background:var(--navy);color:#FF6B00;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;flex-shrink:0}
+    .rv-body{flex:1}
+    .rv-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.3rem}
+    .rv-name{font-weight:700;font-size:.9rem;color:var(--navy)}
+    .rv-stars{color:#FF6B00;font-size:.9rem;letter-spacing:1px}
+    .rv-meta{font-size:.75rem;color:var(--muted);margin-bottom:.5rem}
+    .rv-msg{font-size:.87rem;color:var(--charcoal);line-height:1.65;font-style:italic}
+    .rv-tag{display:inline-block;background:#f0f2f8;color:var(--navy);font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:8px;margin-top:.5rem}
+    .rv-del{background:#fde8e8;color:var(--red);border:none;padding:4px 10px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:.2s;flex-shrink:0}
+    .rv-del:hover{background:var(--red);color:#fff}
+    .reviews-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1rem;margin-bottom:1.5rem}
+
     /* ORDERS */
     .orders-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem}
     .search-box{display:flex;align-items:center;gap:.5rem;background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;flex:1;max-width:300px}
@@ -291,6 +307,7 @@
       </div>
       <div class="sidebar-link" id="sl-products" onclick="showPanel('products')">👕 Products</div>
       <div class="sidebar-link" id="sl-settings" onclick="showPanel('settings')">⚙️ Settings</div>
+      <div class="sidebar-link" id="sl-reviews" onclick="showPanel('reviews')">⭐ Reviews</div>
       <div class="sidebar-divider"></div>
       <div class="sidebar-label">Quick Links</div>
       <div class="sidebar-link" onclick="window.open('../index.html','_blank')">🌐 View Website</div>
@@ -366,6 +383,19 @@
             <tbody id="prodTbody"><tr><td colspan="7" class="tbl-loading"><div class="spinner"></div></td></tr></tbody>
           </table>
         </div>
+      </div>
+
+
+      <!-- REVIEWS -->
+      <div class="panel" id="panel-reviews">
+        <div class="panel-title">Customer Reviews</div>
+        <div class="panel-sub">All feedback submitted by customers. Delete spam or inappropriate reviews.</div>
+        <div class="reviews-summary" id="reviewsSummary"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:1rem">
+          <div class="search-box">🔍 <input type="text" id="reviewSearch" placeholder="Search reviews..." oninput="renderReviews()"/></div>
+          <button class="refresh-btn" onclick="loadReviews()">🔄 Refresh</button>
+        </div>
+        <div id="reviewsList"><div class="tbl-loading"><div class="spinner"></div></div></div>
       </div>
 
       <!-- SETTINGS -->
@@ -949,6 +979,82 @@ function printQR(){
     </body></html>`);
   win.document.close();
 }
+
+
+// ── REVIEWS ──
+let allReviews = [];
+
+async function loadReviews(){
+  document.getElementById('reviewsList').innerHTML = '<div class="tbl-loading"><div class="spinner"></div><p style="margin-top:.5rem">Loading reviews...</p></div>';
+  try {
+    const {data, error} = await db.from('reviews').select('*').order('created_at',{ascending:false});
+    if(error) throw new Error(error.message);
+    allReviews = data || [];
+    renderReviews();
+    updateReviewsSummary();
+  } catch(e){
+    document.getElementById('reviewsList').innerHTML = '<div class="tbl-loading" style="color:var(--red)">❌ Could not load reviews. Make sure the reviews table exists in Supabase.</div>';
+  }
+}
+
+function updateReviewsSummary(){
+  const total = allReviews.length;
+  const avg   = total ? (allReviews.reduce((s,r)=>s+r.rating,0)/total).toFixed(1) : '0';
+  const fiveS = allReviews.filter(r=>r.rating===5).length;
+  document.getElementById('reviewsSummary').innerHTML = `
+    <div class="stat-card highlight"><div class="st-icon">⭐</div><div class="st-val">${avg}</div><div class="st-lbl">Avg Rating</div></div>
+    <div class="stat-card"><div class="st-icon">💬</div><div class="st-val">${total}</div><div class="st-lbl">Total Reviews</div></div>
+    <div class="stat-card"><div class="st-icon">🏆</div><div class="st-val">${fiveS}</div><div class="st-lbl">5-Star Reviews</div></div>
+  `;
+}
+
+function renderReviews(){
+  const q = (document.getElementById('reviewSearch').value||'').toLowerCase();
+  const list = allReviews.filter(r=>
+    !q || r.customer_name.toLowerCase().includes(q) || (r.message||'').toLowerCase().includes(q)
+  );
+  const el = document.getElementById('reviewsList');
+  if(!list.length){
+    el.innerHTML = '<div class="empty-orders"><div class="e-icon">⭐</div><p>No reviews yet. Share the feedback form link with customers!</p></div>';
+    return;
+  }
+  const stars = n => '★'.repeat(n)+'☆'.repeat(5-n);
+  el.innerHTML = list.map(r=>{
+    const date = new Date(r.created_at).toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric'});
+    const initial = r.customer_name.charAt(0).toUpperCase();
+    return `
+    <div class="review-card">
+      <div class="rv-avatar">${initial}</div>
+      <div class="rv-body">
+        <div class="rv-top">
+          <div>
+            <div class="rv-name">${r.customer_name} ${r.location?'<span style="font-weight:400;color:var(--muted)">· '+r.location+'</span>':''}</div>
+            <div class="rv-stars">${stars(r.rating)}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <span style="font-size:.75rem;color:var(--muted)">${date}</span>
+            <button class="rv-del" onclick="deleteReview(${r.id})">🗑️</button>
+          </div>
+        </div>
+        <div class="rv-meta">${r.product_category?'📦 '+r.product_category:''}${r.customer_phone?' · 📞 '+r.customer_phone:''}</div>
+        <div class="rv-msg">"${r.message}"</div>
+        ${r.product_category?`<span class="rv-tag">${r.product_category}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function deleteReview(id){
+  if(!confirm('Delete this review?')) return;
+  try {
+    await db.from('reviews').delete().eq('id',id);
+    allReviews = allReviews.filter(r=>r.id!==id);
+    renderReviews();
+    updateReviewsSummary();
+    toast('Review deleted.','red');
+  } catch(e){ toast('Error deleting review.','red'); }
+}
+
 
 // Auto-refresh orders every 60 seconds
 setInterval(()=>{ if(document.getElementById('panel-orders').classList.contains('active')) loadOrders(); loadDashboard(); }, 60000);
