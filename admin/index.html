@@ -308,6 +308,7 @@
       <div class="sidebar-link" id="sl-products" onclick="showPanel('products')">👕 Products</div>
       <div class="sidebar-link" id="sl-settings" onclick="showPanel('settings')">⚙️ Settings</div>
       <div class="sidebar-link" id="sl-reviews" onclick="showPanel('reviews')">⭐ Reviews</div>
+      <div class="sidebar-link" id="sl-reports" onclick="showPanel('reports')">📊 Reports</div>
       <div class="sidebar-divider"></div>
       <div class="sidebar-label">Quick Links</div>
       <div class="sidebar-link" onclick="window.open('../index.html','_blank')">🌐 View Website</div>
@@ -379,7 +380,7 @@
         </div>
         <div class="tbl-wrap">
           <table class="prod-table">
-            <thead><tr><th>Photo</th><th>Name</th><th>SKU</th><th>Category</th><th>Price</th><th>Badge</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Photo</th><th>Name</th><th>SKU</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
             <tbody id="prodTbody"><tr><td colspan="7" class="tbl-loading"><div class="spinner"></div></td></tr></tbody>
           </table>
         </div>
@@ -396,6 +397,34 @@
           <button class="refresh-btn" onclick="loadReviews()">🔄 Refresh</button>
         </div>
         <div id="reviewsList"><div class="tbl-loading"><div class="spinner"></div></div></div>
+      </div>
+
+
+      <!-- REPORTS -->
+      <div class="panel" id="panel-reports">
+        <div class="panel-title">Sales Reports</div>
+        <div class="panel-sub">Overview of your orders, revenue and top products.</div>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1.5rem" id="reportTabs">
+          <button class="ct active" onclick="setReportRange(7,this)">Last 7 Days</button>
+          <button class="ct" onclick="setReportRange(30,this)">Last 30 Days</button>
+          <button class="ct" onclick="setReportRange(90,this)">Last 3 Months</button>
+          <button class="ct" onclick="setReportRange(0,this)">All Time</button>
+        </div>
+        <div class="stats-row" id="reportStats"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem">
+          <div style="background:var(--card);border-radius:12px;padding:1.5rem;border:1px solid var(--border)">
+            <div style="font-weight:700;color:var(--navy);margin-bottom:1rem;font-size:.95rem">📦 Orders by Status</div>
+            <div id="reportByStatus"></div>
+          </div>
+          <div style="background:var(--card);border-radius:12px;padding:1.5rem;border:1px solid var(--border)">
+            <div style="font-weight:700;color:var(--navy);margin-bottom:1rem;font-size:.95rem">💳 Payment Methods</div>
+            <div id="reportByPayment"></div>
+          </div>
+        </div>
+        <div style="background:var(--card);border-radius:12px;padding:1.5rem;border:1px solid var(--border);margin-top:1rem">
+          <div style="font-weight:700;color:var(--navy);margin-bottom:1rem;font-size:.95rem">📋 Recent Orders</div>
+          <div id="reportRecentOrders"></div>
+        </div>
       </div>
 
       <!-- SETTINGS -->
@@ -724,6 +753,7 @@ function buildOrderCard(o){
         <div class="status-btns">${statusBtns}</div>
         <div style="display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin-top:.8rem">
           <a href="https://wa.me/${o.customer_phone.replace(/[^0-9]/g,'')}?text=${waMsg}" target="_blank" class="wa-reply-btn">💬 Notify Customer on WhatsApp</a>
+          <button onclick="printInvoice(${o.id})" style="display:inline-flex;align-items:center;gap:.4rem;background:#f0f2f8;color:var(--navy);border:none;padding:8px 14px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:.0rem;transition:.2s" onmouseover="this.style.background='var(--navy)';this.style.color='#fff'" onmouseout="this.style.background='#f0f2f8';this.style.color='var(--navy)'">🖨️ Print Invoice</button>
           <button class="del-order-btn" onclick="deleteOrder(${o.id})">🗑️ Delete Order</button>
         </div>
       </div>
@@ -809,13 +839,14 @@ function renderTable(){
     const thumb=p.img?`<div class="prod-thumb"><img src="${p.img}" alt=""/></div>`:`<div class="prod-thumb" style="background:${p.bg||'#eee'}">${p.emoji||'👕'}</div>`;
     const oldP=p.old_price>0?`<span style="font-size:.75rem;color:#bbb;text-decoration:line-through;margin-left:4px">Rs.${Number(p.old_price).toLocaleString()}</span>`:'';
     const sku = p.sku || ('WG-'+String(p.id).padStart(4,'0'));
-    return `<tr>
+    const oos = p.out_of_stock || false;
+    return `<tr style="${oos?'opacity:.65':''}">
       <td>${thumb}</td>
-      <td style="font-weight:600;max-width:140px">${p.name}</td>
+      <td style="font-weight:600;max-width:130px">${p.name}</td>
       <td><span class="sku-label">${sku}</span></td>
       <td><span class="cat-pill ${p.category}">${p.category}</span></td>
       <td>Rs.${Number(p.price).toLocaleString()}${oldP}</td>
-      <td>${p.badge?`<span class="badge-pill ${p.badge.toLowerCase()}">${p.badge}</span>`:'—'}</td>
+      <td><button onclick="toggleOOS(${p.id},${oos})" style="background:${oos?'#fde8e8':'#dcf5e6'};color:${oos?'var(--red)':'var(--green)'};border:none;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s">${oos?'❌ OOS':'✅ In Stock'}</button></td>
       <td><div class="tbl-btns">
         <button class="edit-btn" onclick="openProdModal(${p.id})">✏️ Edit</button>
         <button class="show-qr-btn" onclick="showAdminQR('${sku}','${p.name.replace(/'/g,"\'")}',${p.price})">📱 QR</button>
@@ -978,6 +1009,183 @@ function printQR(){
     <script>window.onload=()=>window.print()<\/script>
     </body></html>`);
   win.document.close();
+}
+
+
+
+// ── TOGGLE OUT OF STOCK ──
+async function toggleOOS(id, current){
+  try {
+    await db.from('products').update({out_of_stock: !current}).eq('id',id);
+    await loadAllProducts();
+    toast(current ? '✅ Marked as In Stock' : '❌ Marked as Out of Stock', current?'gold':'red');
+  } catch(e){ toast('Error updating stock.','red'); }
+}
+
+// ── PRINT INVOICE ──
+function printInvoice(id){
+  const o = allOrders.find(x=>x.id===id);
+  if(!o){ toast('Order not found.','red'); return; }
+  const date = new Date(o.created_at).toLocaleString('en-PK',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const win  = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>Invoice ${o.order_number}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;padding:2rem;color:#1A1A1A;font-size:14px}
+    .inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:2px solid #FF6B00}
+    .shop-name{font-size:1.8rem;font-weight:900;color:#1A1A1A;letter-spacing:-1px}
+    .shop-name span{color:#FF6B00}
+    .shop-info{font-size:.8rem;color:#888;margin-top:.3rem;line-height:1.6}
+    .inv-label{font-size:1rem;font-weight:700;color:#888;text-align:right}
+    .inv-num{font-size:1.5rem;font-weight:900;color:#FF6B00;text-align:right}
+    .inv-date{font-size:.8rem;color:#888;text-align:right;margin-top:.2rem}
+    .section{margin-bottom:1.5rem}
+    .section h3{font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:#aaa;margin-bottom:.7rem;font-weight:600}
+    .cust-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .info-block p{font-size:.88rem;line-height:1.7;color:#333}
+    .info-block strong{display:block;color:#1A1A1A;font-weight:700;margin-bottom:.2rem}
+    .items-table{width:100%;border-collapse:collapse;margin-bottom:1rem}
+    .items-table th{background:#1A1A1A;color:#fff;padding:8px 12px;text-align:left;font-size:.8rem;font-weight:600}
+    .items-table td{padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:.88rem}
+    .items-table tr:last-child td{border-bottom:none}
+    .total-row{display:flex;justify-content:flex-end;margin-top:1rem}
+    .total-box{background:#f8f8f8;border-radius:8px;padding:1rem 1.5rem;text-align:right;min-width:200px}
+    .total-box .t-label{font-size:.8rem;color:#888;margin-bottom:.3rem}
+    .total-box .t-amount{font-size:1.5rem;font-weight:900;color:#FF6B00}
+    .status-box{display:inline-block;padding:4px 14px;border-radius:20px;font-size:.8rem;font-weight:700;background:#e8f5e8;color:#2a6a2a;margin-top:.3rem}
+    .footer{margin-top:2rem;padding-top:1rem;border-top:1px solid #f0f0f0;text-align:center;font-size:.75rem;color:#aaa}
+    @media print{body{padding:1rem}.no-print{display:none}}
+  </style></head><body>
+  <div class="no-print" style="margin-bottom:1rem">
+    <button onclick="window.print()" style="background:#FF6B00;color:#1A1A1A;border:none;padding:10px 24px;border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;margin-right:.5rem">🖨️ Print</button>
+    <button onclick="window.close()" style="background:#f0f0f0;color:#333;border:none;padding:10px 18px;border-radius:8px;font-size:.9rem;cursor:pointer">✕ Close</button>
+  </div>
+  <div class="inv-header">
+    <div>
+      <div class="shop-name">WALLI <span>GARMENTS</span></div>
+      <div class="shop-info">
+        Famous Kohlo Wali Gali, Near Riaz Market, Shop #6<br/>
+        Shakargarh, Punjab, Pakistan<br/>
+        📞 +92322-5925409 · 📧 sharryk432@gmail.com
+      </div>
+    </div>
+    <div>
+      <div class="inv-label">INVOICE</div>
+      <div class="inv-num">${o.order_number}</div>
+      <div class="inv-date">${date}</div>
+      <div class="status-box">${o.status}</div>
+    </div>
+  </div>
+  <div class="section">
+    <h3>Customer Details</h3>
+    <div class="cust-grid">
+      <div class="info-block"><strong>Name</strong><p>${o.customer_name}</p></div>
+      <div class="info-block"><strong>Phone</strong><p>${o.customer_phone}</p></div>
+      <div class="info-block"><strong>Delivery Address</strong><p>${o.customer_address}</p></div>
+      <div class="info-block"><strong>Payment Method</strong><p>${o.payment_method}</p></div>
+    </div>
+  </div>
+  <div class="section">
+    <h3>Order Items</h3>
+    <table class="items-table">
+      <thead><tr><th>#</th><th>Item</th><th>Amount</th></tr></thead>
+      <tbody>
+        ${o.items.split(',').map((item,i)=>`<tr><td>${i+1}</td><td>${item.trim()}</td><td>—</td></tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="total-row">
+      <div class="total-box">
+        <div class="t-label">Total Amount</div>
+        <div class="t-amount">Rs. ${Number(o.total_amount).toLocaleString()}</div>
+      </div>
+    </div>
+  </div>
+  ${o.notes?`<div class="section"><h3>Notes</h3><p style="font-size:.88rem;color:#555">${o.notes}</p></div>`:''}
+  <div class="footer">
+    Thank you for shopping with Walli Garments! 🙏<br/>
+    For queries: WhatsApp +92322-5925409
+  </div>
+  <script>window.onload=()=>{}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+// ── SALES REPORTS ──
+let reportDays = 7;
+
+function setReportRange(days, btn){
+  reportDays = days;
+  document.querySelectorAll('#reportTabs .ct').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildReport();
+}
+
+async function buildReport(){
+  const el = document.getElementById('reportStats');
+  el.innerHTML = '<div class="tbl-loading"><div class="spinner"></div></div>';
+  try {
+    let query = db.from('orders').select('*').order('created_at',{ascending:false});
+    if(reportDays > 0){
+      const since = new Date(Date.now() - reportDays*24*60*60*1000).toISOString();
+      query = query.gte('created_at', since);
+    }
+    const {data: orders} = await query;
+    const total    = orders?.length || 0;
+    const revenue  = (orders||[]).filter(o=>o.status==='Delivered').reduce((s,o)=>s+Number(o.total_amount),0);
+    const pending  = (orders||[]).filter(o=>o.status==='Pending').length;
+    const delivered= (orders||[]).filter(o=>o.status==='Delivered').length;
+    const cancelled= (orders||[]).filter(o=>o.status==='Cancelled').length;
+    const avgOrder = total ? Math.round(revenue/Math.max(delivered,1)) : 0;
+
+    // Stats
+    el.innerHTML = `
+      <div class="stat-card highlight"><div class="st-icon">📦</div><div class="st-val">${total}</div><div class="st-lbl">Total Orders</div></div>
+      <div class="stat-card highlight"><div class="st-icon">💰</div><div class="st-val">Rs.${revenue.toLocaleString()}</div><div class="st-lbl">Revenue</div></div>
+      <div class="stat-card"><div class="st-icon">⏳</div><div class="st-val">${pending}</div><div class="st-lbl">Pending</div></div>
+      <div class="stat-card"><div class="st-icon">🎉</div><div class="st-val">${delivered}</div><div class="st-lbl">Delivered</div></div>
+      <div class="stat-card"><div class="st-icon">❌</div><div class="st-val">${cancelled}</div><div class="st-lbl">Cancelled</div></div>
+      <div class="stat-card"><div class="st-icon">📊</div><div class="st-val">Rs.${avgOrder.toLocaleString()}</div><div class="st-lbl">Avg Order</div></div>
+    `;
+
+    // By status
+    const statuses = ['Pending','Confirmed','Out for Delivery','Delivered','Cancelled'];
+    const statusColors = {'Pending':'#e6a020','Confirmed':'#2a4a8a','Out for Delivery':'#2E7D51','Delivered':'#1a6640','Cancelled':'#c0392b'};
+    document.getElementById('reportByStatus').innerHTML = statuses.map(s=>{
+      const cnt = (orders||[]).filter(o=>o.status===s).length;
+      const pct = total ? Math.round(cnt/total*100) : 0;
+      return `<div style="margin-bottom:.8rem">
+        <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:.3rem"><span style="color:#555">${s}</span><span style="font-weight:600;color:${statusColors[s]}">${cnt} (${pct}%)</span></div>
+        <div style="height:7px;background:#f0f0f0;border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${statusColors[s]};border-radius:4px;transition:width 1s"></div></div>
+      </div>`;
+    }).join('');
+
+    // By payment
+    const pays = ['Cash on Delivery','EasyPaisa','JazzCash'];
+    document.getElementById('reportByPayment').innerHTML = pays.map(p=>{
+      const cnt = (orders||[]).filter(o=>o.payment_method===p).length;
+      const pct = total ? Math.round(cnt/total*100) : 0;
+      const icons = {'Cash on Delivery':'🚪','EasyPaisa':'📱','JazzCash':'🎵'};
+      return `<div style="margin-bottom:.8rem">
+        <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:.3rem"><span style="color:#555">${icons[p]||''} ${p}</span><span style="font-weight:600;color:var(--navy)">${cnt} (${pct}%)</span></div>
+        <div style="height:7px;background:#f0f0f0;border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:#FF6B00;border-radius:4px;transition:width 1s"></div></div>
+      </div>`;
+    }).join('');
+
+    // Recent orders table
+    document.getElementById('reportRecentOrders').innerHTML = (orders||[]).slice(0,10).map(o=>{
+      const sc = o.status.toLowerCase().replace(/ /g,'-');
+      const d  = new Date(o.created_at).toLocaleDateString('en-PK',{day:'numeric',month:'short'});
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid #f0f0f0;flex-wrap:wrap;gap:.5rem">
+        <div><div style="font-weight:600;font-size:.85rem;color:var(--navy)">${o.order_number}</div><div style="font-size:.75rem;color:var(--muted)">${o.customer_name} · ${d}</div></div>
+        <div style="display:flex;align-items:center;gap:.8rem">
+          <span style="font-weight:700;font-size:.88rem">Rs.${Number(o.total_amount).toLocaleString()}</span>
+          <span class="status-pill ${sc}">${o.status}</span>
+          <button onclick="printInvoice(${o.id})" style="background:#f0f2f8;border:none;padding:4px 10px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--navy);font-weight:600">🖨️</button>
+        </div>
+      </div>`;
+    }).join('') || '<p style="color:var(--muted);padding:1rem 0;font-size:.88rem">No orders in this period.</p>';
+
+  } catch(e){ el.innerHTML = '<p style="color:var(--red)">Error loading report.</p>'; }
 }
 
 
