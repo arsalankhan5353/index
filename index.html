@@ -355,6 +355,22 @@
     @media(max-width:860px){.sg-grid{grid-template-columns:1fr}}
 
 
+
+    /* REAL REVIEWS */
+    .rv-filter-btn{padding:6px 14px;border:1.5px solid #e0e0e0;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;background:transparent;transition:.2s;font-weight:500;color:#666}
+    .rv-filter-btn.active,.rv-filter-btn:hover{background:#1A1A1A;color:#fff;border-color:#1A1A1A}
+    .real-review-card{background:#fff;border-radius:14px;padding:1.5rem;border:1px solid #e8e8e8;box-shadow:0 2px 10px rgba(0,0,0,.05);transition:.2s}
+    .real-review-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.09);transform:translateY(-2px)}
+    .rrc-top{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem}
+    .rrc-avatar{width:40px;height:40px;border-radius:50%;background:#FF6B00;color:#1A1A1A;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0}
+    .rrc-name{font-weight:700;font-size:.9rem;color:#1A1A1A}
+    .rrc-loc{font-size:.75rem;color:#aaa}
+    .rrc-stars{color:#FF6B00;font-size:.85rem;letter-spacing:1px;margin-bottom:.5rem}
+    .rrc-msg{font-size:.87rem;color:#555;line-height:1.7;font-style:italic}
+    .rrc-tag{display:inline-block;background:rgba(255,107,0,.1);color:#FF6B00;font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:8px;margin-top:.6rem}
+    .rrc-date{font-size:.72rem;color:#bbb;margin-top:.5rem}
+    .verified-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(46,125,81,.1);color:#2E7D51;font-size:.68rem;font-weight:600;padding:2px 7px;border-radius:8px;margin-left:.4rem}
+
     /* FEEDBACK */
     #feedback{background:#1A1A1A}
     #feedback .section-title{color:#fff}
@@ -625,19 +641,19 @@
   <h2 class="section-title">What Our Customers Say</h2>
   <p class="section-sub">Real reviews from real customers across Shakargarh and nearby areas.</p>
 
-  <!-- Rating summary -->
-  <div class="testi-summary">
+  <!-- Rating summary — updated dynamically -->
+  <div class="testi-summary" id="ratingsSummary">
     <div class="testi-score">
-      <span class="big-score">4.9</span>
-      <span class="big-stars">★★★★★</span>
-      <p>Based on 120+ reviews</p>
+      <span class="big-score" id="avgScore">4.9</span>
+      <span class="big-stars" id="avgStars">★★★★★</span>
+      <p id="reviewCount">Loading reviews...</p>
     </div>
-    <div class="testi-bars">
-      <div class="bar-row"><span class="bar-label">5★</span><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><span class="bar-count">106</span></div>
-      <div class="bar-row"><span class="bar-label">4★</span><div class="bar-track"><div class="bar-fill" style="width:9%"></div></div><span class="bar-count">11</span></div>
-      <div class="bar-row"><span class="bar-label">3★</span><div class="bar-track"><div class="bar-fill" style="width:2%"></div></div><span class="bar-count">2</span></div>
-      <div class="bar-row"><span class="bar-label">2★</span><div class="bar-track"><div class="bar-fill" style="width:1%"></div></div><span class="bar-count">1</span></div>
-      <div class="bar-row"><span class="bar-label">1★</span><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-count">0</span></div>
+    <div class="testi-bars" id="ratingBars">
+      <div class="bar-row"><span class="bar-label">5★</span><div class="bar-track"><div class="bar-fill" id="bar5" style="width:0%"></div></div><span class="bar-count" id="cnt5">0</span></div>
+      <div class="bar-row"><span class="bar-label">4★</span><div class="bar-track"><div class="bar-fill" id="bar4" style="width:0%"></div></div><span class="bar-count" id="cnt4">0</span></div>
+      <div class="bar-row"><span class="bar-label">3★</span><div class="bar-track"><div class="bar-fill" id="bar3" style="width:0%"></div></div><span class="bar-count" id="cnt3">0</span></div>
+      <div class="bar-row"><span class="bar-label">2★</span><div class="bar-track"><div class="bar-fill" id="bar2" style="width:0%"></div></div><span class="bar-count" id="cnt2">0</span></div>
+      <div class="bar-row"><span class="bar-label">1★</span><div class="bar-track"><div class="bar-fill" id="bar1" style="width:0%"></div></div><span class="bar-count" id="cnt1">0</span></div>
     </div>
   </div>
 
@@ -749,6 +765,30 @@
     <button class="tn-btn" onclick="testiPrev()">&#8592;</button>
     <div class="tn-dots" id="testiDots"></div>
     <button class="tn-btn" onclick="testiNext()">&#8594;</button>
+  </div>
+
+  <!-- Real customer reviews from database -->
+  <div id="realReviewsSection" style="margin-top:3rem;display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:#1A1A1A">
+        ⭐ Verified Customer Reviews
+        <span id="realReviewsCount" style="font-family:'DM Sans',sans-serif;font-size:.8rem;color:#aaa;font-weight:400;margin-left:.5rem"></span>
+      </h3>
+      <div style="display:flex;gap:.5rem">
+        <button class="rv-filter-btn active" onclick="filterRealReviews('all',this)">All</button>
+        <button class="rv-filter-btn" onclick="filterRealReviews(5,this)">5★</button>
+        <button class="rv-filter-btn" onclick="filterRealReviews(4,this)">4★</button>
+        <button class="rv-filter-btn" onclick="filterRealReviews(3,this)">3★</button>
+      </div>
+    </div>
+    <div id="realReviewsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem"></div>
+    <div id="loadMoreBtn" style="text-align:center;margin-top:1.5rem;display:none">
+      <button onclick="loadMoreReviews()" style="background:transparent;border:1.5px solid #FF6B00;color:#FF6B00;padding:10px 28px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:.2s" onmouseover="this.style.background='#FF6B00';this.style.color='#1A1A1A'" onmouseout="this.style.background='transparent';this.style.color='#FF6B00'">Load More Reviews</button>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:2.5rem">
+    <a href="#feedback" style="display:inline-flex;align-items:center;gap:.6rem;background:#FF6B00;color:#1A1A1A;text-decoration:none;padding:13px 28px;border-radius:8px;font-weight:700;font-size:.92rem;transition:.2s" onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">✍️ Write Your Review</a>
   </div>
 </section>
 
@@ -1323,9 +1363,92 @@ function toast(msg,type='gold'){
 // Init
 renderCart();
 renderProducts('all');
+loadRealReviews();
 
 
 
+
+
+
+// ── LOAD REAL REVIEWS FROM DATABASE ──
+let allDbReviews = [];
+let reviewFilterVal = 'all';
+let reviewsShown = 6;
+
+async function loadRealReviews(){
+  try {
+    if(!db) return;
+    const {data, error} = await db.from('reviews').select('*').order('created_at',{ascending:false});
+    if(error || !data || !data.length) return;
+    allDbReviews = data;
+    updateRatingSummary(data);
+    document.getElementById('realReviewsSection').style.display = 'block';
+    renderRealReviews();
+  } catch(e){ console.log('Reviews not loaded:', e.message); }
+}
+
+function updateRatingSummary(reviews){
+  const total = reviews.length;
+  if(!total) return;
+  const avg = (reviews.reduce((s,r)=>s+r.rating,0)/total).toFixed(1);
+  const counts = {5:0,4:0,3:0,2:0,1:0};
+  reviews.forEach(r=>{ if(counts[r.rating]!==undefined) counts[r.rating]++; });
+
+  document.getElementById('avgScore').textContent = avg;
+  document.getElementById('avgStars').textContent = '★'.repeat(Math.round(avg)) + '☆'.repeat(5-Math.round(avg));
+  document.getElementById('reviewCount').textContent = `Based on ${total} verified review${total!==1?'s':''}`;
+
+  [5,4,3,2,1].forEach(n=>{
+    const pct = total ? Math.round((counts[n]/total)*100) : 0;
+    document.getElementById('bar'+n).style.width = pct+'%';
+    document.getElementById('cnt'+n).textContent = counts[n];
+  });
+}
+
+function filterRealReviews(val, btn){
+  reviewFilterVal = val;
+  reviewsShown = 6;
+  document.querySelectorAll('.rv-filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRealReviews();
+}
+
+function renderRealReviews(){
+  let list = reviewFilterVal==='all'
+    ? allDbReviews
+    : allDbReviews.filter(r=>r.rating===reviewFilterVal);
+
+  document.getElementById('realReviewsCount').textContent = `(${list.length})`;
+
+  const shown = list.slice(0, reviewsShown);
+  const stars = n => '★'.repeat(n)+'☆'.repeat(5-n);
+  const initial = name => name.charAt(0).toUpperCase();
+  const date = d => new Date(d).toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric'});
+
+  document.getElementById('realReviewsList').innerHTML = shown.map(r=>`
+    <div class="real-review-card">
+      <div class="rrc-top">
+        <div class="rrc-avatar">${initial(r.customer_name)}</div>
+        <div>
+          <div class="rrc-name">${r.customer_name} <span class="verified-badge">✓ Verified</span></div>
+          <div class="rrc-loc">📍 ${r.location||'Shakargarh'}</div>
+        </div>
+      </div>
+      <div class="rrc-stars">${stars(r.rating)}</div>
+      <div class="rrc-msg">"${r.message}"</div>
+      ${r.product_category?`<span class="rrc-tag">📦 ${r.product_category}</span>`:''}
+      <div class="rrc-date">${date(r.created_at)}</div>
+    </div>`).join('');
+
+  // show load more button
+  const lmBtn = document.getElementById('loadMoreBtn');
+  lmBtn.style.display = list.length > reviewsShown ? 'block' : 'none';
+}
+
+function loadMoreReviews(){
+  reviewsShown += 6;
+  renderRealReviews();
+}
 
 
 // ── FEEDBACK ──
@@ -1392,6 +1515,9 @@ async function submitFeedback(){
       `Please add this review to your website!`
     );
     window.open('https://wa.me/923225925409?text='+waMsg, '_blank');
+
+    // Refresh reviews list
+    await loadRealReviews();
 
     // Show success
     document.getElementById('feedbackFormBox').innerHTML = `
