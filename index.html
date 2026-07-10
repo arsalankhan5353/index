@@ -17,14 +17,39 @@
     html{scroll-behavior:smooth}
     body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);overflow-x:hidden}
 
+
+
+    /* WA POPUP */
+    .wa-popup{position:fixed;bottom:90px;right:24px;z-index:997;background:#fff;border-radius:14px;padding:1.2rem;box-shadow:0 8px 32px rgba(0,0,0,.18);width:280px;display:none;border:1px solid #e0e0e0;animation:popIn .3s ease}
+    @keyframes popIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .wa-popup.show{display:block}
+    .wp-header{display:flex;align-items:center;gap:.7rem;margin-bottom:.8rem;padding-bottom:.8rem;border-bottom:1px solid #f0f0f0}
+    .wp-avatar{width:40px;height:40px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+    .wp-name{font-weight:700;font-size:.9rem;color:#1A1A1A}
+    .wp-status{font-size:.75rem;color:#25D366;display:flex;align-items:center;gap:.3rem}
+    .wp-bubble{background:#f0f4f8;border-radius:10px;padding:.8rem 1rem;font-size:.83rem;color:#333;line-height:1.6;margin-bottom:.9rem}
+    .wp-start{width:100%;background:#25D366;color:#fff;border:none;padding:10px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s}
+    .wp-start:hover{opacity:.9}
+    .wp-close{position:absolute;top:8px;right:10px;background:none;border:none;color:#bbb;cursor:pointer;font-size:1rem}
+
+    /* SALE BANNER */
+    .sale-banner{background:linear-gradient(90deg,#FF6B00,#ff4500,#FF6B00);background-size:200%;animation:gradMove 3s linear infinite;color:#fff;text-align:center;padding:10px 1rem;font-weight:700;font-size:.85rem;letter-spacing:.5px;position:relative;z-index:1002;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap}
+    @keyframes gradMove{0%{background-position:0%}100%{background-position:200%}}
+    .sale-timer{display:inline-flex;align-items:center;gap:.3rem;background:rgba(0,0,0,.25);padding:4px 12px;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:.82rem}
+    .timer-block{text-align:center;min-width:28px}
+    .timer-num{font-size:1rem;font-weight:700;display:block;line-height:1}
+    .timer-lbl{font-size:.55rem;opacity:.8;text-transform:uppercase;letter-spacing:.5px}
+    .sale-close{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:1.1rem;padding:4px}
+    .sale-close:hover{color:#fff}
+
     /* TICKER */
-    .ticker{background:var(--gold);color:var(--navy);font-weight:700;font-size:.82rem;overflow:hidden;white-space:nowrap;padding:9px 0;position:fixed;top:0;left:0;right:0;z-index:1001}
+    .ticker{background:var(--gold);color:var(--navy);font-weight:700;font-size:.82rem;overflow:hidden;white-space:nowrap;padding:9px 0;position:fixed;top:40px;left:0;right:0;z-index:1001}
     .ticker-inner{display:inline-flex;animation:tick 30s linear infinite}
     .ticker-inner span{padding:0 3rem}
     @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
     /* NAV */
-    nav{position:fixed;top:34px;left:0;right:0;z-index:1000;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:66px;box-shadow:0 2px 24px rgba(0,0,0,.3)}
+    nav{position:fixed;top:74px;left:0;right:0;z-index:1000;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:66px;box-shadow:0 2px 24px rgba(0,0,0,.3)}
     .nav-logo{font-family:'Playfair Display',serif;color:var(--gold);font-size:1.55rem;letter-spacing:1px;text-decoration:none}
     .nav-logo span{color:var(--white)}
     .nav-links{display:flex;gap:1.8rem;list-style:none;align-items:center}
@@ -35,7 +60,7 @@
     .hamburger span{width:26px;height:2px;background:var(--white);border-radius:2px;display:block}
 
     /* HERO */
-    #hero{min-height:100vh;background:linear-gradient(135deg,#111111 0%,#2a2a2a 55%,#1A1A1A 100%);display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:170px 5% 80px;gap:3rem;position:relative;overflow:hidden}
+    #hero{min-height:100vh;background:linear-gradient(135deg,#111111 0%,#2a2a2a 55%,#1A1A1A 100%);display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:210px 5% 80px;gap:3rem;position:relative;overflow:hidden}
     #hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23C9963A' fill-opacity='0.04'%3E%3Cpath d='M0 0h40v40H0zm40 40h40v40H40z'/%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
     .hero-left{position:relative;z-index:2}
     .hero-tag{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,107,0,.15);color:var(--gold);border:1px solid rgba(255,107,0,.35);padding:6px 16px;border-radius:40px;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:1.6rem}
@@ -120,6 +145,50 @@
     .spinner{width:40px;height:40px;border:3px solid #e0dbd2;border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:1rem}
     @keyframes spin{to{transform:rotate(360deg)}}
     .empty-state{grid-column:1/-1;text-align:center;padding:4rem;color:var(--muted)}
+
+
+
+    /* WISHLIST + RECENTLY VIEWED */
+    .p-actions{display:flex;gap:.5rem;margin-top:.5rem}
+    .wish-btn{background:none;border:1.5px solid #e0dbd2;border-radius:6px;padding:7px 10px;cursor:pointer;font-size:.9rem;transition:.2s;flex-shrink:0}
+    .wish-btn:hover{border-color:#FF6B00}
+    .wish-btn.wished{background:#fff0f0;border-color:#FF6B00;color:#FF6B00}
+    .wishlist-fab{position:fixed;bottom:160px;right:24px;z-index:998;background:#fff;color:#1A1A1A;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 4px 16px rgba(0,0,0,.15);cursor:pointer;border:none;transition:.2s}
+    .wishlist-fab:hover{transform:scale(1.1)}
+    .wl-badge{position:absolute;top:-4px;right:-4px;background:#FF6B00;color:#fff;font-size:.6rem;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;display:none}
+    #recentlyViewed{background:#fff;display:none}
+    #recentlyViewed.show{display:block}
+    .out-of-stock-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;border-radius:0}
+    .oos-label{background:#333;color:#fff;padding:6px 16px;border-radius:20px;font-size:.78rem;font-weight:700;letter-spacing:1px}
+
+    /* WISHLIST DRAWER */
+    .wl-drawer{position:fixed;right:0;top:0;bottom:0;width:100%;max-width:380px;background:#fff;z-index:2002;transform:translateX(100%);transition:transform .3s;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,.15)}
+    .wl-drawer.open{transform:translateX(0)}
+    .wl-header{background:#1A1A1A;padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .wl-header h3{color:#fff;font-size:1rem;font-weight:700}
+    .wl-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:1.4rem;cursor:pointer}
+    .wl-body{flex:1;overflow-y:auto;padding:1rem 1.2rem}
+    .wl-item{display:flex;gap:.8rem;padding:.8rem 0;border-bottom:1px solid #f0f0f0;align-items:center}
+    .wl-thumb{width:50px;height:50px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;overflow:hidden}
+    .wl-thumb img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+    .wl-info{flex:1}
+    .wl-name{font-weight:600;font-size:.88rem;color:#1A1A1A;margin-bottom:.2rem}
+    .wl-price{font-size:.85rem;color:#FF6B00;font-weight:700}
+    .wl-remove{background:none;border:none;color:#ccc;cursor:pointer;font-size:1rem;padding:4px}
+    .wl-remove:hover{color:#c0392b}
+    .wl-empty{text-align:center;padding:3rem 1rem;color:#aaa}
+    .wl-footer{padding:1rem 1.2rem;border-top:1px solid #f0f0f0;flex-shrink:0}
+    .wl-add-all{width:100%;background:#FF6B00;color:#1A1A1A;border:none;padding:12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:.2s}
+    .wl-add-all:hover{opacity:.9}
+
+    /* SEARCH */
+    .search-bar-wrap{background:#111;padding:14px 5%;display:flex;align-items:center;gap:1rem;position:sticky;top:66px;z-index:999;border-bottom:1px solid rgba(255,107,0,.2)}
+    .search-bar-wrap .sb-inner{display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,107,0,.3);border-radius:8px;padding:10px 14px;flex:1;max-width:600px;margin:0 auto}
+    .search-bar-wrap .sb-inner input{border:none;outline:none;background:transparent;color:#fff;font-family:'DM Sans',sans-serif;font-size:.92rem;width:100%}
+    .search-bar-wrap .sb-inner input::placeholder{color:rgba(255,255,255,.35)}
+    .search-bar-wrap .sb-inner .sb-icon{color:rgba(255,255,255,.4);font-size:1.1rem;flex-shrink:0}
+    .search-bar-wrap .sb-clear{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:1rem;padding:0;display:none}
+    .search-results-info{font-size:.82rem;color:#aaa;margin-bottom:1rem}
 
     /* CART */
     .cart-fab{position:fixed;bottom:90px;right:24px;z-index:998;background:var(--navy);color:var(--white);width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 6px 24px rgba(26,35,64,.4);cursor:pointer;border:none;transition:.2s}
@@ -436,8 +505,33 @@
 </head>
 <body>
 
+
+<!-- SEARCH BAR -->
+<div class="search-bar-wrap" id="searchBarWrap" style="display:none">
+  <div class="sb-inner">
+    <span class="sb-icon">🔍</span>
+    <input type="text" id="globalSearch" placeholder="Search products... e.g. kurta, lawn suit, kids shirt" oninput="globalSearchProducts(this.value)"/>
+    <button class="sb-clear" id="sbClear" onclick="clearSearch()">✕</button>
+  </div>
+</div>
+
 <!-- Float WA -->
 <a href="https://wa.me/923225925409" target="_blank" class="float-wa">💬</a>
+
+
+<!-- WA POPUP -->
+<div class="wa-popup" id="waPopup">
+  <button class="wp-close" onclick="document.getElementById('waPopup').classList.remove('show')">✕</button>
+  <div class="wp-header">
+    <div class="wp-avatar">💬</div>
+    <div>
+      <div class="wp-name">Walli Garments</div>
+      <div class="wp-status"><span style="width:7px;height:7px;border-radius:50%;background:#25D366;display:inline-block"></span> Online Now</div>
+    </div>
+  </div>
+  <div class="wp-bubble">Assalam o Alaikum! 👋<br/>Need help choosing the right size or want to place an order? Chat with us directly on WhatsApp!</div>
+  <a href="https://wa.me/923225925409?text=Assalam%20o%20Alaikum!%20I%20need%20help%20with%20my%20order." target="_blank"><button class="wp-start">💬 Start Chat on WhatsApp</button></a>
+</div>
 
 <!-- Cart FAB -->
 <button class="cart-fab" onclick="toggleCart()">
@@ -462,6 +556,20 @@
     </div>
     <button class="checkout-btn" onclick="openCheckout()">📦 Place Order</button>
   </div>
+</div>
+
+
+<!-- SALE BANNER -->
+<div class="sale-banner" id="saleBanner" style="top:0;left:0;right:0;position:fixed;z-index:1002">
+  🔥 EID SALE — Special discounts on all items!
+  <div class="sale-timer">
+    <div class="timer-block"><span class="timer-num" id="th">00</span><span class="timer-lbl">Hrs</span></div>
+    <span style="font-size:1rem;font-weight:700">:</span>
+    <div class="timer-block"><span class="timer-num" id="tm">00</span><span class="timer-lbl">Min</span></div>
+    <span style="font-size:1rem;font-weight:700">:</span>
+    <div class="timer-block"><span class="timer-num" id="ts">00</span><span class="timer-lbl">Sec</span></div>
+  </div>
+  <button class="sale-close" onclick="document.getElementById('saleBanner').style.display='none';adjustOffsets()">✕</button>
 </div>
 
 <!-- Ticker -->
@@ -489,6 +597,7 @@
     <li><a href="#trackingSection" onclick="document.getElementById('trackingSection').classList.add('show')">Track Order</a></li>
     <li><a href="#sizeGuide">Size Guide</a></li>
     <li><a href="#feedback">Reviews</a></li>
+    <li><a href="#orderHistory" onclick="document.getElementById('orderHistory').style.display='block'">My Orders</a></li>
     <li><a href="#payment">Payment</a></li>
     <li><a href="#" onclick="openCheckout();return false" class="nav-cta">Order Now</a></li>
   </ul>
@@ -583,6 +692,16 @@
   </div>
 </section>
 
+
+<!-- RECENTLY VIEWED -->
+<div id="recentlyViewed">
+  <div style="padding:60px 5% 0">
+    <div style="font-size:.73rem;text-transform:uppercase;letter-spacing:3px;color:#FF6B00;font-weight:700;margin-bottom:.7rem">Recently Viewed</div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;color:#1A1A1A;margin-bottom:2rem">Continue Browsing</h2>
+    <div class="products-grid" id="recentlyViewedGrid"></div>
+  </div>
+</div>
+
 <!-- Promo Banner -->
 <div class="promo-banner">
   <div>
@@ -591,6 +710,19 @@
   </div>
   <button class="btn-primary" onclick="openCheckout()">🛒 Order Now</button>
 </div>
+
+
+<!-- ORDER HISTORY -->
+<section id="orderHistory" style="background:#f8f9fc;display:none" class="show">
+  <div class="section-label">My Orders</div>
+  <h2 class="section-title">Order History</h2>
+  <p class="section-sub">Enter your phone number to see all your past orders.</p>
+  <div style="display:flex;gap:1rem;max-width:460px;margin-bottom:2rem;flex-wrap:wrap">
+    <input type="tel" id="historyPhone" placeholder="+92300-0000000 or 03001234567" style="flex:1;padding:12px 16px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.92rem;outline:none;transition:.2s" onfocus="this.style.borderColor='#FF6B00'" onblur="this.style.borderColor='#e0e0e0'" onkeydown="if(event.key==='Enter')lookupOrders()"/>
+    <button onclick="lookupOrders()" style="background:#1A1A1A;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s" onmouseover="this.style.background='#FF6B00';this.style.color='#1A1A1A'" onmouseout="this.style.background='#1A1A1A';this.style.color='#fff'">🔍 Find My Orders</button>
+  </div>
+  <div id="historyResults"></div>
+</section>
 
 <!-- Order Tracking -->
 <section id="trackingSection">
@@ -986,7 +1118,8 @@
     <div class="foot-col"><h4>Collections</h4><ul><li><a href="#categories">Men's Wear</a></li><li><a href="#categories">Women's Fashion</a></li><li><a href="#categories">Kids' Collection</a></li></ul></div>
     <div class="foot-col"><h4>Quick Links</h4><ul><li><a href="#hero">Home</a></li><li><a href="#products">Shop</a></li><li><a href="#trackingSection" onclick="document.getElementById('trackingSection').classList.add('show')">Track Order</a></li>
     <li><a href="#sizeGuide">Size Guide</a></li>
-    <li><a href="#feedback">Reviews</a></li><li><a href="#payment">Payment</a></li></ul></div>
+    <li><a href="#feedback">Reviews</a></li>
+    <li><a href="#orderHistory" onclick="document.getElementById('orderHistory').style.display='block'">My Orders</a></li><li><a href="#payment">Payment</a></li></ul></div>
     <div class="foot-col"><h4>Contact</h4><ul>
       <li><a href="tel:+923225925409">📞 +92322-5925409</a></li>
       <li><a href="https://wa.me/923225925409" target="_blank">💬 WhatsApp Us</a></li>
@@ -1070,9 +1203,15 @@ async function renderProducts(filter){
       ? `<select id="sz-${p.id}" style="width:100%;padding:5px 8px;border:1px solid #e0dbd2;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.78rem;margin-bottom:.7rem;outline:none;background:#f8f9fc"><option value="">Select size</option>${p.sizes.map(s=>`<option>${s}</option>`).join('')}</select>`
       : '';
     const sku = p.sku || ('WG-'+String(p.id).padStart(4,'0'));
+    const isOOS = p.out_of_stock || false;
+    const isWished = wishlist.some(w=>w.id===p.id);
+    trackRecentlyViewed(p);
     return `
-    <div class="p-card">
-      <div class="p-img" style="background:${p.bg||'#d0dae8'}">${imgEl}${badge}</div>
+    <div class="p-card" style="${isOOS?'opacity:.7':''}">
+      <div class="p-img" style="background:${p.bg||'#d0dae8'}">
+        ${imgEl}${badge}
+        ${isOOS?'<div class="out-of-stock-overlay"><span class="oos-label">OUT OF STOCK</span></div>':''}
+      </div>
       <div class="p-info">
         <div class="p-cat">${p.category==='men'?"Men's":p.category==='women'?"Women's":"Kids'"} Collection</div>
         <h4>${p.name}</h4>
@@ -1081,7 +1220,10 @@ async function renderProducts(filter){
         ${sizeSelect}
         <div class="p-row">
           <div><span class="p-price">Rs. ${Number(p.price).toLocaleString()}</span>${oldP}</div>
-          <button class="p-btn" onclick="addToCart(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.price},'${p.emoji||'👕'}','${p.bg||'#d0dae8'}','${p.img||''}','${sku}')">Add to Cart</button>
+          <div style="display:flex;gap:.4rem">
+            <button class="wish-btn${isWished?' wished':''}" onclick="toggleWishItem(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.price},'${p.emoji||'👕'}','${p.bg||'#d0dae8'}','${p.img||''}')" title="Add to Wishlist">${isWished?'❤️':'🤍'}</button>
+            <button class="p-btn" onclick="addToCart(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.price},'${p.emoji||'👕'}','${p.bg||'#d0dae8'}','${p.img||''}','${sku}')" ${isOOS?'disabled style="opacity:.5;cursor:not-allowed"':''}>${isOOS?'Out of Stock':'Add to Cart'}</button>
+          </div>
         </div>
         <button class="qr-btn" onclick="showQR('${sku}','${p.name.replace(/'/g,"\\'")}')" style="width:100%;margin-top:.5rem">📱 Show QR Code</button>
       </div>
@@ -1364,11 +1506,244 @@ function toast(msg,type='gold'){
 renderCart();
 renderProducts('all');
 loadRealReviews();
+renderWishlist();
+setTimeout(renderRecentlyViewed, 1500);
 
 
 
 
 
+
+
+// ════════════════════════════════════════════════
+// SALE COUNTDOWN TIMER
+// ════════════════════════════════════════════════
+(function(){
+  // Set sale end: 3 days from now
+  const stored = localStorage.getItem('walliSaleEnd');
+  let end;
+  if(stored){ end = new Date(stored); }
+  else { end = new Date(Date.now() + 3*24*60*60*1000); localStorage.setItem('walliSaleEnd', end.toISOString()); }
+
+  function updateTimer(){
+    const now  = new Date();
+    const diff = end - now;
+    if(diff <= 0){ document.getElementById('saleBanner').style.display='none'; return; }
+    const h = Math.floor(diff/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    const s = Math.floor((diff%60000)/1000);
+    document.getElementById('th').textContent = String(h).padStart(2,'0');
+    document.getElementById('tm').textContent = String(m).padStart(2,'0');
+    document.getElementById('ts').textContent = String(s).padStart(2,'0');
+  }
+  updateTimer();
+  setInterval(updateTimer, 1000);
+})();
+
+function adjustOffsets(){
+  const saleH  = (document.getElementById('saleBanner')?.offsetHeight||0);
+  const ticker = document.querySelector('.ticker');
+  const nav    = document.querySelector('nav');
+  if(ticker) ticker.style.top = saleH+'px';
+  if(nav)    nav.style.top    = (saleH+34)+'px';
+}
+window.addEventListener('resize', adjustOffsets);
+
+// ════════════════════════════════════════════════
+// WHATSAPP POPUP (shows after 12 seconds)
+// ════════════════════════════════════════════════
+setTimeout(()=>{
+  if(!localStorage.getItem('waPop')){
+    document.getElementById('waPopup').classList.add('show');
+    localStorage.setItem('waPop','1');
+  }
+}, 12000);
+
+// ════════════════════════════════════════════════
+// GLOBAL SEARCH
+// ════════════════════════════════════════════════
+let searchTimeout;
+function globalSearchProducts(q){
+  clearTimeout(searchTimeout);
+  const clearBtn = document.getElementById('sbClear');
+  clearBtn.style.display = q ? 'block' : 'none';
+  searchTimeout = setTimeout(async ()=>{
+    if(!q.trim()){ renderProducts(currentFilter); document.querySelector('.search-results-info')?.remove(); return; }
+    const grid = document.getElementById('productsGrid');
+    grid.innerHTML = '<div class="loading-grid"><div class="spinner"></div><p>Searching...</p></div>';
+    try {
+      const {data} = await db.from('products').select('*').ilike('name','%'+q+'%').order('created_at',{ascending:false});
+      const info = document.querySelector('.search-results-info');
+      if(info) info.remove();
+      const infoEl = document.createElement('p');
+      infoEl.className = 'search-results-info';
+      infoEl.textContent = `${(data||[]).length} result(s) for "${q}"`;
+      grid.parentNode.insertBefore(infoEl, grid);
+      if(!data?.length){
+        grid.innerHTML = '<div class="empty-state"><div style="font-size:3rem;margin-bottom:1rem">🔍</div><p>No products found for "'+q+'".<br/>Try a different search or <a href="https://wa.me/923225925409" style="color:#FF6B00">ask us on WhatsApp</a>.</p></div>';
+        return;
+      }
+      // render search results using same card builder
+      renderProductCards(data, grid);
+    } catch(e){ console.error(e); }
+  }, 400);
+}
+
+function clearSearch(){
+  document.getElementById('globalSearch').value = '';
+  document.getElementById('sbClear').style.display = 'none';
+  document.querySelector('.search-results-info')?.remove();
+  renderProducts(currentFilter);
+}
+
+// Show search bar after hero
+window.addEventListener('scroll', ()=>{
+  const wrap = document.getElementById('searchBarWrap');
+  if(wrap) wrap.style.display = window.scrollY > 400 ? 'flex' : 'none';
+});
+
+// ════════════════════════════════════════════════
+// WISHLIST
+// ════════════════════════════════════════════════
+let wishlist = JSON.parse(localStorage.getItem('walliWishlist')||'[]');
+
+function renderWishlist(){
+  const body   = document.getElementById('wlBody');
+  const footer = document.getElementById('wlFooter');
+  const badge  = document.getElementById('wlBadge');
+  badge.textContent  = wishlist.length;
+  badge.style.display= wishlist.length ? 'flex' : 'none';
+  if(!wishlist.length){
+    body.innerHTML = '<div class="wl-empty"><div style="font-size:3rem;margin-bottom:1rem">❤️</div><p>Your wishlist is empty.<br/>Tap 🤍 on any product to save it!</p></div>';
+    footer.style.display='none'; return;
+  }
+  footer.style.display='block';
+  body.innerHTML = wishlist.map((w,i)=>`
+    <div class="wl-item">
+      <div class="wl-thumb" style="background:${w.bg}">${w.img?`<img src="${w.img}" alt=""/>`:(w.emoji||'👕')}</div>
+      <div class="wl-info">
+        <div class="wl-name">${w.name}</div>
+        <div class="wl-price">Rs. ${Number(w.price).toLocaleString()}</div>
+      </div>
+      <button class="wl-remove" onclick="removeFromWishlist(${i})" title="Remove">🗑️</button>
+    </div>`).join('');
+}
+
+function toggleWishlist(){
+  document.getElementById('wlDrawer').classList.toggle('open');
+  document.getElementById('wlOverlay').classList.toggle('open');
+  renderWishlist();
+}
+
+function toggleWishItem(id,name,price,emoji,bg,img){
+  const idx = wishlist.findIndex(w=>w.id===id);
+  if(idx>-1){ wishlist.splice(idx,1); toast('Removed from wishlist','red'); }
+  else { wishlist.push({id,name,price,emoji,bg,img}); toast('Added to wishlist ❤️'); }
+  localStorage.setItem('walliWishlist', JSON.stringify(wishlist));
+  renderWishlist();
+  renderProducts(currentFilter);
+}
+
+function removeFromWishlist(i){
+  wishlist.splice(i,1);
+  localStorage.setItem('walliWishlist', JSON.stringify(wishlist));
+  renderWishlist();
+  renderProducts(currentFilter);
+}
+
+function addAllToCart(){
+  wishlist.forEach(w=>{ const ex=cart.find(c=>c.id===w.id); if(ex)ex.qty++; else cart.push({...w,qty:1,size:'',sku:''}); });
+  renderCart();
+  toggleWishlist();
+  toggleCart();
+  toast('All wishlist items added to cart! 🛒');
+}
+
+// ════════════════════════════════════════════════
+// RECENTLY VIEWED
+// ════════════════════════════════════════════════
+let recentlyViewedList = JSON.parse(localStorage.getItem('walliRecent')||'[]');
+
+function trackRecentlyViewed(p){
+  recentlyViewedList = recentlyViewedList.filter(r=>r.id!==p.id);
+  recentlyViewedList.unshift({id:p.id,name:p.name,price:p.price,emoji:p.emoji,bg:p.bg,img:p.img,category:p.category,old_price:p.old_price,badge:p.badge,sizes:p.sizes,sku:p.sku});
+  if(recentlyViewedList.length>8) recentlyViewedList.pop();
+  localStorage.setItem('walliRecent', JSON.stringify(recentlyViewedList));
+}
+
+function renderRecentlyViewed(){
+  const sec  = document.getElementById('recentlyViewed');
+  const grid = document.getElementById('recentlyViewedGrid');
+  if(!recentlyViewedList.length||recentlyViewedList.length<2){ sec.classList.remove('show'); return; }
+  sec.classList.add('show');
+  renderProductCards(recentlyViewedList.slice(0,4), grid);
+}
+
+// ════════════════════════════════════════════════
+// SHARED CARD BUILDER (used by search + recently viewed)
+// ════════════════════════════════════════════════
+function renderProductCards(products, grid){
+  grid.innerHTML = products.map(p=>{
+    const sizes  = (p.sizes||[]).map(s=>`<span class="size-tag">${s}</span>`).join('');
+    const badge  = p.badge ? `<span class="p-badge ${p.badge.toLowerCase()}">${p.badge}</span>` : '';
+    const oldP   = p.old_price>0 ? `<span class="p-old">Rs. ${Number(p.old_price).toLocaleString()}</span>` : '';
+    const imgEl  = p.img ? `<img src="${p.img}" alt="${p.name}" loading="lazy"/>` : `<span>${p.emoji||'👕'}</span>`;
+    const sku    = p.sku || ('WG-'+String(p.id).padStart(4,'0'));
+    const isWished = wishlist.some(w=>w.id===p.id);
+    return `
+    <div class="p-card">
+      <div class="p-img" style="background:${p.bg||'#d0dae8'}">${imgEl}${badge}</div>
+      <div class="p-info">
+        <div class="p-cat">${p.category==='men'?"Men's":p.category==='women'?"Women's":"Kids'"} Collection</div>
+        <h4>${p.name}</h4>
+        <div class="p-sku">SKU: <span>${sku}</span></div>
+        ${sizes?`<div class="p-sizes">${sizes}</div>`:''}
+        <div class="p-row">
+          <div><span class="p-price">Rs. ${Number(p.price).toLocaleString()}</span>${oldP}</div>
+          <div style="display:flex;gap:.4rem">
+            <button class="wish-btn${isWished?' wished':''}" onclick="toggleWishItem(${p.id},'${p.name.replace(/'/g,"\'")}',${p.price},'${p.emoji||'👕'}','${p.bg||'#d0dae8'}','${p.img||''}')">${isWished?'❤️':'🤍'}</button>
+            <button class="p-btn" onclick="addToCart(${p.id},'${p.name.replace(/'/g,"\'")}',${p.price},'${p.emoji||'👕'}','${p.bg||'#d0dae8'}','${p.img||''}','${sku}')">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════
+// ORDER HISTORY LOOKUP
+// ════════════════════════════════════════════════
+async function lookupOrders(){
+  const phone = document.getElementById('historyPhone').value.trim();
+  if(!phone){ toast('Please enter your phone number.','red'); return; }
+  const el = document.getElementById('historyResults');
+  el.innerHTML = '<div style="text-align:center;padding:2rem"><div class="spinner" style="margin:0 auto 1rem"></div><p style="color:#888">Looking up your orders...</p></div>';
+  try {
+    // Try with different phone formats
+    const clean = phone.replace(/[^0-9]/g,'');
+    const {data} = await db.from('orders').select('*').or(`customer_phone.ilike.%${clean}%,customer_phone.ilike.%${phone}%`).order('created_at',{ascending:false});
+    if(!data?.length){
+      el.innerHTML = '<div style="text-align:center;padding:2rem;color:#888"><div style="font-size:2.5rem;margin-bottom:1rem">📦</div><p>No orders found for this number.<br/>Check the number or <a href="https://wa.me/923225925409" style="color:#FF6B00">contact us on WhatsApp</a>.</p></div>';
+      return;
+    }
+    const statusIcons = {'Pending':'⏳','Confirmed':'✅','Out for Delivery':'🚚','Delivered':'🎉','Cancelled':'❌'};
+    el.innerHTML = `<p style="font-size:.85rem;color:#888;margin-bottom:1rem">Found ${data.length} order(s)</p>` + data.map(o=>`
+      <div style="background:#fff;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:.9rem;border:1px solid #e8e8e8;box-shadow:0 2px 8px rgba(0,0,0,.05)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem">
+          <div>
+            <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:#1A1A1A;font-weight:700">${o.order_number}</div>
+            <div style="font-size:.75rem;color:#aaa">${new Date(o.created_at).toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric'})}</div>
+          </div>
+          <span class="status-pill ${o.status.toLowerCase().replace(/ /g,'-')}">${statusIcons[o.status]||''} ${o.status}</span>
+        </div>
+        <div style="font-size:.85rem;color:#555;margin-bottom:.6rem">📦 ${o.items}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
+          <span style="font-weight:700;color:#1A1A1A">Rs. ${Number(o.total_amount).toLocaleString()} · ${o.payment_method}</span>
+          <button onclick="document.getElementById('trackInput').value='${o.order_number}';document.getElementById('trackingSection').classList.add('show');trackOrder();document.getElementById('trackingSection').scrollIntoView({behavior:'smooth'})" style="background:#1A1A1A;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">🔍 Track</button>
+        </div>
+      </div>`).join('');
+  } catch(e){ el.innerHTML = '<p style="color:#c0392b;text-align:center;padding:2rem">Error looking up orders. Check your internet connection.</p>'; }
+}
 
 // ── LOAD REAL REVIEWS FROM DATABASE ──
 let allDbReviews = [];
