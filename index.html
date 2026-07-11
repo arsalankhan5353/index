@@ -4,8 +4,6 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Walli Garments – Casual Fashion for Everyone</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -1158,828 +1156,582 @@
   </div>
 </div>
 
-<div id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
+// ═══════════════════════════════════════════════════════
+// WALLI GARMENTS - MAIN SCRIPT
+// Clean rebuild - all helpers defined before use
+// ═══════════════════════════════════════════════════════
+
+// ── CONFIG ──
 const SB_URL = 'https://jzybbxdexxilvgbbbxzt.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6eWJieGRleHhpbHZnYmJieHp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0Mjg1MDQsImV4cCI6MjA5OTAwNDUwNH0.Xi60WDhQqqK3clgXi0f7HXHKAw3Q0f8Lmhd2sFF1tAE';
-let db;
-try {
-  const _sb = window.supabase || supabase;
-  db = _sb.createClient(SB_URL, SB_KEY);
-  console.log('✅ Supabase connected');
-} catch(e) {
-  console.error('❌ Supabase init failed:', e.message||e);
+
+// ── STATE ──
+let db = null;
+let cart = [];
+let wishlist = [];
+let recentlyViewedList = [];
+let currentFilter = 'all';
+let allDbReviews = [];
+let reviewFilterVal = 'all';
+let reviewsShown = 6;
+let selectedRating = 0;
+let searchTimeout = null;
+let testiIndex = 0;
+
+// ── SAFE DOM HELPERS ──
+function $(id) { return document.getElementById(id); }
+function setText(id, val) { var e=$(id); if(e) e.textContent = val; }
+function setHtml(id, val) { var e=$(id); if(e) e.innerHTML = val; }
+function setDisplay(id, val) { var e=$(id); if(e) e.style.display = val; }
+function show(id) { setDisplay(id, 'block'); }
+function hide(id) { setDisplay(id, 'none'); }
+
+// ── SUPABASE ──
+function initSupabase() {
+  try {
+    if (!window.supabase) { console.error('Supabase not loaded'); return false; }
+    db = window.supabase.createClient(SB_URL, SB_KEY);
+    console.log('✅ Supabase ready');
+    return true;
+  } catch(e) { console.error('Supabase error:', e.message); return false; }
 }
 
 // ── PRODUCTS ──
-let currentFilter = 'all';
-
-async function fetchProducts(cat=''){
+async function fetchProducts(cat) {
+  if (!db) return [];
   try {
-    let query = db.from('products').select('*').order('created_at', {ascending:false});
-    if(cat) query = query.eq('category', cat);
-    const {data, error} = await query;
-    if(error){ console.error('fetchProducts error:', error.message, error.code, error.details); return []; }
-    return data || [];
-  } catch(e){ console.error('fetchProducts exception:', e.message||e); return []; }
+    var q = db.from('products').select('*').order('created_at', {ascending: false});
+    if (cat) q = q.eq('category', cat);
+    var res = await q;
+    if (res.error) { console.error('DB error:', res.error.message); return []; }
+    return res.data || [];
+  } catch(e) { console.error('fetchProducts:', e.message); return []; }
 }
 
-async function renderProducts(filter){
+async function renderProducts(filter) {
   currentFilter = filter;
-  const grid = document.getElementById('productsGrid');
+  var grid = $('productsGrid');
+  if (!grid) return;
   grid.innerHTML = '<div class="loading-grid"><div class="spinner"></div><p>Loading products...</p></div>';
-  const products = await fetchProducts(filter==='all'?'':filter);
-  if(!products.length){
-    grid.innerHTML = '<div class="empty-state"><div style="font-size:3rem;margin-bottom:1rem">🛍️</div><p>No products in this category yet.<br/>Check back soon!</p></div>';
+  var products = await fetchProducts(filter === 'all' ? '' : filter);
+  if (!products.length) {
+    grid.innerHTML = '<div class="empty-state"><div style="font-size:3rem;margin-bottom:1rem">🛍️</div><p>No products yet. Check back soon!</p></div>';
     return;
   }
-  grid.innerHTML = products.map(p=>{
-    const sizes = (p.sizes||[]).map(s=>`<span class="size-tag">${s}</span>`).join('');
-    const badge = p.badge ? `<span class="p-badge ${p.badge.toLowerCase()}">${p.badge}</span>` : '';
-    const oldP  = p.old_price>0 ? `<span class="p-old">Rs. ${Number(p.old_price).toLocaleString()}</span>` : '';
-    const imgEl = p.img ? `<img src="${p.img}" alt="${p.name}" loading="lazy"/>` : `<span>${p.emoji||'👕'}</span>`;
-    const sizeSelect = (p.sizes&&p.sizes.length)
-      ? `<select id="sz-${p.id}" style="width:100%;padding:5px 8px;border:1px solid #e0dbd2;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.78rem;margin-bottom:.7rem;outline:none;background:#f8f9fc"><option value="">Select size</option>${p.sizes.map(s=>`<option>${s}</option>`).join('')}</select>`
-      : '';
-    const sku = p.sku || ('WG-'+String(p.id).padStart(4,'0'));
-    const isOOS = p.out_of_stock || false;
-    const isWished = wishlist.some(w=>w.id===p.id);
+  buildProductCards(products, grid, true);
+  setTimeout(renderRecentlyViewed, 800);
+}
+
+function buildProductCards(products, grid, showSize) {
+  if (!grid) return;
+  grid.innerHTML = products.map(function(p) {
+    var sizes = (p.sizes || []).map(function(s){ return '<span class="size-tag">'+s+'</span>'; }).join('');
+    var badge = p.badge ? '<span class="p-badge '+p.badge.toLowerCase()+'">'+p.badge+'</span>' : '';
+    var oldP  = p.old_price > 0 ? '<span class="p-old">Rs. '+Number(p.old_price).toLocaleString()+'</span>' : '';
+    var imgEl = p.img ? '<img src="'+p.img+'" alt="'+p.name+'" loading="lazy"/>' : '<span>'+(p.emoji||'👕')+'</span>';
+    var sku   = p.sku || ('WG-' + String(p.id).padStart(4,'0'));
+    var isWished = wishlist.some(function(w){ return w.id === p.id; });
+    var isOOS = p.out_of_stock || false;
+    var sName = p.name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var sEmoji = (p.emoji||'👕');
+    var sBg   = p.bg || '#d0dae8';
+    var sImg  = p.img || '';
+    var sizeSelect = '';
+    if (showSize && p.sizes && p.sizes.length) {
+      sizeSelect = '<select id="sz-'+p.id+'" style="width:100%;padding:5px 8px;border:1px solid #e0dbd2;border-radius:6px;font-family:DM Sans,sans-serif;font-size:.78rem;margin-bottom:.7rem;outline:none;background:#f8f9fc"><option value="">Select size</option>';
+      p.sizes.forEach(function(s){ sizeSelect += '<option>'+s+'</option>'; });
+      sizeSelect += '</select>';
+    }
     trackRecentlyViewed(p);
-    return `
-    <div class="p-card" style="${isOOS?'opacity:.7':''}">
-      <div class="p-img" style="background:${p.bg||'#d0dae8'}">
-        ${imgEl}${badge}
-        ${isOOS?'<div class="out-of-stock-overlay"><span class="oos-label">OUT OF STOCK</span></div>':''}
-      </div>
-      <div class="p-info">
-        <div class="p-cat">${p.category==='men'?"Men's":p.category==='women'?"Women's":"Kids'"} Collection</div>
-        <h4>${p.name}</h4>
-        <div class="p-sku">SKU: <span>${sku}</span></div>
-        ${sizes?`<div class="p-sizes">${sizes}</div>`:''}
-        ${sizeSelect}
-        <div class="p-row">
-          <div><span class="p-price">Rs. ${Number(p.price).toLocaleString()}</span>${oldP}</div>
-          <div style="display:flex;gap:.4rem">
-            <button class="wish-btn${isWished?' wished':''}" onclick="toggleWishItem(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.price},'${p.emoji||'👕'}','${p.bg||'#d0dae8'}','${p.img||''}')" title="Add to Wishlist">${isWished?'❤️':'🤍'}</button>
-            <button class="p-btn" onclick="addToCart(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.price},'${p.emoji||'👕'}','${p.bg||'#d0dae8'}','${p.img||''}','${sku}')" ${isOOS?'disabled style="opacity:.5;cursor:not-allowed"':''}>${isOOS?'Out of Stock':'Add to Cart'}</button>
-          </div>
-        </div>
-        <button class="qr-btn" onclick="showQR('${sku}','${p.name.replace(/'/g,"\\'")}')" style="width:100%;margin-top:.5rem">📱 Show QR Code</button>
-      </div>
-    </div>`;
+    return '<div class="p-card" style="'+(isOOS?'opacity:.7':'')+'">'
+      +'<div class="p-img" style="background:'+sBg+'">'+imgEl+badge+(isOOS?'<div class="out-of-stock-overlay"><span class="oos-label">OUT OF STOCK</span></div>':'')+'</div>'
+      +'<div class="p-info">'
+        +'<div class="p-cat">'+(p.category==='men'?"Men's":p.category==='women'?"Women's":"Kids'")+' Collection</div>'
+        +'<h4>'+p.name+'</h4>'
+        +'<div class="p-sku">SKU: <span>'+sku+'</span></div>'
+        +(sizes?'<div class="p-sizes">'+sizes+'</div>':'')
+        +sizeSelect
+        +'<div class="p-row">'
+          +'<div><span class="p-price">Rs. '+Number(p.price).toLocaleString()+'</span>'+oldP+'</div>'
+          +'<div style="display:flex;gap:.4rem">'
+            +'<button class="wish-btn'+(isWished?' wished':'')+'" onclick="toggleWishItem('+p.id+',\''+sName+'\','+p.price+',\''+sEmoji+'\',\''+sBg+'\',\''+sImg+'\')">'+(isWished?'❤️':'🤍')+'</button>'
+            +'<button class="p-btn" onclick="addToCart('+p.id+',\''+sName+'\','+p.price+',\''+sEmoji+'\',\''+sBg+'\',\''+sImg+'\',\''+sku+'\')" '+(isOOS?'disabled style="opacity:.5;cursor:not-allowed"':'')+'>'+( isOOS?'Out of Stock':'Add to Cart')+'</button>'
+          +'</div>'
+        +'</div>'
+        +'<button class="qr-btn" onclick="showQR(\''+sku+'\',\''+sName+'\')" style="width:100%;margin-top:.5rem">📱 QR Code</button>'
+      +'</div>'
+    +'</div>';
   }).join('');
 }
 
-function filterProducts(cat,btn){
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+function filterProducts(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
   renderProducts(cat);
 }
-function filterAndScroll(cat){
-  document.querySelectorAll('.filter-btn').forEach(b=>{b.classList.remove('active'); if(b.textContent.toLowerCase()===cat)b.classList.add('active');});
+function filterAndScroll(cat) {
+  document.querySelectorAll('.filter-btn').forEach(function(b){
+    b.classList.remove('active');
+    if (b.textContent.toLowerCase() === cat) b.classList.add('active');
+  });
   renderProducts(cat);
-  document.getElementById('products').scrollIntoView({behavior:'smooth'});
+  var el = $('products'); if(el) el.scrollIntoView({behavior:'smooth'});
 }
 
 // ── CART ──
-let cart = [];
-
-function addToCart(id,name,price,emoji,bg,img,sku=''){
-  const sizeEl = document.getElementById('sz-'+id);
-  const size = sizeEl ? sizeEl.value : '';
-  const existing = cart.find(c=>c.id===id && c.size===size);
-  if(existing){ existing.qty++; }
-  else{ cart.push({id,name,price,emoji,bg,img,size,qty:1,sku}); }
+function addToCart(id, name, price, emoji, bg, img, sku) {
+  var sizeEl = $('sz-'+id);
+  var size = sizeEl ? sizeEl.value : '';
+  var existing = cart.find(function(c){ return c.id===id && c.size===size; });
+  if (existing) { existing.qty++; }
+  else { cart.push({id:id, name:name, price:price, emoji:emoji, bg:bg, img:img, size:size, qty:1, sku:sku||''}); }
   renderCart();
   toast('Added to cart! 🛒');
 }
 
-function renderCart(){
-  const body = document.getElementById('cartBody');
-  const footer = document.getElementById('cartFooter');
-  const badge = document.getElementById('cartBadge');
-  const total = cart.reduce((s,c)=>s+c.price*c.qty,0);
-  const count = cart.reduce((s,c)=>s+c.qty,0);
-
-  badge.textContent = count;
-  badge.style.display = count>0 ? 'flex' : 'none';
-
-  if(!cart.length){
-    body.innerHTML = '<div class="cart-empty"><div class="ce-icon">🛒</div><p>Your cart is empty.<br/>Add some items to get started!</p></div>';
-    footer.style.display='none';
+function renderCart() {
+  var body   = $('cartBody');
+  var footer = $('cartFooter');
+  var badge  = $('cartBadge');
+  var totalEl= $('cartTotal');
+  var total  = cart.reduce(function(s,c){ return s + c.price*c.qty; }, 0);
+  var count  = cart.reduce(function(s,c){ return s + c.qty; }, 0);
+  if (badge)  { badge.textContent = count; badge.style.display = count>0?'flex':'none'; }
+  if (!body)  return;
+  if (!cart.length) {
+    body.innerHTML = '<div class="cart-empty"><div class="ce-icon">🛒</div><p>Your cart is empty.<br/>Add some items!</p></div>';
+    if (footer) footer.style.display = 'none';
     return;
   }
-  footer.style.display='block';
-  document.getElementById('cartTotal').textContent = `Rs. ${total.toLocaleString()}`;
-  body.innerHTML = cart.map((c,i)=>`
-    <div class="cart-item">
-      <div class="ci-thumb" style="background:${c.bg}">${c.img?`<img src="${c.img}" alt=""/>`:(c.emoji||'👕')}</div>
-      <div class="ci-info">
-        <div class="ci-name">${c.name}</div>
-        <div class="ci-price">Rs. ${Number(c.price).toLocaleString()}</div>
-        ${c.size?`<div class="ci-size">Size: ${c.size}</div>`:''}
-        ${c.sku?`<div style="font-size:.7rem;color:#aaa;margin-top:.1rem">SKU: ${c.sku}</div>`:''}
-        <div class="ci-qty">
-          <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
-          <span class="qty-val">${c.qty}</span>
-          <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
-        </div>
-      </div>
-      <button class="ci-remove" onclick="removeFromCart(${i})" title="Remove">🗑️</button>
-    </div>`).join('');
+  if (footer) footer.style.display = 'block';
+  if (totalEl) totalEl.textContent = 'Rs. '+total.toLocaleString();
+  body.innerHTML = cart.map(function(c,i){
+    return '<div class="cart-item">'
+      +'<div class="ci-thumb" style="background:'+c.bg+'">'+(c.img?'<img src="'+c.img+'" alt=""/>':(c.emoji||'👕'))+'</div>'
+      +'<div class="ci-info">'
+        +'<div class="ci-name">'+c.name+'</div>'
+        +'<div class="ci-price">Rs. '+Number(c.price).toLocaleString()+'</div>'
+        +(c.size?'<div class="ci-size">Size: '+c.size+'</div>':'')
+        +(c.sku?'<div style="font-size:.7rem;color:#aaa">SKU: '+c.sku+'</div>':'')
+        +'<div class="ci-qty">'
+          +'<button class="qty-btn" onclick="changeQty('+i+',-1)">−</button>'
+          +'<span class="qty-val">'+c.qty+'</span>'
+          +'<button class="qty-btn" onclick="changeQty('+i+',1)">+</button>'
+        +'</div>'
+      +'</div>'
+      +'<button class="ci-remove" onclick="removeFromCart('+i+')">🗑️</button>'
+    +'</div>';
+  }).join('');
 }
 
-function changeQty(i,d){
-  cart[i].qty += d;
-  if(cart[i].qty<=0) cart.splice(i,1);
-  renderCart();
-}
-function removeFromCart(i){ cart.splice(i,1); renderCart(); }
-function toggleCart(){
-  document.getElementById('cartDrawer').classList.toggle('open');
-  document.getElementById('cartOverlay').classList.toggle('open');
-  if(!cart.length) renderCart();
+function changeQty(i, d) { cart[i].qty += d; if(cart[i].qty<=0) cart.splice(i,1); renderCart(); }
+function removeFromCart(i) { cart.splice(i,1); renderCart(); }
+function toggleCart() {
+  var d=$('cartDrawer'), o=$('cartOverlay');
+  if(d) d.classList.toggle('open');
+  if(o) o.classList.toggle('open');
 }
 
 // ── CHECKOUT ──
-function openCheckout(){
-  if(!cart.length){ toast('Add items to cart first! 🛒'); document.getElementById('products').scrollIntoView({behavior:'smooth'}); return; }
-  document.getElementById('cartDrawer').classList.remove('open');
-  document.getElementById('cartOverlay').classList.remove('open');
-  const total = cart.reduce((s,c)=>s+c.price*c.qty,0);
-  const items = cart.map(c=>`${c.name}${c.size?' ('+c.size+')':''} x${c.qty} = Rs.${(c.price*c.qty).toLocaleString()}`).join('\n');
-  document.getElementById('modalTitle').textContent = '📦 Place Your Order';
-  document.getElementById('modalBody').innerHTML = `
-    <div class="order-summary">
-      <h4>🛒 Order Summary</h4>
-      ${cart.map(c=>`<div class="os-item"><span>${c.name}${c.size?' ('+c.size+')':''} × ${c.qty}</span><span>Rs. ${(c.price*c.qty).toLocaleString()}</span></div>`).join('')}
-      <div class="os-total"><span>Total</span><span>Rs. ${total.toLocaleString()}</span></div>
-    </div>
-    <div class="mrow">
-      <div class="mfg"><label>Your Name *</label><input type="text" id="oName" placeholder="Ali Hassan"/></div>
-      <div class="mfg"><label>Phone Number *</label><input type="tel" id="oPhone" placeholder="+92300-0000000"/></div>
-    </div>
-    <div class="mfg"><label>Delivery Address *</label><textarea id="oAddr" placeholder="House no., Street, Area, Shakargarh"></textarea></div>
-    <div class="mfg"><label>Payment Method *</label>
-      <select id="oPay">
-        <option value="">-- Select Payment --</option>
-        <option>EasyPaisa</option>
-        <option>JazzCash</option>
-        <option>Cash on Delivery</option>
-      </select>
-    </div>
-    <div class="mfg"><label>Notes (optional)</label><input type="text" id="oNotes" placeholder="Any special instructions..."/></div>
-    <button class="place-btn" id="placeBtn" onclick="placeOrder()">✅ Confirm Order — Rs. ${total.toLocaleString()}</button>
-  `;
-  document.getElementById('orderModal').classList.add('open');
+function openCheckout() {
+  if (!cart.length) { toast('Add items to cart first!'); var p=$('products'); if(p)p.scrollIntoView({behavior:'smooth'}); return; }
+  var d=$('cartDrawer'), o=$('cartOverlay');
+  if(d) d.classList.remove('open');
+  if(o) o.classList.remove('open');
+  var total = cart.reduce(function(s,c){ return s+c.price*c.qty; },0);
+  var rows  = cart.map(function(c){ return '<div class="os-item"><span>'+c.name+(c.size?' ('+c.size+')':'')+' x'+c.qty+'</span><span>Rs. '+(c.price*c.qty).toLocaleString()+'</span></div>'; }).join('');
+  setText('modalTitle','📦 Place Your Order');
+  setHtml('modalBody',
+    '<div class="order-summary"><h4>🛒 Order Summary</h4>'+rows+'<div class="os-total"><span>Total</span><span>Rs. '+total.toLocaleString()+'</span></div></div>'
+    +'<div class="mrow"><div class="mfg"><label>Your Name *</label><input type="text" id="oName" placeholder="Ali Hassan"/></div>'
+    +'<div class="mfg"><label>Phone *</label><input type="tel" id="oPhone" placeholder="+92300-0000000"/></div></div>'
+    +'<div class="mfg"><label>Delivery Address *</label><textarea id="oAddr" placeholder="House no, Street, Shakargarh"></textarea></div>'
+    +'<div class="mfg"><label>Payment Method *</label><select id="oPay"><option value="">-- Select --</option><option>EasyPaisa</option><option>JazzCash</option><option>Cash on Delivery</option></select></div>'
+    +'<div class="mfg"><label>Notes (optional)</label><input type="text" id="oNotes" placeholder="Any special instructions..."/></div>'
+    +'<button class="place-btn" id="placeBtn" onclick="placeOrder()">✅ Confirm Order — Rs. '+total.toLocaleString()+'</button>'
+  );
+  var m=$('orderModal'); if(m) m.classList.add('open');
 }
 
-function closeModal(){ document.getElementById('orderModal').classList.remove('open'); }
+function closeModal() { var m=$('orderModal'); if(m) m.classList.remove('open'); }
 
-async function placeOrder(){
-  const name  = document.getElementById('oName').value.trim();
-  const phone = document.getElementById('oPhone').value.trim();
-  const addr  = document.getElementById('oAddr').value.trim();
-  const pay   = document.getElementById('oPay').value;
-  const notes = document.getElementById('oNotes').value.trim();
-  if(!name||!phone||!addr||!pay){ toast('Please fill all required fields.','red'); return; }
-
-  const btn = document.getElementById('placeBtn');
-  btn.disabled=true; btn.textContent='Placing order...';
-
-  const total = cart.reduce((s,c)=>s+c.price*c.qty,0);
-  const itemsText = cart.map(c=>`${c.name}${c.size?' ('+c.size+')':''} [${c.sku||''}] x${c.qty}`).join(', ');
-  const orderNum = 'WG-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6);
-
+async function placeOrder() {
+  var name  = ($('oName')||{value:''}).value.trim();
+  var phone = ($('oPhone')||{value:''}).value.trim();
+  var addr  = ($('oAddr')||{value:''}).value.trim();
+  var pay   = ($('oPay')||{value:''}).value;
+  var notes = ($('oNotes')||{value:''}).value.trim();
+  if (!name||!phone||!addr||!pay) { toast('Please fill all required fields.','red'); return; }
+  var btn = $('placeBtn');
+  if(btn){ btn.disabled=true; btn.textContent='Placing order...'; }
+  var total     = cart.reduce(function(s,c){ return s+c.price*c.qty; },0);
+  var itemsText = cart.map(function(c){ return c.name+(c.size?' ('+c.size+')':'')+(c.sku?' ['+c.sku+']':'')+' x'+c.qty; }).join(', ');
+  var orderNum  = 'WG-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6);
   try {
-    const {data: orderData, error: orderError} = await db.from('orders').insert({
-      order_number: orderNum,
-      customer_name: name,
-      customer_phone: phone,
-      customer_address: addr,
-      items: itemsText,
-      payment_method: pay,
-      total_amount: total,
-      status: 'Pending',
-      notes: notes
-    }).select();
-    if(orderError) throw new Error(orderError.message);
-
-    // ── AUTO-SEND WhatsApp notification to shop owner ──
-    const ownerMsg = encodeURIComponent(
-      `🛍️ *New Order Received!*\n\n`+
-      `📋 *Order No:* ${orderNum}\n`+
-      `👤 *Customer:* ${name}\n`+
-      `📞 *Phone:* ${phone}\n`+
-      `📍 *Address:* ${addr}\n`+
-      `📦 *Items:* ${itemsText}\n`+
-      `💰 *Total:* Rs. ${total.toLocaleString()}\n`+
-      `💳 *Payment:* ${pay}\n`+
-      `${notes?'📝 *Notes:* '+notes+'\n':''}\n`+
-      `👉 Please confirm & update status in admin panel:\n`+
-      `https://index-tau-ruddy.vercel.app/admin/index.html`
+    if (db) {
+      var ins = await db.from('orders').insert({order_number:orderNum,customer_name:name,customer_phone:phone,customer_address:addr,items:itemsText,payment_method:pay,total_amount:total,status:'Pending',notes:notes});
+      if (ins.error) throw new Error(ins.error.message);
+    }
+    var ownerMsg = encodeURIComponent('🛍️ *New Order!*\n\n📋 *Order:* '+orderNum+'\n👤 *Name:* '+name+'\n📞 *Phone:* '+phone+'\n📍 *Address:* '+addr+'\n📦 *Items:* '+itemsText+'\n💰 *Total:* Rs. '+total.toLocaleString()+'\n💳 *Payment:* '+pay+(notes?'\n📝 *Notes:* '+notes:'')+'\n\n👉 Admin: https://index-tau-ruddy.vercel.app/admin/index.html');
+    window.open('https://wa.me/923225925409?text='+ownerMsg,'_blank');
+    setText('modalTitle','✅ Order Placed!');
+    setHtml('modalBody',
+      '<div class="success-screen">'
+      +'<div class="success-icon">🎉</div>'
+      +'<h2>Order Placed!</h2>'
+      +'<p>Thank you <strong>'+name+'</strong>! WhatsApp opened — tap <strong>Send</strong> to notify the shop.</p>'
+      +'<div class="order-num-box"><strong>Your Order Number</strong><span>'+orderNum+'</span></div>'
+      +'<p class="track-hint">💡 Save this number to track your order.</p>'
+      +'<a href="https://wa.me/923225925409?text='+ownerMsg+'" target="_blank" class="wa-notify-btn">💬 Re-send WhatsApp</a>'
+      +'<a href="#trackingSection" onclick="closeModal();var ts=$$(\'trackingSection\');if(ts)ts.classList.add(\'show\');setTimeout(function(){setText(\'trackInput\',\''+orderNum+'\');trackOrder();},600)" class="track-btn-link">🔍 Track My Order</a>'
+      +'</div>'
     );
-
-    // Open WhatsApp automatically to notify owner
-    window.open(`https://wa.me/923225925409?text=${ownerMsg}`, '_blank');
-
-    // Show success screen
-    document.getElementById('modalTitle').textContent = '✅ Order Placed!';
-    document.getElementById('modalBody').innerHTML = `
-      <div class="success-screen">
-        <div class="success-icon">🎉</div>
-        <h2>Order Placed Successfully!</h2>
-        <p>Thank you <strong>${name}</strong>! Your order has been received. WhatsApp has opened to notify the shop — please tap <strong>Send</strong> if it didn't send automatically.</p>
-        <div class="order-num-box">
-          <strong>Your Order Number</strong>
-          <span>${orderNum}</span>
-        </div>
-        <p class="track-hint">💡 Save this number to track your order status anytime.</p>
-        <a href="https://wa.me/923225925409?text=${ownerMsg}" target="_blank" class="wa-notify-btn">💬 Re-send WhatsApp Notification</a>
-        <a href="#trackingSection" onclick="closeModal();document.getElementById('trackingSection').classList.add('show');setTimeout(()=>{document.getElementById('trackInput').value='${orderNum}';trackOrder()},600)" class="track-btn-link">🔍 Track My Order</a>
-      </div>`;
-
     cart = [];
     renderCart();
-
-    // pre-fill tracker
-    setTimeout(()=>{
-      document.getElementById('trackInput').value = orderNum;
-    }, 500);
-
-  } catch(e){
-    toast('Error placing order. Please try again.','red');
-    btn.disabled=false; btn.textContent='Confirm Order';
+  } catch(e) {
+    toast('Error placing order. Try again.','red');
+    if(btn){ btn.disabled=false; btn.textContent='Confirm Order'; }
     console.error(e);
   }
 }
 
 // ── ORDER TRACKING ──
-const STATUS_STEPS = ['Pending','Confirmed','Out for Delivery','Delivered'];
-const STATUS_ICONS = {'Pending':'⏳','Confirmed':'✅','Out for Delivery':'🚚','Delivered':'🎉','Cancelled':'❌'};
-const STATUS_DESC  = {
-  'Pending':'Your order has been received. We will confirm it shortly.',
-  'Confirmed':'Great! Your order is confirmed and being prepared.',
-  'Out for Delivery':'Your order is on the way! Delivery agent is heading to your address.',
-  'Delivered':'Your order has been delivered. Enjoy your purchase! 🎉',
-  'Cancelled':'This order has been cancelled. Contact us on WhatsApp for help.'
+var STATUS_STEPS = ['Pending','Confirmed','Out for Delivery','Delivered'];
+var STATUS_ICONS = {Pending:'⏳',Confirmed:'✅','Out for Delivery':'🚚',Delivered:'🎉',Cancelled:'❌'};
+var STATUS_DESC  = {
+  Pending:'Your order has been received. We will confirm it shortly.',
+  Confirmed:'Your order is confirmed and being prepared.',
+  'Out for Delivery':'Your order is on the way to your address!',
+  Delivered:'Your order has been delivered. Enjoy! 🎉',
+  Cancelled:'This order has been cancelled. Contact us on WhatsApp.'
 };
 
-async function trackOrder(){
-  const num = document.getElementById('trackInput').value.trim().toUpperCase();
-  if(!num){ toast('Please enter an order number.','red'); return; }
-  const res = document.getElementById('trackResult');
-  const nf  = document.getElementById('trackNotFound');
-  res.classList.remove('show'); nf.classList.remove('show');
-  res.innerHTML = '<div style="text-align:center;padding:2rem"><div class="spinner" style="margin:0 auto 1rem"></div><p style="color:var(--muted)">Looking up order...</p></div>';
-  res.classList.add('show');
-
+async function trackOrder() {
+  var num = ($('trackInput')||{value:''}).value.trim().toUpperCase();
+  if (!num) { toast('Please enter an order number.','red'); return; }
+  var res=$('trackResult'), nf=$('trackNotFound');
+  if(res){ res.classList.remove('show'); res.innerHTML='<div style="text-align:center;padding:2rem"><div class="spinner" style="margin:0 auto 1rem"></div></div>'; res.classList.add('show'); }
+  if(nf) nf.classList.remove('show');
   try {
-    const {data, error: trackError} = await db.from('orders').select('*').eq('order_number', num);
-    if(trackError) throw new Error(trackError.message);
-    if(!data.length){ res.classList.remove('show'); nf.classList.add('show'); return; }
-    const o = data[0];
-    const isCancelled = o.status==='Cancelled';
-    const activeIdx = isCancelled ? -1 : STATUS_STEPS.indexOf(o.status);
-
-    const timeline = STATUS_STEPS.map((step,i)=>{
-      let dotClass = 'tl-dot';
-      let lineClass = 'tl-line';
-      if(isCancelled && step===o.status){ dotClass+=' cancelled'; }
-      else if(i < activeIdx){ dotClass+=' done'; lineClass+=' done'; }
-      else if(i === activeIdx){ dotClass+=' active'; }
-      return `
-      <div class="tl-step">
-        <div class="tl-left">
-          <div class="${dotClass}">${i<=activeIdx&&!isCancelled?'✓':(STATUS_ICONS[step]||'○')}</div>
-          <div class="${lineClass}"></div>
-        </div>
-        <div class="tl-content">
-          <div class="tl-title">${step}</div>
-          <div class="tl-desc">${i===activeIdx||isCancelled?STATUS_DESC[step]:(i<activeIdx?'Completed':'Waiting...')}</div>
-        </div>
-      </div>`;
+    var r = await db.from('orders').select('*').eq('order_number',num);
+    if (!r.data||!r.data.length) { if(res)res.classList.remove('show'); if(nf)nf.classList.add('show'); return; }
+    var o=r.data[0], isCancelled=o.status==='Cancelled', activeIdx=isCancelled?-1:STATUS_STEPS.indexOf(o.status);
+    var timeline = STATUS_STEPS.map(function(step,i){
+      var dc='tl-dot', lc='tl-line';
+      if(isCancelled&&step===o.status) dc+=' cancelled';
+      else if(i<activeIdx){dc+=' done';lc+=' done';}
+      else if(i===activeIdx) dc+=' active';
+      return '<div class="tl-step"><div class="tl-left"><div class="'+dc+'">'+(i<=activeIdx&&!isCancelled?'✓':(STATUS_ICONS[step]||'○'))+'</div><div class="'+lc+'"></div></div><div class="tl-content"><div class="tl-title">'+step+'</div><div class="tl-desc">'+(i===activeIdx||isCancelled?STATUS_DESC[step]:i<activeIdx?'Completed':'Waiting...')+'</div></div></div>';
     }).join('');
-
-    const date = new Date(o.created_at).toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-    const statusKey = o.status.toLowerCase().replace(/ /g,'-');
-
-    res.innerHTML = `
-      <div class="tr-header">
-        <div>
-          <div class="tr-order-num">${o.order_number}</div>
-          <div class="tr-date">Ordered on ${date}</div>
-        </div>
-        <span class="status-badge ${statusKey}">${STATUS_ICONS[o.status]} ${o.status}</span>
-      </div>
-      <div class="timeline">${timeline}</div>
-      <div class="tr-details">
-        <div class="td-block">
-          <h4>👤 Customer</h4>
-          <p><strong>${o.customer_name}</strong><br/>${o.customer_phone}<br/>${o.customer_address}</p>
-        </div>
-        <div class="td-block">
-          <h4>📦 Order Details</h4>
-          <p>${o.items}<br/><br/><strong>Payment:</strong> ${o.payment_method}<br/><strong>Total:</strong> Rs. ${Number(o.total_amount).toLocaleString()}</p>
-        </div>
-      </div>
-      ${o.notes?`<div style="margin-top:1rem;padding:1rem;background:#f8f9fc;border-radius:8px;font-size:.85rem;color:var(--muted)">📝 <strong>Notes:</strong> ${o.notes}</div>`:''}
-      <a href="https://wa.me/923225925409?text=Assalam%20o%20Alaikum!%20I%20want%20to%20ask%20about%20my%20order%20${o.order_number}" target="_blank" class="wa-contact-btn">💬 Contact Us About This Order</a>
-    `;
-  } catch(e){
-    res.innerHTML='<p style="color:var(--red);text-align:center;padding:2rem">Error loading order. Check your internet connection.</p>';
-  }
+    var date=new Date(o.created_at).toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    var sc=o.status.toLowerCase().replace(/ /g,'-');
+    if(res) res.innerHTML='<div class="tr-header"><div><div class="tr-order-num">'+o.order_number+'</div><div class="tr-date">Ordered on '+date+'</div></div><span class="status-badge '+sc+'">'+(STATUS_ICONS[o.status]||'')+' '+o.status+'</span></div>'
+      +'<div class="timeline">'+timeline+'</div>'
+      +'<div class="tr-details"><div class="td-block"><h4>👤 Customer</h4><p><strong>'+o.customer_name+'</strong><br/>'+o.customer_phone+'<br/>'+o.customer_address+'</p></div>'
+      +'<div class="td-block"><h4>📦 Order</h4><p>'+o.items+'<br/><br/><strong>Payment:</strong> '+o.payment_method+'<br/><strong>Total:</strong> Rs. '+Number(o.total_amount).toLocaleString()+'</p></div></div>'
+      +(o.notes?'<div style="margin-top:1rem;padding:1rem;background:#f8f9fc;border-radius:8px;font-size:.85rem">📝 '+o.notes+'</div>':'')
+      +'<a href="https://wa.me/923225925409?text=Query%20about%20order%20'+o.order_number+'" target="_blank" class="wa-contact-btn">💬 Contact Us</a>';
+  } catch(e) { if(res) res.innerHTML='<p style="color:red;text-align:center;padding:2rem">Error loading order.</p>'; }
 }
 
-// ── UTILS ──
-function toggleNav(){ document.getElementById('navLinks').classList.toggle('open'); }
-function toast(msg,type='gold'){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.style.borderLeftColor=type==='red'?'var(--red)':'var(--gold)';
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+// ── ORDER HISTORY ──
+async function lookupOrders() {
+  var phone=($('historyPhone')||{value:''}).value.trim();
+  if(!phone){toast('Please enter your phone number.','red');return;}
+  var el=$('historyResults');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:2rem"><div class="spinner" style="margin:0 auto 1rem"></div></div>';
+  try {
+    var clean=phone.replace(/[^0-9]/g,'');
+    var r=await db.from('orders').select('*').ilike('customer_phone','%'+clean+'%').order('created_at',{ascending:false});
+    if(!r.data||!r.data.length){el.innerHTML='<div style="text-align:center;padding:2rem;color:#888"><div style="font-size:2.5rem;margin-bottom:1rem">📦</div><p>No orders found.<br/><a href="https://wa.me/923225925409" style="color:#FF6B00">Contact us on WhatsApp</a></p></div>';return;}
+    el.innerHTML='<p style="font-size:.85rem;color:#888;margin-bottom:1rem">Found '+r.data.length+' order(s)</p>'+r.data.map(function(o){
+      var sc=o.status.toLowerCase().replace(/ /g,'-');
+      return '<div style="background:#fff;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:.9rem;border:1px solid #e8e8e8;box-shadow:0 2px 8px rgba(0,0,0,.05)">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem">'
+          +'<div><div style="font-family:Playfair Display,serif;font-size:1.1rem;color:#1A1A1A;font-weight:700">'+o.order_number+'</div>'
+          +'<div style="font-size:.75rem;color:#aaa">'+new Date(o.created_at).toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric'})+'</div></div>'
+          +'<span class="status-pill '+sc+'">'+(STATUS_ICONS[o.status]||'')+' '+o.status+'</span>'
+        +'</div>'
+        +'<div style="font-size:.85rem;color:#555;margin-bottom:.6rem">📦 '+o.items+'</div>'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">'
+          +'<span style="font-weight:700;color:#1A1A1A">Rs. '+Number(o.total_amount).toLocaleString()+' · '+o.payment_method+'</span>'
+          +'<button onclick="var ti=$(\'trackInput\');if(ti)ti.value=\''+o.order_number+'\';var ts=$(\'trackingSection\');if(ts)ts.classList.add(\'show\');trackOrder();ts.scrollIntoView({behavior:\'smooth\'})" style="background:#1A1A1A;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif">🔍 Track</button>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  } catch(e){el.innerHTML='<p style="color:red;text-align:center;padding:2rem">Error. Check internet.</p>';}
 }
 
-// Init
-renderCart();
-renderProducts('all');
-loadRealReviews();
-renderWishlist();
-setTimeout(renderRecentlyViewed, 1500);
-
-
-
-
-
-
-
-// ════════════════════════════════════════════════
-// SALE COUNTDOWN TIMER
-// ════════════════════════════════════════════════
-(function(){
-  // Set sale end: 3 days from now
-  const stored = localStorage.getItem('walliSaleEnd');
-  let end;
-  if(stored){ end = new Date(stored); }
-  else { end = new Date(Date.now() + 3*24*60*60*1000); localStorage.setItem('walliSaleEnd', end.toISOString()); }
-
-  function updateTimer(){
-    const now  = new Date();
-    const diff = end - now;
-    if(diff <= 0){ document.getElementById('saleBanner').style.display='none'; return; }
-    const h = Math.floor(diff/3600000);
-    const m = Math.floor((diff%3600000)/60000);
-    const s = Math.floor((diff%60000)/1000);
-    document.getElementById('th').textContent = String(h).padStart(2,'0');
-    document.getElementById('tm').textContent = String(m).padStart(2,'0');
-    document.getElementById('ts').textContent = String(s).padStart(2,'0');
-  }
-  updateTimer();
-  setInterval(updateTimer, 1000);
-})();
-
-function adjustOffsets(){
-  const saleH  = (document.getElementById('saleBanner')?.offsetHeight||0);
-  const ticker = document.querySelector('.ticker');
-  const nav    = document.querySelector('nav');
-  if(ticker) ticker.style.top = saleH+'px';
-  if(nav)    nav.style.top    = (saleH+34)+'px';
-}
-window.addEventListener('resize', adjustOffsets);
-
-// ════════════════════════════════════════════════
-// WHATSAPP POPUP (shows after 12 seconds)
-// ════════════════════════════════════════════════
-setTimeout(()=>{
-  if(!localStorage.getItem('waPop')){
-    document.getElementById('waPopup').classList.add('show');
-    localStorage.setItem('waPop','1');
-  }
-}, 12000);
-
-// ════════════════════════════════════════════════
-// GLOBAL SEARCH
-// ════════════════════════════════════════════════
-let searchTimeout;
-function globalSearchProducts(q){
-  clearTimeout(searchTimeout);
-  const clearBtn = document.getElementById('sbClear');
-  clearBtn.style.display = q ? 'block' : 'none';
-  searchTimeout = setTimeout(async ()=>{
-    if(!q.trim()){ renderProducts(currentFilter); document.querySelector('.search-results-info')?.remove(); return; }
-    const grid = document.getElementById('productsGrid');
-    grid.innerHTML = '<div class="loading-grid"><div class="spinner"></div><p>Searching...</p></div>';
-    try {
-      const {data} = await db.from('products').select('*').ilike('name','%'+q+'%').order('created_at',{ascending:false});
-      const info = document.querySelector('.search-results-info');
-      if(info) info.remove();
-      const infoEl = document.createElement('p');
-      infoEl.className = 'search-results-info';
-      infoEl.textContent = `${(data||[]).length} result(s) for "${q}"`;
-      grid.parentNode.insertBefore(infoEl, grid);
-      if(!data?.length){
-        grid.innerHTML = '<div class="empty-state"><div style="font-size:3rem;margin-bottom:1rem">🔍</div><p>No products found for "'+q+'".<br/>Try a different search or <a href="https://wa.me/923225925409" style="color:#FF6B00">ask us on WhatsApp</a>.</p></div>';
-        return;
-      }
-      // render search results using same card builder
-      renderProductCards(data, grid);
-    } catch(e){ console.error(e); }
-  }, 400);
-}
-
-function clearSearch(){
-  document.getElementById('globalSearch').value = '';
-  document.getElementById('sbClear').style.display = 'none';
-  document.querySelector('.search-results-info')?.remove();
-  renderProducts(currentFilter);
-}
-
-// Show search bar after hero
-window.addEventListener('scroll', ()=>{
-  const wrap = document.getElementById('searchBarWrap');
-  if(wrap) wrap.style.display = window.scrollY > 400 ? 'flex' : 'none';
-});
-
-// ════════════════════════════════════════════════
-// WISHLIST
-// ════════════════════════════════════════════════
-let wishlist = JSON.parse(localStorage.getItem('walliWishlist')||'[]');
+// ── WISHLIST ──
+function saveWishlist(){ localStorage.setItem('walliWishlist',JSON.stringify(wishlist)); }
 
 function renderWishlist(){
-  const body   = document.getElementById('wlBody');
-  const footer = document.getElementById('wlFooter');
-  const badge  = document.getElementById('wlBadge');
-  badge.textContent  = wishlist.length;
-  badge.style.display= wishlist.length ? 'flex' : 'none';
+  var body=$('wlBody'),footer=$('wlFooter'),badge=$('wlBadge');
+  if(badge){badge.textContent=wishlist.length;badge.style.display=wishlist.length?'flex':'none';}
+  if(!body) return;
   if(!wishlist.length){
-    body.innerHTML = '<div class="wl-empty"><div style="font-size:3rem;margin-bottom:1rem">❤️</div><p>Your wishlist is empty.<br/>Tap 🤍 on any product to save it!</p></div>';
-    footer.style.display='none'; return;
+    body.innerHTML='<div class="wl-empty"><div style="font-size:3rem;margin-bottom:1rem">❤️</div><p>Your wishlist is empty.<br/>Tap 🤍 on any product!</p></div>';
+    if(footer)footer.style.display='none';return;
   }
-  footer.style.display='block';
-  body.innerHTML = wishlist.map((w,i)=>`
-    <div class="wl-item">
-      <div class="wl-thumb" style="background:${w.bg}">${w.img?`<img src="${w.img}" alt=""/>`:(w.emoji||'👕')}</div>
-      <div class="wl-info">
-        <div class="wl-name">${w.name}</div>
-        <div class="wl-price">Rs. ${Number(w.price).toLocaleString()}</div>
-      </div>
-      <button class="wl-remove" onclick="removeFromWishlist(${i})" title="Remove">🗑️</button>
-    </div>`).join('');
+  if(footer)footer.style.display='block';
+  body.innerHTML=wishlist.map(function(w,i){
+    return '<div class="wl-item"><div class="wl-thumb" style="background:'+w.bg+'">'+(w.img?'<img src="'+w.img+'" alt=""/>':(w.emoji||'👕'))+'</div>'
+      +'<div class="wl-info"><div class="wl-name">'+w.name+'</div><div class="wl-price">Rs. '+Number(w.price).toLocaleString()+'</div></div>'
+      +'<button class="wl-remove" onclick="removeFromWishlist('+i+')">🗑️</button></div>';
+  }).join('');
 }
 
 function toggleWishlist(){
-  document.getElementById('wlDrawer').classList.toggle('open');
-  document.getElementById('wlOverlay').classList.toggle('open');
+  var d=$('wlDrawer'),o=$('wlOverlay');
+  if(d)d.classList.toggle('open');
+  if(o)o.classList.toggle('open');
   renderWishlist();
 }
 
 function toggleWishItem(id,name,price,emoji,bg,img){
-  const idx = wishlist.findIndex(w=>w.id===id);
-  if(idx>-1){ wishlist.splice(idx,1); toast('Removed from wishlist','red'); }
-  else { wishlist.push({id,name,price,emoji,bg,img}); toast('Added to wishlist ❤️'); }
-  localStorage.setItem('walliWishlist', JSON.stringify(wishlist));
-  renderWishlist();
-  renderProducts(currentFilter);
+  var idx=wishlist.findIndex(function(w){return w.id===id;});
+  if(idx>-1){wishlist.splice(idx,1);toast('Removed from wishlist','red');}
+  else{wishlist.push({id:id,name:name,price:price,emoji:emoji,bg:bg,img:img});toast('Added to wishlist ❤️');}
+  saveWishlist();renderWishlist();renderProducts(currentFilter);
 }
 
-function removeFromWishlist(i){
-  wishlist.splice(i,1);
-  localStorage.setItem('walliWishlist', JSON.stringify(wishlist));
-  renderWishlist();
-  renderProducts(currentFilter);
-}
+function removeFromWishlist(i){wishlist.splice(i,1);saveWishlist();renderWishlist();renderProducts(currentFilter);}
 
 function addAllToCart(){
-  wishlist.forEach(w=>{ const ex=cart.find(c=>c.id===w.id); if(ex)ex.qty++; else cart.push({...w,qty:1,size:'',sku:''}); });
-  renderCart();
-  toggleWishlist();
-  toggleCart();
-  toast('All wishlist items added to cart! 🛒');
+  wishlist.forEach(function(w){var ex=cart.find(function(c){return c.id===w.id;});if(ex)ex.qty++;else cart.push({id:w.id,name:w.name,price:w.price,emoji:w.emoji,bg:w.bg,img:w.img,qty:1,size:'',sku:''});});
+  renderCart();toggleWishlist();toggleCart();toast('All wishlist items added to cart! 🛒');
 }
 
-// ════════════════════════════════════════════════
-// RECENTLY VIEWED
-// ════════════════════════════════════════════════
-let recentlyViewedList = JSON.parse(localStorage.getItem('walliRecent')||'[]');
-
+// ── RECENTLY VIEWED ──
 function trackRecentlyViewed(p){
-  recentlyViewedList = recentlyViewedList.filter(r=>r.id!==p.id);
-  recentlyViewedList.unshift({id:p.id,name:p.name,price:p.price,emoji:p.emoji,bg:p.bg,img:p.img,category:p.category,old_price:p.old_price,badge:p.badge,sizes:p.sizes,sku:p.sku});
-  if(recentlyViewedList.length>8) recentlyViewedList.pop();
-  localStorage.setItem('walliRecent', JSON.stringify(recentlyViewedList));
+  recentlyViewedList=recentlyViewedList.filter(function(r){return r.id!==p.id;});
+  recentlyViewedList.unshift(p);
+  if(recentlyViewedList.length>8)recentlyViewedList.pop();
+  try{localStorage.setItem('walliRecent',JSON.stringify(recentlyViewedList));}catch(e){}
 }
 
 function renderRecentlyViewed(){
-  const sec  = document.getElementById('recentlyViewed');
-  const grid = document.getElementById('recentlyViewedGrid');
-  if(!recentlyViewedList.length||recentlyViewedList.length<2){ sec.classList.remove('show'); return; }
-  sec.classList.add('show');
-  renderProductCards(recentlyViewedList.slice(0,4), grid);
+  var sec=$('recentlyViewed'),grid=$('recentlyViewedGrid');
+  if(!sec||!grid||recentlyViewedList.length<2){if(sec)sec.style.display='none';return;}
+  sec.style.display='block';
+  buildProductCards(recentlyViewedList.slice(0,4),grid,false);
 }
 
-// ════════════════════════════════════════════════
-// SHARED CARD BUILDER (used by search + recently viewed)
-// ════════════════════════════════════════════════
-function renderProductCards(products, grid){
-  grid.innerHTML = products.map(p=>{
-    const sizes  = (p.sizes||[]).map(s=>`<span class="size-tag">${s}</span>`).join('');
-    const badge  = p.badge ? `<span class="p-badge ${p.badge.toLowerCase()}">${p.badge}</span>` : '';
-    const oldP   = p.old_price>0 ? `<span class="p-old">Rs. ${Number(p.old_price).toLocaleString()}</span>` : '';
-    const imgEl  = p.img ? `<img src="${p.img}" alt="${p.name}" loading="lazy"/>` : `<span>${p.emoji||'👕'}</span>`;
-    const sku    = p.sku || ('WG-'+String(p.id).padStart(4,'0'));
-    const isWished = wishlist.some(w=>w.id===p.id);
-    return `
-    <div class="p-card">
-      <div class="p-img" style="background:${p.bg||'#d0dae8'}">${imgEl}${badge}</div>
-      <div class="p-info">
-        <div class="p-cat">${p.category==='men'?"Men's":p.category==='women'?"Women's":"Kids'"} Collection</div>
-        <h4>${p.name}</h4>
-        <div class="p-sku">SKU: <span>${sku}</span></div>
-        ${sizes?`<div class="p-sizes">${sizes}</div>`:''}
-        <div class="p-row">
-          <div><span class="p-price">Rs. ${Number(p.price).toLocaleString()}</span>${oldP}</div>
-          <div style="display:flex;gap:.4rem">
-            <button class="wish-btn${isWished?' wished':''}" onclick="toggleWishItem(${p.id},'${p.name.replace(/'/g,"\'")}',${p.price},'${p.emoji||'👕'}','${p.bg||'#d0dae8'}','${p.img||''}')">${isWished?'❤️':'🤍'}</button>
-            <button class="p-btn" onclick="addToCart(${p.id},'${p.name.replace(/'/g,"\'")}',${p.price},'${p.emoji||'👕'}','${p.bg||'#d0dae8'}','${p.img||''}','${sku}')">Add to Cart</button>
-          </div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+// ── GLOBAL SEARCH ──
+function globalSearchProducts(q){
+  clearTimeout(searchTimeout);
+  var cl=$('sbClear');
+  if(cl)cl.style.display=q?'block':'none';
+  searchTimeout=setTimeout(async function(){
+    if(!q.trim()){renderProducts(currentFilter);var info=document.querySelector('.search-results-info');if(info)info.remove();return;}
+    var grid=$('productsGrid');
+    if(!grid)return;
+    grid.innerHTML='<div class="loading-grid"><div class="spinner"></div><p>Searching...</p></div>';
+    try{
+      var r=await db.from('products').select('*').ilike('name','%'+q+'%').order('created_at',{ascending:false});
+      var info=document.querySelector('.search-results-info');if(info)info.remove();
+      var infoEl=document.createElement('p');infoEl.className='search-results-info';
+      infoEl.textContent=(r.data||[]).length+' result(s) for "'+q+'"';
+      grid.parentNode.insertBefore(infoEl,grid);
+      if(!r.data||!r.data.length){grid.innerHTML='<div class="empty-state"><div style="font-size:3rem;margin-bottom:1rem">🔍</div><p>No products found for "'+q+'".<br/><a href="https://wa.me/923225925409" style="color:#FF6B00">Ask us on WhatsApp</a></p></div>';return;}
+      buildProductCards(r.data,grid,true);
+    }catch(e){console.error(e);}
+  },400);
 }
 
-// ════════════════════════════════════════════════
-// ORDER HISTORY LOOKUP
-// ════════════════════════════════════════════════
-async function lookupOrders(){
-  const phone = document.getElementById('historyPhone').value.trim();
-  if(!phone){ toast('Please enter your phone number.','red'); return; }
-  const el = document.getElementById('historyResults');
-  el.innerHTML = '<div style="text-align:center;padding:2rem"><div class="spinner" style="margin:0 auto 1rem"></div><p style="color:#888">Looking up your orders...</p></div>';
-  try {
-    // Try with different phone formats
-    const clean = phone.replace(/[^0-9]/g,'');
-    const {data} = await db.from('orders').select('*').or(`customer_phone.ilike.%${clean}%,customer_phone.ilike.%${phone}%`).order('created_at',{ascending:false});
-    if(!data?.length){
-      el.innerHTML = '<div style="text-align:center;padding:2rem;color:#888"><div style="font-size:2.5rem;margin-bottom:1rem">📦</div><p>No orders found for this number.<br/>Check the number or <a href="https://wa.me/923225925409" style="color:#FF6B00">contact us on WhatsApp</a>.</p></div>';
-      return;
-    }
-    const statusIcons = {'Pending':'⏳','Confirmed':'✅','Out for Delivery':'🚚','Delivered':'🎉','Cancelled':'❌'};
-    el.innerHTML = `<p style="font-size:.85rem;color:#888;margin-bottom:1rem">Found ${data.length} order(s)</p>` + data.map(o=>`
-      <div style="background:#fff;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:.9rem;border:1px solid #e8e8e8;box-shadow:0 2px 8px rgba(0,0,0,.05)">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem">
-          <div>
-            <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:#1A1A1A;font-weight:700">${o.order_number}</div>
-            <div style="font-size:.75rem;color:#aaa">${new Date(o.created_at).toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric'})}</div>
-          </div>
-          <span class="status-pill ${o.status.toLowerCase().replace(/ /g,'-')}">${statusIcons[o.status]||''} ${o.status}</span>
-        </div>
-        <div style="font-size:.85rem;color:#555;margin-bottom:.6rem">📦 ${o.items}</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem">
-          <span style="font-weight:700;color:#1A1A1A">Rs. ${Number(o.total_amount).toLocaleString()} · ${o.payment_method}</span>
-          <button onclick="document.getElementById('trackInput').value='${o.order_number}';document.getElementById('trackingSection').classList.add('show');trackOrder();document.getElementById('trackingSection').scrollIntoView({behavior:'smooth'})" style="background:#1A1A1A;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">🔍 Track</button>
-        </div>
-      </div>`).join('');
-  } catch(e){ el.innerHTML = '<p style="color:#c0392b;text-align:center;padding:2rem">Error looking up orders. Check your internet connection.</p>'; }
+function clearSearch(){
+  var inp=$('globalSearch');if(inp)inp.value='';
+  var cl=$('sbClear');if(cl)cl.style.display='none';
+  var info=document.querySelector('.search-results-info');if(info)info.remove();
+  renderProducts(currentFilter);
 }
 
-// ── LOAD REAL REVIEWS FROM DATABASE ──
-let allDbReviews = [];
-let reviewFilterVal = 'all';
-let reviewsShown = 6;
+window.addEventListener('scroll',function(){
+  var wrap=$('searchBarWrap');
+  if(wrap)wrap.style.display=window.scrollY>400?'flex':'none';
+});
 
+// ── SALE COUNTDOWN ──
+(function(){
+  var stored=localStorage.getItem('walliSaleEnd');
+  var end=stored?new Date(stored):new Date(Date.now()+3*24*60*60*1000);
+  if(!stored)localStorage.setItem('walliSaleEnd',end.toISOString());
+  function tick(){
+    var diff=end-new Date();
+    if(diff<=0){var b=$('saleBanner');if(b)b.style.display='none';return;}
+    var h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+    setText('th',String(h).padStart(2,'0'));
+    setText('tm',String(m).padStart(2,'0'));
+    setText('ts',String(s).padStart(2,'0'));
+  }
+  tick();setInterval(tick,1000);
+})();
+
+// ── WHATSAPP POPUP ──
+setTimeout(function(){
+  if(!localStorage.getItem('waPop')){
+    var p=$('waPopup');if(p)p.classList.add('show');
+    localStorage.setItem('waPop','1');
+  }
+},12000);
+
+// ── REAL REVIEWS ──
 async function loadRealReviews(){
-  try {
-    if(!db) return;
-    const {data, error} = await db.from('reviews').select('*').order('created_at',{ascending:false});
-    if(error || !data || !data.length) return;
-    allDbReviews = data;
-    updateRatingSummary(data);
-    document.getElementById('realReviewsSection').style.display = 'block';
+  if(!db)return;
+  try{
+    var r=await db.from('reviews').select('*').order('created_at',{ascending:false});
+    if(r.error||!r.data||!r.data.length)return;
+    allDbReviews=r.data;
+    updateRatingSummary(r.data);
+    show('realReviewsSection');
     renderRealReviews();
-  } catch(e){ console.log('Reviews not loaded:', e.message); }
+  }catch(e){console.log('Reviews:',e.message);}
 }
 
 function updateRatingSummary(reviews){
-  const total = reviews.length;
-  if(!total) return;
-  const avg = (reviews.reduce((s,r)=>s+r.rating,0)/total).toFixed(1);
-  const counts = {5:0,4:0,3:0,2:0,1:0};
-  reviews.forEach(r=>{ if(counts[r.rating]!==undefined) counts[r.rating]++; });
-
-  document.getElementById('avgScore').textContent = avg;
-  document.getElementById('avgStars').textContent = '★'.repeat(Math.round(avg)) + '☆'.repeat(5-Math.round(avg));
-  document.getElementById('reviewCount').textContent = `Based on ${total} verified review${total!==1?'s':''}`;
-
-  [5,4,3,2,1].forEach(n=>{
-    const pct = total ? Math.round((counts[n]/total)*100) : 0;
-    document.getElementById('bar'+n).style.width = pct+'%';
-    document.getElementById('cnt'+n).textContent = counts[n];
+  var total=reviews.length;if(!total)return;
+  var avg=(reviews.reduce(function(s,r){return s+r.rating;},0)/total).toFixed(1);
+  var counts={5:0,4:0,3:0,2:0,1:0};
+  reviews.forEach(function(r){if(counts[r.rating]!==undefined)counts[r.rating]++;});
+  setText('avgScore',avg);
+  setText('avgStars','★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg)));
+  setText('reviewCount','Based on '+total+' verified review'+(total!==1?'s':''));
+  [5,4,3,2,1].forEach(function(n){
+    var pct=total?Math.round((counts[n]/total)*100):0;
+    var bar=$('bar'+n);if(bar)bar.style.width=pct+'%';
+    setText('cnt'+n,counts[n]);
   });
 }
 
-function filterRealReviews(val, btn){
-  reviewFilterVal = val;
-  reviewsShown = 6;
-  document.querySelectorAll('.rv-filter-btn').forEach(b=>b.classList.remove('active'));
+function filterRealReviews(val,btn){
+  reviewFilterVal=val;reviewsShown=6;
+  document.querySelectorAll('.rv-filter-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
   renderRealReviews();
 }
 
 function renderRealReviews(){
-  let list = reviewFilterVal==='all'
-    ? allDbReviews
-    : allDbReviews.filter(r=>r.rating===reviewFilterVal);
-
-  document.getElementById('realReviewsCount').textContent = `(${list.length})`;
-
-  const shown = list.slice(0, reviewsShown);
-  const stars = n => '★'.repeat(n)+'☆'.repeat(5-n);
-  const initial = name => name.charAt(0).toUpperCase();
-  const date = d => new Date(d).toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric'});
-
-  document.getElementById('realReviewsList').innerHTML = shown.map(r=>`
-    <div class="real-review-card">
-      <div class="rrc-top">
-        <div class="rrc-avatar">${initial(r.customer_name)}</div>
-        <div>
-          <div class="rrc-name">${r.customer_name} <span class="verified-badge">✓ Verified</span></div>
-          <div class="rrc-loc">📍 ${r.location||'Shakargarh'}</div>
-        </div>
-      </div>
-      <div class="rrc-stars">${stars(r.rating)}</div>
-      <div class="rrc-msg">"${r.message}"</div>
-      ${r.product_category?`<span class="rrc-tag">📦 ${r.product_category}</span>`:''}
-      <div class="rrc-date">${date(r.created_at)}</div>
-    </div>`).join('');
-
-  // show load more button
-  const lmBtn = document.getElementById('loadMoreBtn');
-  lmBtn.style.display = list.length > reviewsShown ? 'block' : 'none';
+  var list=reviewFilterVal==='all'?allDbReviews:allDbReviews.filter(function(r){return r.rating===reviewFilterVal;});
+  setText('realReviewsCount','('+list.length+')');
+  var el=$('realReviewsList');if(!el)return;
+  function stars(n){return '★'.repeat(n)+'☆'.repeat(5-n);}
+  el.innerHTML=list.slice(0,reviewsShown).map(function(r){
+    return '<div class="real-review-card">'
+      +'<div class="rrc-top"><div class="rrc-avatar">'+r.customer_name.charAt(0).toUpperCase()+'</div>'
+      +'<div><div class="rrc-name">'+r.customer_name+' <span class="verified-badge">✓ Verified</span></div>'
+      +'<div class="rrc-loc">📍 '+(r.location||'Shakargarh')+'</div></div></div>'
+      +'<div class="rrc-stars">'+stars(r.rating)+'</div>'
+      +'<div class="rrc-msg">"'+r.message+'"</div>'
+      +(r.product_category?'<span class="rrc-tag">📦 '+r.product_category+'</span>':'')
+      +'<div class="rrc-date">'+new Date(r.created_at).toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric'})+'</div>'
+    +'</div>';
+  }).join('');
+  var lm=$('loadMoreBtn');if(lm)lm.style.display=list.length>reviewsShown?'block':'none';
 }
 
-function loadMoreReviews(){
-  reviewsShown += 6;
-  renderRealReviews();
-}
-
+function loadMoreReviews(){reviewsShown+=6;renderRealReviews();}
 
 // ── FEEDBACK ──
-let selectedRating = 0;
-
 function setRating(n){
-  selectedRating = n;
-  document.querySelectorAll('.star-pick').forEach((s,i)=>{
-    s.classList.toggle('active', i < n);
-  });
+  selectedRating=n;
+  document.querySelectorAll('.star-pick').forEach(function(s,i){s.classList.toggle('active',i<n);});
 }
 
-// hover effect on stars
-document.addEventListener('DOMContentLoaded', ()=>{
-  document.querySelectorAll('.star-pick').forEach((s,i)=>{
-    s.addEventListener('mouseenter',()=>{
-      document.querySelectorAll('.star-pick').forEach((x,j)=>x.classList.toggle('active',j<=i));
-    });
-    s.addEventListener('mouseleave',()=>{
-      document.querySelectorAll('.star-pick').forEach((x,j)=>x.classList.toggle('active',j<selectedRating));
-    });
-  });
-});
-
 async function submitFeedback(){
-  const name     = document.getElementById('fbName').value.trim();
-  const phone    = document.getElementById('fbPhone').value.trim();
-  const product  = document.getElementById('fbProduct').value;
-  const message  = document.getElementById('fbMessage').value.trim();
-  const location = document.getElementById('fbLocation').value.trim();
-
-  if(!name){ toast('Please enter your name.','red'); return; }
-  if(!selectedRating){ toast('Please select a star rating.','red'); return; }
-  if(!message){ toast('Please write your review.','red'); return; }
-
-  const btn = document.getElementById('fbSubmitBtn');
-  btn.disabled = true;
-  btn.textContent = 'Submitting...';
-
-  try {
-    // Save to Supabase reviews table
-    if(db){
-      await db.from('reviews').insert({
-        customer_name: name,
-        customer_phone: phone || null,
-        rating: selectedRating,
-        product_category: product || null,
-        message: message,
-        location: location || null,
-        created_at: new Date().toISOString()
-      });
-    }
-
-    // Also send to owner via WhatsApp
-    const stars = '★'.repeat(selectedRating) + '☆'.repeat(5-selectedRating);
-    const waMsg = encodeURIComponent(
-      `⭐ *New Customer Review!*\n\n`+
-      `👤 *Name:* ${name}\n`+
-      `${stars}\n`+
-      `📦 *Bought:* ${product||'Not specified'}\n`+
-      `💬 *Review:* ${message}\n`+
-      `${location?'📍 *Location:* '+location+'\n':''}`+
-      `${phone?'📞 *Phone:* '+phone:''}\n\n`+
-      `Please add this review to your website!`
-    );
-    window.open('https://wa.me/923225925409?text='+waMsg, '_blank');
-
-    // Refresh reviews list
+  var name=($('fbName')||{value:''}).value.trim();
+  var phone=($('fbPhone')||{value:''}).value.trim();
+  var product=($('fbProduct')||{value:''}).value;
+  var message=($('fbMessage')||{value:''}).value.trim();
+  var location=($('fbLocation')||{value:''}).value.trim();
+  if(!name){toast('Please enter your name.','red');return;}
+  if(!selectedRating){toast('Please select a star rating.','red');return;}
+  if(!message){toast('Please write your review.','red');return;}
+  var btn=$('fbSubmitBtn');if(btn){btn.disabled=true;btn.textContent='Submitting...';}
+  try{
+    if(db)await db.from('reviews').insert({customer_name:name,customer_phone:phone||null,rating:selectedRating,product_category:product||null,message:message,location:location||null,created_at:new Date().toISOString()});
+    var stars='★'.repeat(selectedRating)+'☆'.repeat(5-selectedRating);
+    var waMsg=encodeURIComponent('⭐ *New Review!*\n\n👤 *Name:* '+name+'\n'+stars+'\n📦 *Bought:* '+(product||'N/A')+'\n💬 *Review:* '+message+(location?'\n📍 '+location:'')+(phone?'\n📞 '+phone:''));
+    window.open('https://wa.me/923225925409?text='+waMsg,'_blank');
     await loadRealReviews();
-
-    // Show success
-    document.getElementById('feedbackFormBox').innerHTML = `
-      <div class="fb-success">
-        <div class="fs-icon">🎉</div>
-        <h3>Thank You for Your Review!</h3>
-        <p>JazakAllah ${name}! Your review has been submitted and sent to Walli Garments on WhatsApp.<br/><br/>Your feedback helps us serve Shakargarh better every day! 🙏</p>
-      </div>`;
-
-  } catch(e){
-    console.error('Feedback error:', e);
-    // Even if DB fails, WhatsApp notification was sent
-    document.getElementById('feedbackFormBox').innerHTML = `
-      <div class="fb-success">
-        <div class="fs-icon">✅</div>
-        <h3>Review Sent!</h3>
-        <p>Your review was sent to Walli Garments via WhatsApp. JazakAllah ${name}!</p>
-      </div>`;
+    setHtml('feedbackFormBox','<div class="fb-success"><div class="fs-icon">🎉</div><h3>Thank You '+name+'!</h3><p>Your review is now live on the website! JazakAllah 🙏</p></div>');
+  }catch(e){
+    setHtml('feedbackFormBox','<div class="fb-success"><div class="fs-icon">✅</div><h3>Review Sent!</h3><p>JazakAllah '+name+'! Sent via WhatsApp.</p></div>');
   }
 }
 
-// ── TESTIMONIALS CAROUSEL ──
-let testiIndex = 0;
-const TESTI_VISIBLE = window.innerWidth < 600 ? 1 : window.innerWidth < 900 ? 2 : 3;
-const testiCards = document.querySelectorAll ? 0 : 0; // will be set on load
-
+// ── CAROUSEL ──
 function initTesti(){
-  const track = document.getElementById('testiTrack');
-  const dots  = document.getElementById('testiDots');
-  if(!track||!dots) return;
-  const cards = track.children.length;
-  const visible = window.innerWidth < 600 ? 1 : window.innerWidth < 900 ? 2 : 3;
-  const pages = Math.ceil(cards / visible);
-  dots.innerHTML = Array.from({length:pages},(_,i)=>
-    `<button class="tn-dot${i===0?' active':''}" onclick="testiGo(${i})"></button>`
-  ).join('');
+  var track=$('testiTrack'),dots=$('testiDots');
+  if(!track||!dots)return;
+  var cards=track.children.length;
+  var visible=window.innerWidth<600?1:window.innerWidth<900?2:3;
+  var pages=Math.ceil(cards/visible);
+  dots.innerHTML=Array.from({length:pages},function(_,i){return '<button class="tn-dot'+(i===0?' active':'')+'" onclick="testiGo('+i+')"></button>';}).join('');
   testiGo(0);
-  // auto scroll every 4s
-  setInterval(()=>testiNext(), 4500);
+  setInterval(function(){testiNext();},4500);
 }
-
 function testiGo(page){
-  const track = document.getElementById('testiTrack');
-  if(!track) return;
-  const visible = window.innerWidth < 600 ? 1 : window.innerWidth < 900 ? 2 : 3;
-  const cardW = track.children[0].offsetWidth + 19; // card + gap
-  const pages = Math.ceil(track.children.length / visible);
-  testiIndex = ((page % pages) + pages) % pages;
-  track.style.transform = `translateX(-${testiIndex * visible * cardW}px)`;
-  document.querySelectorAll('.tn-dot').forEach((d,i)=>d.classList.toggle('active',i===testiIndex));
+  var track=$('testiTrack');if(!track)return;
+  var visible=window.innerWidth<600?1:window.innerWidth<900?2:3;
+  var pages=Math.ceil(track.children.length/visible);
+  testiIndex=((page%pages)+pages)%pages;
+  var cardW=(track.children[0]?track.children[0].offsetWidth:300)+19;
+  track.style.transform='translateX(-'+(testiIndex*visible*cardW)+'px)';
+  document.querySelectorAll('.tn-dot').forEach(function(d,i){d.classList.toggle('active',i===testiIndex);});
 }
+function testiNext(){testiGo(testiIndex+1);}
+function testiPrev(){testiGo(testiIndex-1);}
 
-function testiNext(){ testiGo(testiIndex+1); }
-function testiPrev(){ testiGo(testiIndex-1); }
-
-window.addEventListener('load', initTesti);
-window.addEventListener('resize', ()=>testiGo(0));
-
-// ── SIZE GUIDE TABS ──
-function showSizeTab(tab, btn){
-  document.querySelectorAll('.sg-panel').forEach(p=>p.style.display='none');
-  document.querySelectorAll('.sg-tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sg-'+tab).style.display='block';
+// ── SIZE GUIDE ──
+function showSizeTab(tab,btn){
+  document.querySelectorAll('.sg-panel').forEach(function(p){if(p)p.style.display='none';});
+  document.querySelectorAll('.sg-tab').forEach(function(b){b.classList.remove('active');});
+  var el=$('sg-'+tab);if(el)el.style.display='block';
   btn.classList.add('active');
 }
 
 // ── QR CODE ──
-function showQR(sku, name){
-  document.getElementById('qrProductName').textContent = name;
-  document.getElementById('qrSkuLabel').textContent = 'SKU: ' + sku;
-  const canvas = document.getElementById('qrCanvas');
-  canvas.innerHTML = '';
-  const qrUrl = window.location.origin + window.location.pathname + '?sku=' + sku;
-  new QRCode(canvas, {
-    text: qrUrl,
-    width: 180,
-    height: 180,
-    colorDark: '#1A1A1A',
-    colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.H
-  });
-  document.getElementById('qrModalBg').classList.add('open');
+function showQR(sku,name){
+  setText('qrProductName',name);
+  setText('qrSkuLabel','SKU: '+sku);
+  var canvas=$('qrCanvas');if(!canvas)return;
+  canvas.innerHTML='';
+  try{new QRCode(canvas,{text:window.location.origin+'/?sku='+sku,width:180,height:180,colorDark:'#1A1A1A',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});}catch(e){}
+  var m=$('qrModalBg');if(m)m.classList.add('open');
 }
-function closeQR(){ document.getElementById('qrModalBg').classList.remove('open'); }
+function closeQR(){var m=$('qrModalBg');if(m)m.classList.remove('open');}
 
-// Show tracking if hash
-if(location.hash==='#trackingSection') document.getElementById('trackingSection').classList.add('show');
+// ── NAV ──
+function toggleNav(){var n=$('navLinks');if(n)n.classList.toggle('open');}
+
+// ── TOAST ──
+function toast(msg,type){
+  var t=$('toast');if(!t)return;
+  t.textContent=msg;
+  t.style.borderLeftColor=type==='red'?'#c0392b':'#FF6B00';
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3000);
+}
+
+// ── START ──
+window.addEventListener('load',function(){
+  try{wishlist=JSON.parse(localStorage.getItem('walliWishlist')||'[]');}catch(e){wishlist=[];}
+  try{recentlyViewedList=JSON.parse(localStorage.getItem('walliRecent')||'[]');}catch(e){recentlyViewedList=[];}
+  initSupabase();
+  renderCart();
+  renderWishlist();
+  renderProducts('all');
+  loadRealReviews();
+  initTesti();
+  setTimeout(renderRecentlyViewed,1500);
+  if(location.hash==='#trackingSection'){var ts=$('trackingSection');if(ts)ts.classList.add('show');}
+});
+
 </script>
 </body>
 </html>
