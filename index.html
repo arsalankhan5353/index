@@ -31,7 +31,7 @@
     .wp-close{position:absolute;top:8px;right:10px;background:none;border:none;color:#bbb;cursor:pointer;font-size:1rem}
 
     /* SALE BANNER */
-    .sale-banner{background:linear-gradient(90deg,#2E7D51,#1a6640,#2E7D51);background-size:200%;animation:gradMove 3s linear infinite;color:#fff;text-align:center;padding:10px 1rem;font-weight:700;font-size:.85rem;letter-spacing:.5px;position:relative;z-index:1002;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap}
+    .sale-banner{background:linear-gradient(90deg,#FF6B00,#ff4500,#FF6B00);background-size:200%;animation:gradMove 3s linear infinite;color:#fff;text-align:center;padding:10px 1rem;font-weight:700;font-size:.85rem;letter-spacing:.5px;position:relative;z-index:1002;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap}
     @keyframes gradMove{0%{background-position:0%}100%{background-position:200%}}
     .sale-timer{display:inline-flex;align-items:center;gap:.3rem;background:rgba(0,0,0,.25);padding:4px 12px;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:.82rem}
     .timer-block{text-align:center;min-width:28px}
@@ -438,6 +438,15 @@
     .rrc-date{font-size:.72rem;color:#bbb;margin-top:.5rem}
     .verified-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(46,125,81,.1);color:#2E7D51;font-size:.68rem;font-weight:600;padding:2px 7px;border-radius:8px;margin-left:.4rem}
 
+
+    /* COLOR VARIANTS */
+    .color-variants{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem;align-items:center}
+    .cv-label{font-size:.72rem;color:#aaa;margin-bottom:.3rem;display:block}
+    .cv-swatch{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:.2s;flex-shrink:0;position:relative}
+    .cv-swatch:hover{transform:scale(1.2)}
+    .cv-swatch.active{border-color:#1A1A1A;box-shadow:0 0 0 2px #fff,0 0 0 4px #1A1A1A}
+    .cv-name{font-size:.72rem;color:#FF6B00;font-weight:600;margin-left:.3rem}
+
     /* FEEDBACK */
     #feedback{background:#1A1A1A}
     #feedback .section-title{color:#fff}
@@ -559,7 +568,7 @@
 
 <!-- SALE BANNER -->
 <div class="sale-banner" id="saleBanner" style="top:0;left:0;right:0;position:fixed;z-index:1002">
-  🔥 Summer SALE — Special discounts on all items!
+  🔥 EID SALE — Special discounts on all items!
   <div class="sale-timer">
     <div class="timer-block"><span class="timer-num" id="th">00</span><span class="timer-lbl">Hrs</span></div>
     <span style="font-size:1rem;font-weight:700">:</span>
@@ -684,6 +693,7 @@
     <button class="filter-btn" onclick="filterProducts('men',this)">Men</button>
     <button class="filter-btn" onclick="filterProducts('women',this)">Women</button>
     <button class="filter-btn" onclick="filterProducts('kids',this)">Kids</button>
+    <button class="filter-btn" onclick="filterProducts('teens',this)">🔥 Teens</button>
   </div>
   <div class="products-grid" id="productsGrid">
     <div class="loading-grid"><div class="spinner"></div><p>Loading products...</p></div>
@@ -1226,6 +1236,28 @@ async function renderProducts(filter) {
   setTimeout(renderRecentlyViewed, 800);
 }
 
+
+function buildColorSwatches(p) {
+  var variants = p.color_variants || [];
+  if (!variants.length) return '';
+  var html = '<div class="color-variants"><span class="cv-label">Colors:</span>';
+  variants.forEach(function(v, i) {
+    var safeName = v.name.replace(/'/g,'&#39;');
+    html += '<div class="cv-swatch'+(i===0?' active':'')+'" style="background:'+v.hex+'" title="'+v.name+'" onclick="selectColor(this,&quot;'+safeName+'&quot;,'+p.id+')"></div>';
+  });
+  html += '<span class="cv-name" id="cv-name-'+p.id+'">'+(variants[0]?variants[0].name:'')+'</span>';
+  html += '</div>';
+  return html;
+}
+
+function selectColor(el, name, pid) {
+  var parent = el.parentNode;
+  parent.querySelectorAll('.cv-swatch').forEach(function(s){ s.classList.remove('active'); });
+  el.classList.add('active');
+  var nameEl = document.getElementById('cv-name-'+pid);
+  if (nameEl) nameEl.textContent = name;
+}
+
 function buildProductCards(products, grid, showSize) {
   if (!grid) return;
   grid.innerHTML = products.map(function(p) {
@@ -1250,11 +1282,12 @@ function buildProductCards(products, grid, showSize) {
     return '<div class="p-card" style="'+(isOOS?'opacity:.7':'')+'">'
       +'<div class="p-img" style="background:'+sBg+'">'+imgEl+badge+(isOOS?'<div class="out-of-stock-overlay"><span class="oos-label">OUT OF STOCK</span></div>':'')+'</div>'
       +'<div class="p-info">'
-        +'<div class="p-cat">'+(p.category==='men'?"Men's":p.category==='women'?"Women's":"Kids'")+' Collection</div>'
+        +'<div class="p-cat">'+(p.category==='men'?"Men's":p.category==='women'?"Women's":p.category==='teens'?"Teens'":"Kids'")+' Collection</div>'
         +'<h4>'+p.name+'</h4>'
         +'<div class="p-sku">SKU: <span>'+sku+'</span></div>'
         +(sizes?'<div class="p-sizes">'+sizes+'</div>':'')
         +sizeSelect
+        +buildColorSwatches(p)
         +'<div class="p-row">'
           +'<div><span class="p-price">Rs. '+Number(p.price).toLocaleString()+'</span>'+oldP+'</div>'
           +'<div style="display:flex;gap:.4rem">'
@@ -1286,9 +1319,12 @@ function filterAndScroll(cat) {
 function addToCart(id, name, price, emoji, bg, img, sku) {
   var sizeEl = $('sz-'+id);
   var size = sizeEl ? sizeEl.value : '';
-  var existing = cart.find(function(c){ return c.id===id && c.size===size; });
+  // get selected color
+  var colorEl = document.querySelector('#cv-name-'+id);
+  var color = colorEl ? colorEl.textContent : '';
+  var existing = cart.find(function(c){ return c.id===id && c.size===size && c.color===color; });
   if (existing) { existing.qty++; }
-  else { cart.push({id:id, name:name, price:price, emoji:emoji, bg:bg, img:img, size:size, qty:1, sku:sku||''}); }
+  else { cart.push({id:id, name:name, price:price, emoji:emoji, bg:bg, img:img, size:size, color:color, qty:1, sku:sku||''}); }
   renderCart();
   toast('Added to cart! 🛒');
 }
@@ -1316,6 +1352,7 @@ function renderCart() {
         +'<div class="ci-name">'+c.name+'</div>'
         +'<div class="ci-price">Rs. '+Number(c.price).toLocaleString()+'</div>'
         +(c.size?'<div class="ci-size">Size: '+c.size+'</div>':'')
+        +(c.color?'<div class="ci-size">Color: '+c.color+'</div>':'')
         +(c.sku?'<div style="font-size:.7rem;color:#aaa">SKU: '+c.sku+'</div>':'')
         +'<div class="ci-qty">'
           +'<button class="qty-btn" onclick="changeQty('+i+',-1)">−</button>'
@@ -1369,7 +1406,7 @@ async function placeOrder() {
   var btn = $('placeBtn');
   if(btn){ btn.disabled=true; btn.textContent='Placing order...'; }
   var total     = cart.reduce(function(s,c){ return s+c.price*c.qty; },0);
-  var itemsText = cart.map(function(c){ return c.name+(c.size?' ('+c.size+')':'')+(c.sku?' ['+c.sku+']':'')+' x'+c.qty; }).join(', ');
+  var itemsText = cart.map(function(c){ return c.name+(c.color?' - '+c.color:'')+(c.size?' ('+c.size+')':'')+(c.sku?' ['+c.sku+']':'')+' x'+c.qty; }).join(', ');
   var orderNum  = 'WG-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6);
   try {
     if (db) {
