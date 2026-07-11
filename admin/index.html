@@ -4,8 +4,6 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel – Walli Garments</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -85,6 +83,20 @@
     .show-qr-btn{background:#f0f2f8;border:1px solid #e2e6f0;color:#2c3345;padding:4px 10px;border-radius:6px;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:.2s}
     .show-qr-btn:hover{background:#FF6B00;color:#fff;border-color:#FF6B00}
 
+
+
+    /* COLOR VARIANTS ADMIN */
+    .cv-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
+    .cv-chip{display:inline-flex;align-items:center;gap:.4rem;background:#f0f2f8;border-radius:20px;padding:4px 10px 4px 6px;font-size:.78rem;font-weight:500;color:#2c3345}
+    .cv-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;border:1px solid rgba(0,0,0,.1)}
+    .cv-chip button{background:none;border:none;color:#aaa;cursor:pointer;font-size:.85rem;line-height:1;padding:0;margin-left:.2rem}
+    .cv-chip button:hover{color:var(--red)}
+    .cv-add-row{display:flex;gap:.5rem;margin-top:.7rem;align-items:center;flex-wrap:wrap}
+    .cv-add-row input{padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;transition:.2s;background:var(--bg)}
+    .cv-add-row input:focus{border-color:var(--gold);background:var(--white)}
+    .cv-color-input{width:44px;height:36px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;padding:2px;background:var(--bg)}
+    .cv-add-btn{background:var(--navy);color:var(--white);border:none;padding:8px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap}
+    .cv-add-btn:hover{background:var(--gold);color:var(--navy)}
 
     /* REVIEWS */
     .review-card{background:var(--card);border-radius:12px;border:1px solid var(--border);padding:1.2rem 1.5rem;margin-bottom:.9rem;display:flex;align-items:flex-start;gap:1rem;transition:.2s}
@@ -197,6 +209,7 @@
     .cat-pill.men{background:#dce6f5;color:#2a4a8a}
     .cat-pill.women{background:#f5dce6;color:#8a2a4a}
     .cat-pill.kids{background:#dcf5e6;color:#2a8a4a}
+    .cat-pill.teens{background:#ede0f5;color:#6b3fa0}
     .badge-pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.7rem;font-weight:700}
     .badge-pill.sale{background:#fff3dc;color:#a07020}
     .badge-pill.new{background:#dce6f5;color:#2a4a8a}
@@ -374,13 +387,14 @@
               <button class="ct" onclick="setCatTab('men',this)">Men</button>
               <button class="ct" onclick="setCatTab('women',this)">Women</button>
               <button class="ct" onclick="setCatTab('kids',this)">Kids</button>
+              <button class="ct" onclick="setCatTab('teens',this)">🔥 Teens</button>
             </div>
           </div>
           <button class="add-prod-btn" onclick="openProdModal()">➕ Add Product</button>
         </div>
         <div class="tbl-wrap">
           <table class="prod-table">
-            <thead><tr><th>Photo</th><th>Name</th><th>SKU</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Photo</th><th>Name</th><th>SKU</th><th>Colors</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
             <tbody id="prodTbody"><tr><td colspan="7" class="tbl-loading"><div class="spinner"></div></td></tr></tbody>
           </table>
         </div>
@@ -484,6 +498,16 @@
         <div class="mfg"><label>Old Price (Rs.)</label><input type="number" id="mOldPrice" placeholder="0 if none" min="0"/></div>
       </div>
       <div class="mfg">
+        <label>Color Variants <span style="font-weight:400;color:var(--muted)">(add all available colors)</span></label>
+        <div class="cv-row" id="cvChips"></div>
+        <div class="cv-add-row">
+          <input type="color" id="cvColorPick" value="#FF6B00" class="cv-color-input" title="Pick color"/>
+          <input type="text" id="cvColorName" placeholder="Color name e.g. Red, Navy Blue, White..." style="flex:1"/>
+          <button class="cv-add-btn" onclick="addColorVariant()">+ Add Color</button>
+        </div>
+        <div class="hint">Click the color circle to pick, then type the name and click Add Color</div>
+      </div>
+      <div class="mfg">
         <label>Sizes</label>
         <div class="tags-container" id="tagsContainer" onclick="document.getElementById('tagInput').focus()">
           <input class="tag-input" id="tagInput" placeholder="Type S, M, L… then press Enter" onkeydown="handleTagKey(event)"/>
@@ -548,19 +572,24 @@
     <button class="qr-close-btn" onclick="closeAdminQR()">✕ Close</button>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <div id="toast"></div>
 
 <script>
 // ── SUPABASE ──
 const SB_URL = 'https://jzybbxdexxilvgbbbxzt.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6eWJieGRleHhpbHZnYmJieHp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0Mjg1MDQsImV4cCI6MjA5OTAwNDUwNH0.Xi60WDhQqqK3clgXi0f7HXHKAw3Q0f8Lmhd2sFF1tAE';
-let db;
-try {
-  const _sb = window.supabase || supabase;
-  db = _sb.createClient(SB_URL, SB_KEY);
-  console.log('✅ Supabase connected');
-} catch(e) {
-  console.error('❌ Supabase init failed:', e.message||e);
+let db = null;
+function initSupabase(){
+  try {
+    const _sb = window.supabase;
+    if(!_sb){ console.error('❌ Supabase not loaded'); return false; }
+    db = _sb.createClient(SB_URL, SB_KEY);
+    console.log('✅ Supabase connected');
+    return true;
+  } catch(e){ console.error('❌ Supabase init failed:', e.message||e); return false; }
 }
 
 
@@ -572,6 +601,7 @@ function doLogin(){
   if(u==='admin'&&p===adminPass){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('adminScreen').style.display='flex';
+    initSupabase();
     loadDashboard(); loadOrders(); loadAllProducts();
   } else {
     document.getElementById('loginErr').style.display='block';
@@ -815,6 +845,7 @@ async function deleteAllOrders(){
 
 // ── PRODUCTS ──
 let allProducts=[], catFilter='all';
+let currentColorVariants=[];
 let currentTags=[], currentEmoji='👕', currentBg='#d0dae8', currentImg='';
 
 async function loadAllProducts(){
@@ -844,7 +875,8 @@ function renderTable(){
       <td>${thumb}</td>
       <td style="font-weight:600;max-width:130px">${p.name}</td>
       <td><span class="sku-label">${sku}</span></td>
-      <td><span class="cat-pill ${p.category}">${p.category}</span></td>
+      <td>${(p.color_variants||[]).map(v=>'<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:'+v.hex+';border:1px solid #ddd;margin-right:2px" title="'+v.name+'"></span>').join('')||'—'}</td>
+      <td><span class="cat-pill ${p.category}">${p.category==="teens"?"🔥 Teens":p.category}</span></td>
       <td>Rs.${Number(p.price).toLocaleString()}${oldP}</td>
       <td><button onclick="toggleOOS(${p.id},${oos})" style="background:${oos?'#fde8e8':'#dcf5e6'};color:${oos?'var(--red)':'var(--green)'};border:none;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s">${oos?'❌ OOS':'✅ In Stock'}</button></td>
       <td><div class="tbl-btns">
@@ -863,6 +895,8 @@ function openProdModal(id){
   document.getElementById('mId').value=p?p.id:'';
   document.getElementById('mName').value=p?p.name:'';
   document.getElementById('mSku').value=p?(p.sku||''):'';
+  currentColorVariants=p?(p.color_variants||[]):[];
+  renderColorChips();
   document.getElementById('mCat').value=p?p.category:'';
   document.getElementById('mBadge').value=p?(p.badge||''):'';
   document.getElementById('mPrice').value=p?p.price:'';
@@ -884,6 +918,38 @@ function openProdModal(id){
 }
 function closeProdModal(){document.getElementById('modalBg').classList.remove('open');}
 
+
+// ── COLOR VARIANTS ──
+function renderColorChips() {
+  var el = document.getElementById('cvChips');
+  if (!el) return;
+  el.innerHTML = currentColorVariants.map(function(v, i) {
+    return '<span class="cv-chip">'
+      +'<span class="cv-dot" style="background:'+v.hex+'"></span>'
+      +v.name
+      +'<button onclick="removeColorVariant('+i+')" title="Remove">×</button>'
+      +'</span>';
+  }).join('');
+}
+
+function addColorVariant() {
+  var hex  = document.getElementById('cvColorPick').value;
+  var name = document.getElementById('cvColorName').value.trim();
+  if (!name) { toast('Please enter a color name.', 'red'); return; }
+  if (currentColorVariants.find(function(v){ return v.name.toLowerCase()===name.toLowerCase(); })) {
+    toast('This color already exists.', 'red'); return;
+  }
+  currentColorVariants.push({hex: hex, name: name});
+  document.getElementById('cvColorName').value = '';
+  renderColorChips();
+  toast('Color added: ' + name);
+}
+
+function removeColorVariant(i) {
+  currentColorVariants.splice(i, 1);
+  renderColorChips();
+}
+
 async function saveProduct(){
   const name=document.getElementById('mName').value.trim();
   const category=document.getElementById('mCat').value;
@@ -892,7 +958,7 @@ async function saveProduct(){
   const btn=document.getElementById('saveBtn');
   btn.disabled=true;btn.textContent='Saving...';
   const skuVal = document.getElementById('mSku').value.trim();
-  const payload={name,category,price,old_price:parseInt(document.getElementById('mOldPrice').value)||0,badge:document.getElementById('mBadge').value||'',sizes:currentTags,emoji:currentEmoji,bg:currentBg,img:currentImg,sku:skuVal||null};
+  const payload={name,category,price,old_price:parseInt(document.getElementById('mOldPrice').value)||0,badge:document.getElementById('mBadge').value||'',sizes:currentTags,emoji:currentEmoji,bg:currentBg,img:currentImg,sku:skuVal||null,color_variants:currentColorVariants};
   const id=document.getElementById('mId').value;
   try {
     const {error: saveErr} = id
