@@ -439,6 +439,67 @@
     .verified-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(46,125,81,.1);color:#2E7D51;font-size:.68rem;font-weight:600;padding:2px 7px;border-radius:8px;margin-left:.4rem}
 
 
+
+    /* ── PRODUCT DETAIL MODAL ── */
+    .pd-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:3500;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+    .pd-overlay.open{display:flex}
+    .pd-modal{background:#fff;border-radius:20px;width:100%;max-width:860px;max-height:94vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.35);display:grid;grid-template-columns:1fr 1fr;position:relative}
+    .pd-img-side{background:#f0f0f0;border-radius:20px 0 0 20px;display:flex;align-items:center;justify-content:center;min-height:420px;position:relative;overflow:hidden;font-size:8rem}
+    .pd-img-side img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:20px 0 0 20px}
+    .pd-badge-big{position:absolute;top:16px;left:16px;font-size:.8rem;font-weight:700;padding:5px 14px;border-radius:20px;z-index:2}
+    .pd-badge-big.sale{background:#FF6B00;color:#1A1A1A}
+    .pd-badge-big.new{background:#1A1A1A;color:#fff}
+    .pd-badge-big.hot{background:#c0392b;color:#fff}
+    .pd-discount-tag{position:absolute;top:16px;right:16px;background:#1A1A1A;color:#fff;font-size:.78rem;font-weight:700;padding:5px 12px;border-radius:20px;z-index:2}
+    .pd-info-side{padding:2rem;display:flex;flex-direction:column;gap:1rem;overflow-y:auto}
+    .pd-close{position:absolute;top:14px;right:14px;z-index:10;background:#1A1A1A;color:#fff;border:none;width:34px;height:34px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+    .pd-close:hover{background:#FF6B00;color:#1A1A1A}
+    .pd-cat-tag{font-size:.72rem;text-transform:uppercase;letter-spacing:2px;color:#FF6B00;font-weight:700}
+    .pd-name{font-family:'Playfair Display',serif;font-size:1.5rem;color:#1A1A1A;line-height:1.25;font-weight:700}
+    .pd-sku-tag{font-size:.72rem;color:#aaa;letter-spacing:1.5px;font-weight:600}
+    .pd-sku-tag span{background:#f0f2f8;padding:2px 8px;border-radius:4px;color:#666}
+    .pd-price-row{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+    .pd-price{font-family:'Playfair Display',serif;font-size:2rem;color:#1A1A1A;font-weight:900}
+    .pd-old-price{font-size:1.1rem;color:#bbb;text-decoration:line-through}
+    .pd-saving{background:rgba(255,107,0,.12);color:#FF6B00;font-size:.78rem;font-weight:700;padding:4px 10px;border-radius:20px}
+    .pd-section-label{font-size:.75rem;font-weight:700;color:#1A1A1A;text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem}
+    /* SIZE BUTTONS */
+    .pd-sizes{display:flex;gap:.5rem;flex-wrap:wrap}
+    .pd-size-btn{padding:7px 16px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:.2s;background:#fff;color:#1A1A1A}
+    .pd-size-btn:hover{border-color:#1A1A1A}
+    .pd-size-btn.selected{background:#1A1A1A;color:#fff;border-color:#1A1A1A}
+    /* COLOR SWATCHES */
+    .pd-colors{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+    .pd-color-swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:.2s}
+    .pd-color-swatch:hover{transform:scale(1.15)}
+    .pd-color-swatch.selected{border-color:#1A1A1A;box-shadow:0 0 0 2px #fff,0 0 0 4px #1A1A1A}
+    .pd-color-name{font-size:.78rem;color:#FF6B00;font-weight:600;margin-left:.3rem}
+    /* QUANTITY */
+    .pd-qty-row{display:flex;align-items:center;gap:1rem}
+    .pd-qty-control{display:flex;align-items:center;border:1.5px solid #e0e0e0;border-radius:10px;overflow:hidden}
+    .pd-qty-btn{width:40px;height:40px;border:none;background:#f8f8f8;font-size:1.2rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;display:flex;align-items:center;justify-content:center}
+    .pd-qty-btn:hover{background:#1A1A1A;color:#fff}
+    .pd-qty-val{width:44px;text-align:center;font-size:1rem;font-weight:700;color:#1A1A1A;border:none;outline:none;font-family:'DM Sans',sans-serif}
+    /* ACTIONS */
+    .pd-add-btn{width:100%;background:#1A1A1A;color:#fff;border:none;padding:15px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:.6rem}
+    .pd-add-btn:hover{background:#FF6B00;color:#1A1A1A}
+    .pd-wa-btn{width:100%;background:#25D366;color:#fff;border:none;padding:13px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:.6rem;text-decoration:none}
+    .pd-wa-btn:hover{opacity:.9}
+    .pd-wish-btn{border:1.5px solid #e0e0e0;background:#fff;padding:13px 18px;border-radius:10px;font-size:1.1rem;cursor:pointer;transition:.2s;flex-shrink:0}
+    .pd-wish-btn:hover{border-color:#FF6B00}
+    .pd-wish-btn.wished{background:#fff0f0;border-color:#FF6B00}
+    .pd-divider{border:none;border-top:1px solid #f0f0f0;margin:.2rem 0}
+    .pd-desc{font-size:.85rem;color:#888;line-height:1.7}
+    /* Responsive */
+    @media(max-width:700px){
+      .pd-modal{grid-template-columns:1fr;max-height:96vh}
+      .pd-img-side{min-height:260px;border-radius:20px 20px 0 0}
+      .pd-img-side img{border-radius:20px 20px 0 0}
+      .pd-info-side{padding:1.4rem}
+      .pd-name{font-size:1.2rem}
+      .pd-price{font-size:1.6rem}
+    }
+
     /* COLOR VARIANTS */
     .color-variants{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem;align-items:center}
     .cv-label{font-size:.72rem;color:#aaa;margin-bottom:.3rem;display:block}
@@ -568,7 +629,7 @@
 
 <!-- SALE BANNER -->
 <div class="sale-banner" id="saleBanner" style="top:0;left:0;right:0;position:fixed;z-index:1002">
-  🔥 SUMMER SALE — Special discounts on all items!
+  🔥 EID SALE — Special discounts on all items!
   <div class="sale-timer">
     <div class="timer-block"><span class="timer-num" id="th">00</span><span class="timer-lbl">Hrs</span></div>
     <span style="font-size:1rem;font-weight:700">:</span>
@@ -1261,6 +1322,7 @@ function selectColor(el, name, pid) {
 function buildProductCards(products, grid, showSize) {
   if (!grid) return;
   grid.innerHTML = products.map(function(p) {
+    var pJson = encodeURIComponent(JSON.stringify({id:p.id,name:p.name,price:p.price,old_price:p.old_price||0,emoji:p.emoji||'👕',bg:p.bg||'#d0dae8',img:p.img||'',category:p.category,sizes:p.sizes||[],color_variants:p.color_variants||[],badge:p.badge||'',sku:p.sku||'',out_of_stock:p.out_of_stock||false}));
     var sizes = (p.sizes || []).map(function(s){ return '<span class="size-tag">'+s+'</span>'; }).join('');
     var badge = p.badge ? '<span class="p-badge '+p.badge.toLowerCase()+'">'+p.badge+'</span>' : '';
     var oldP  = p.old_price > 0 ? '<span class="p-old">Rs. '+Number(p.old_price).toLocaleString()+'</span>' : '';
@@ -1279,7 +1341,7 @@ function buildProductCards(products, grid, showSize) {
       sizeSelect += '</select>';
     }
     trackRecentlyViewed(p);
-    return '<div class="p-card" style="'+(isOOS?'opacity:.7':'')+'">'
+    return '<div class="p-card" style="'+(isOOS?'opacity:.7':'')+';cursor:pointer" onclick="openPD(JSON.parse(decodeURIComponent(\'' + pJson + '\')))">'
       +'<div class="p-img" style="background:'+sBg+'">'+imgEl+badge+(isOOS?'<div class="out-of-stock-overlay"><span class="oos-label">OUT OF STOCK</span></div>':'')+'</div>'
       +'<div class="p-info">'
         +'<div class="p-cat">'+(p.category==='men'?"Men's":p.category==='women'?"Women's":p.category==='teens'?"Teens'":"Kids'")+' Collection</div>'
@@ -1754,6 +1816,160 @@ function toast(msg,type){
   t.classList.add('show');
   setTimeout(function(){t.classList.remove('show');},3000);
 }
+
+
+// ── PRODUCT DETAIL MODAL ──
+var pdCurrentProduct = null;
+var pdSelectedSize   = '';
+var pdSelectedColor  = '';
+var pdQtyVal         = 1;
+
+function openPD(p) {
+  pdCurrentProduct = p;
+  pdSelectedSize   = (p.sizes && p.sizes.length) ? '' : '';
+  pdSelectedColor  = (p.color_variants && p.color_variants.length) ? p.color_variants[0].name : '';
+  pdQtyVal         = 1;
+
+  var sku = p.sku || ('WG-' + String(p.id).padStart(4,'0'));
+
+  // Image side
+  var imgSide = $('pdImgSide');
+  if (imgSide) {
+    imgSide.style.background = p.bg || '#d0dae8';
+    if (p.img) {
+      imgSide.innerHTML = '<img src="'+p.img+'" alt="'+p.name+'"/>';
+    } else {
+      imgSide.innerHTML = '<span style="font-size:8rem">'+(p.emoji||'👕')+'</span>';
+    }
+    // re-add badge + discount
+    if (p.badge) {
+      imgSide.innerHTML += '<span class="pd-badge-big '+p.badge.toLowerCase()+'">'+p.badge+'</span>';
+    }
+    if (p.old_price > 0) {
+      var pct = Math.round((1 - p.price/p.old_price)*100);
+      imgSide.innerHTML += '<span class="pd-discount-tag">'+pct+'% OFF</span>';
+    }
+  }
+
+  // Info
+  var catLabel = p.category==='men'?"Men's Wear":p.category==='women'?"Women's Fashion":p.category==='teens'?"Teens Collection":"Kids' Collection";
+  setText('pdCat', catLabel);
+  setText('pdName', p.name);
+  setText('pdSku', sku);
+  setText('pdPrice', 'Rs. '+Number(p.price).toLocaleString());
+
+  var oldEl = $('pdOldPrice'), savEl = $('pdSaving');
+  if (p.old_price > 0) {
+    if(oldEl){oldEl.textContent='Rs. '+Number(p.old_price).toLocaleString();oldEl.style.display='inline';}
+    var pct = Math.round((1 - p.price/p.old_price)*100);
+    if(savEl){savEl.textContent='Save '+pct+'%';savEl.style.display='inline';}
+  } else {
+    if(oldEl) oldEl.style.display='none';
+    if(savEl) savEl.style.display='none';
+  }
+
+  // Sizes
+  var sizeSec = $('pdSizesSection'), sizesEl = $('pdSizes');
+  if (p.sizes && p.sizes.length && sizeSec && sizesEl) {
+    sizeSec.style.display = 'block';
+    sizesEl.innerHTML = p.sizes.map(function(s,i){
+      return '<button class="pd-size-btn'+(i===0?' selected':'')+'" onclick="pdSelectSize(this,&quot;'+s+'&quot;)">'+s+'</button>';
+    }).join('');
+    pdSelectedSize = p.sizes[0];
+  } else {
+    if(sizeSec) sizeSec.style.display = 'none';
+  }
+
+  // Colors
+  var colSec = $('pdColorsSection'), colsEl = $('pdColors');
+  if (p.color_variants && p.color_variants.length && colSec && colsEl) {
+    colSec.style.display = 'block';
+    setText('pdColorName', p.color_variants[0].name);
+    pdSelectedColor = p.color_variants[0].name;
+    colsEl.innerHTML = p.color_variants.map(function(v,i){
+      var safeCN=v.name.replace(/'/g,'&#39;');
+      return '<div class="pd-color-swatch'+(i===0?' selected':'')+'" style="background:'+v.hex+'" title="'+v.name+'" onclick="pdSelectColor(this,&quot;'+safeCN+'&quot;)"></div>';
+    }).join('');
+  } else {
+    if(colSec) colSec.style.display = 'none';
+    pdSelectedColor = '';
+  }
+
+  // Qty
+  var qtyEl = $('pdQty'); if(qtyEl) qtyEl.value = 1;
+
+  // Wish button
+  var isWished = wishlist.some(function(w){ return w.id===p.id; });
+  var wb = $('pdWishBtn'); if(wb){ wb.textContent=isWished?'❤️':'🤍'; wb.classList.toggle('wished',isWished); }
+
+  // WhatsApp link
+  var waEl = $('pdWaBtn');
+  if (waEl) {
+    var msg = encodeURIComponent('Assalam o Alaikum! I want to order: ' + p.name + ' - Rs. ' + Number(p.price).toLocaleString() + ' SKU: ' + sku + '. Please confirm. JazakAllah!');
+    waEl.href = 'https://wa.me/923225925409?text='+msg;
+  }
+
+  // Description
+  var descEl = $('pdDesc');
+  if (descEl) {
+    var desc = '📦 Category: '+catLabel;
+    if (p.sizes && p.sizes.length) desc += ' · Sizes: '+p.sizes.join(', ');
+    desc += ' | Genuine quality fabric. Home delivery in Shakargarh.';
+    descEl.textContent = desc;
+  }
+
+  // Open modal
+  var overlay = $('pdOverlay'); if(overlay) overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePD() {
+  var overlay = $('pdOverlay'); if(overlay) overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function pdSelectSize(btn, size) {
+  pdSelectedSize = size;
+  document.querySelectorAll('.pd-size-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+}
+
+function pdSelectColor(el, name) {
+  pdSelectedColor = name;
+  setText('pdColorName', name);
+  document.querySelectorAll('.pd-color-swatch').forEach(function(s){ s.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+function pdChangeQty(d) {
+  pdQtyVal = Math.max(1, Math.min(10, pdQtyVal + d));
+  var qtyEl = $('pdQty'); if(qtyEl) qtyEl.value = pdQtyVal;
+}
+
+function pdAddToCart() {
+  if (!pdCurrentProduct) return;
+  var p = pdCurrentProduct;
+  var sku = p.sku || ('WG-' + String(p.id).padStart(4,'0'));
+  // Add qty times
+  for (var i=0; i<pdQtyVal; i++) {
+    var existing = cart.find(function(c){ return c.id===p.id && c.size===pdSelectedSize && c.color===pdSelectedColor; });
+    if (existing) { existing.qty++; }
+    else { cart.push({id:p.id,name:p.name,price:p.price,emoji:p.emoji||'👕',bg:p.bg||'#d0dae8',img:p.img||'',size:pdSelectedSize,color:pdSelectedColor,qty:1,sku:sku}); }
+  }
+  renderCart();
+  closePD();
+  toast('Added to cart! 🛒');
+  toggleCart();
+}
+
+function pdToggleWish() {
+  if (!pdCurrentProduct) return;
+  var p = pdCurrentProduct;
+  toggleWishItem(p.id, p.name, p.price, p.emoji||'👕', p.bg||'#d0dae8', p.img||'');
+  var isWished = wishlist.some(function(w){ return w.id===p.id; });
+  var wb = $('pdWishBtn'); if(wb){ wb.textContent=isWished?'❤️':'🤍'; wb.classList.toggle('wished',isWished); }
+}
+
 
 // ── START ──
 window.addEventListener('load',function(){
