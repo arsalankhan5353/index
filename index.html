@@ -1321,8 +1321,9 @@ function selectColor(el, name, pid) {
 
 function buildProductCards(products, grid, showSize) {
   if (!grid) return;
+  // Store products in global map for easy lookup by ID
+  products.forEach(function(p){ pdProductStore[p.id] = p; });
   grid.innerHTML = products.map(function(p) {
-    var pJson = encodeURIComponent(JSON.stringify({id:p.id,name:p.name,price:p.price,old_price:p.old_price||0,emoji:p.emoji||'👕',bg:p.bg||'#d0dae8',img:p.img||'',category:p.category,sizes:p.sizes||[],color_variants:p.color_variants||[],badge:p.badge||'',sku:p.sku||'',out_of_stock:p.out_of_stock||false}));
     var sizes = (p.sizes || []).map(function(s){ return '<span class="size-tag">'+s+'</span>'; }).join('');
     var badge = p.badge ? '<span class="p-badge '+p.badge.toLowerCase()+'">'+p.badge+'</span>' : '';
     var oldP  = p.old_price > 0 ? '<span class="p-old">Rs. '+Number(p.old_price).toLocaleString()+'</span>' : '';
@@ -1341,7 +1342,7 @@ function buildProductCards(products, grid, showSize) {
       sizeSelect += '</select>';
     }
     trackRecentlyViewed(p);
-    return '<div class="p-card" style="'+(isOOS?'opacity:.7':'')+';cursor:pointer" onclick="openPD(JSON.parse(decodeURIComponent(\'' + pJson + '\')))">'
+    return '<div class="p-card" style="'+(isOOS?'opacity:.7':'')+';cursor:pointer" onclick="openPDById('+p.id+')">'
       +'<div class="p-img" style="background:'+sBg+'">'+imgEl+badge+(isOOS?'<div class="out-of-stock-overlay"><span class="oos-label">OUT OF STOCK</span></div>':'')+'</div>'
       +'<div class="p-info">'
         +'<div class="p-cat">'+(p.category==='men'?"Men's":p.category==='women'?"Women's":p.category==='teens'?"Teens'":"Kids'")+' Collection</div>'
@@ -1819,7 +1820,14 @@ function toast(msg,type){
 
 
 // ── PRODUCT DETAIL MODAL ──
+var pdProductStore = {}; // stores all loaded products by id
 var pdCurrentProduct = null;
+
+function openPDById(id) {
+  var p = pdProductStore[id];
+  if (!p) { console.error('Product not found:', id); return; }
+  openPD(p);
+}
 var pdSelectedSize   = '';
 var pdSelectedColor  = '';
 var pdQtyVal         = 1;
